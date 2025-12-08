@@ -33,10 +33,6 @@ function initializeEventListeners() {
     document.getElementById('switchToSignup').addEventListener('click', (e) => {
         e.preventDefault();
         showPage('signup');
-        // ... existing code ...
-
-        // Forgot Password - ADD THIS LINE
-        initializeForgotPasswordListeners();
     });
 
     // ============ FORGOT PASSWORD FUNCTIONS ============
@@ -1062,29 +1058,3 @@ function checkLoginStatus() {
         showPage('welcome');
     }
 }
-
-// Animation styles
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideInNotif {
-        from {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-    @keyframes slideOutNotif {
-        from {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
