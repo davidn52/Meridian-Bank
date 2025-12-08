@@ -466,6 +466,80 @@ body {
     gap: 15px;
 }
 
+.market-section {
+    margin: 18px 0;
+    text-align: center;
+}
+
+.market-image {
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.market-info {
+    color: #666;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.market-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+.market-image {
+    width: 260px;
+    max-width: 40%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.market-live {
+    flex: 1 1 280px;
+    min-width: 220px;
+}
+
+.market-controls {
+    margin-bottom: 8px;
+}
+
+.market-ticker p {
+    margin: 6px 0;
+    font-weight: 500;
+}
+
+.market-timestamp {
+    color: #666;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+#beneficiaryBankName[readonly] {
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width:700px) {
+    .market-row {
+        flex-direction: column;
+    }
+
+    .market-image {
+        max-width: 100%;
+    }
+}
+
 /* Modal Styles */
 .modal {
     display: none;

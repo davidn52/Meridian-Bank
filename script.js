@@ -1,4 +1,11 @@
-// Simple mobile bank app (client-only, localStorage-backed)
+// script.js
+// Mobile Bank — single-file frontend logic (localStorage-backed)
+// Includes: guarded listeners, signup/login, add-funds, beneficiaries, transfer,
+// cards, loans, investments, transactions, forgot-password, market live simulation,
+// and beneficiary-bank autofill.
+
+// Use strict mode
+'use strict';
 
 // Page IDs map
 const pages = {
@@ -19,17 +26,26 @@ let currentPage = 'welcome';
 let selectedInvestment = null;
 let forgotPasswordState = { email: '', verificationCode: '', resetToken: '' };
 
-// Helpers
+// --- Helpers ---
 function get(id) { return document.getElementById(id); }
-function safeText(el, txt) { if (el) el.textContent = txt; }
+function qs(sel) { return document.querySelector(sel); }
 function showNotification(msg, type = 'success') {
     const n = document.createElement('div');
     n.textContent = msg;
-    n.style.cssText = `position:fixed; top:20px; right:20px; z-index:9999;
-        background:${type === 'error' ? '#f44336' : '#4CAF50'}; color:#fff; padding:12px 16px;
-        border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15);`;
+    n.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: ${type === 'error' ? '#f44336' : '#4CAF50'};
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: sans-serif;
+  `;
     document.body.appendChild(n);
-    setTimeout(() => n.remove(), 3000);
+    setTimeout(() => { n.remove(); }, 3000);
 }
 function requireLogin() {
     const cur = JSON.parse(localStorage.getItem('currentUser'));
@@ -37,7 +53,7 @@ function requireLogin() {
     return cur;
 }
 
-// Generate account/routing
+// Account & routing generator
 function generateAccountNumber() {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let a = '';
@@ -51,7 +67,7 @@ function generateRoutingNumber() {
     return r;
 }
 
-// Initialize listeners (guarded)
+// --- Event listeners (guarded) ---
 function initializeEventListeners() {
     function on(id, event, handler) {
         const el = get(id);
@@ -59,55 +75,63 @@ function initializeEventListeners() {
     }
 
     try {
+        // Welcome
         on('showLoginBtn', 'click', () => showPage('login'));
         on('showSignupBtn', 'click', () => showPage('signup'));
 
+        // Login
         on('loginForm', 'submit', handleLogin);
         on('backFromLoginBtn', 'click', () => showPage('welcome'));
         const switchToSignup = get('switchToSignup');
         if (switchToSignup) switchToSignup.addEventListener('click', e => { e.preventDefault(); showPage('signup'); });
 
+        // Forgot password
         const showForgot = get('showForgotPassword');
         if (showForgot) showForgot.addEventListener('click', e => { e.preventDefault(); showPage('forgotPassword'); });
-
         on('backFromForgotPasswordBtn', 'click', () => showPage('login'));
         const backToLogin = get('backToLogin');
         if (backToLogin) backToLogin.addEventListener('click', e => { e.preventDefault(); resetForgotPasswordForm(); showPage('login'); });
-
         on('forgotPasswordForm', 'submit', handleForgotPasswordSubmit);
         on('verifyCodeForm', 'submit', handleVerifyCode);
         on('resetPasswordForm', 'submit', handleResetPassword);
 
+        // Signup
         on('signupForm', 'submit', handleSignup);
         on('backFromSignupBtn', 'click', () => showPage('welcome'));
         const switchToLogin = get('switchToLogin');
         if (switchToLogin) switchToLogin.addEventListener('click', e => { e.preventDefault(); showPage('login'); });
 
+        // Dashboard quick actions
         on('dashboardMenuToggle', 'click', openMenu);
         on('quickTransferBtn', 'click', () => showPage('transfer'));
         on('quickCardBtn', 'click', () => showPage('card'));
         on('quickLoanBtn', 'click', () => showPage('loan'));
         on('quickInvestBtn', 'click', () => showPage('investment'));
 
+        // Add Funds modal
         if (get('addFundsBtn')) get('addFundsBtn').addEventListener('click', openAddFundsModal);
         if (get('closeAddFundsModal')) get('closeAddFundsModal').addEventListener('click', closeAddFundsModal);
         if (get('cancelAddFundsBtn')) get('cancelAddFundsBtn').addEventListener('click', closeAddFundsModal);
         if (get('addFundsForm')) get('addFundsForm').addEventListener('submit', handleAddFunds);
         if (get('addFundsModal')) get('addFundsModal').addEventListener('click', e => { if (e.target.id === 'addFundsModal') closeAddFundsModal(); });
 
+        // Transfer
         on('transferForm', 'submit', handleTransfer);
         on('backFromTransferBtn', 'click', () => showPage('dashboard'));
 
+        // Beneficiaries
         on('beneficiaryForm', 'submit', handleAddBeneficiary);
         on('backFromBeneficiaryBtn', 'click', () => showPage('dashboard'));
 
+        // Card
         on('cardForm', 'submit', handleAddCard);
         on('backFromCardBtn', 'click', () => showPage('dashboard'));
 
+        // Loan
         on('loanForm', 'submit', handleLoan);
         on('backFromLoanBtn', 'click', () => showPage('dashboard'));
 
-        // investment buttons
+        // Investments
         const invBtns = document.querySelectorAll('.investment-card .btn');
         if (invBtns && invBtns.length) {
             invBtns.forEach(btn => {
@@ -125,12 +149,15 @@ function initializeEventListeners() {
         on('investmentForm', 'submit', handleInvestment);
         on('backFromInvestmentBtn', 'click', () => showPage('dashboard'));
 
+        // Transaction page
         on('backFromTransactionBtn', 'click', () => showPage('dashboard'));
 
+        // Hamburger menu & overlay
         on('hamburgerBtn', 'click', openMenu);
         on('closeMenuBtn', 'click', closeMenu);
         on('menuOverlay', 'click', closeMenu);
 
+        // Sidebar menu items
         on('dashboardMenuBtn', 'click', () => { showPage('dashboard'); closeMenu(); });
         on('transferMenuBtn', 'click', () => { showPage('transfer'); closeMenu(); });
         on('beneficiaryMenuBtn', 'click', () => { showPage('beneficiary'); closeMenu(); });
@@ -140,28 +167,34 @@ function initializeEventListeners() {
         on('transactionMenuBtn', 'click', () => { showPage('transaction'); closeMenu(); });
         on('logoutMenuBtn', 'click', handleLogout);
 
+        // Market live toggle (if present)
+        if (get('marketToggleBtn')) get('marketToggleBtn').addEventListener('click', toggleMarketLive);
+
+        // Beneficiary select change to update bank name/autofill
+        if (get('beneficiarySelect')) get('beneficiarySelect').addEventListener('change', updateBeneficiaryBankName);
+
         console.log('Event listeners initialized (guarded).');
     } catch (err) {
         console.error('init listeners error', err);
     }
 }
 
-// Navigation
+// --- Navigation ---
 function showPage(name) {
     Object.values(pages).forEach(pid => {
-        const el = document.getElementById(pid);
+        const el = get(pid);
         if (el) el.classList.remove('active');
     });
     const pid = pages[name];
     if (pid) {
-        const el = document.getElementById(pid);
+        const el = get(pid);
         if (el) el.classList.add('active');
         currentPage = name;
     }
     if (name === 'transaction') loadFullTransactionHistory();
 }
 
-// Menu
+// --- Menu ---
 function openMenu() {
     const s = get('sidebarMenu'), o = get('menuOverlay'), h = get('hamburgerBtn');
     if (s) s.classList.add('active');
@@ -175,11 +208,11 @@ function closeMenu() {
     if (h) h.classList.remove('active');
 }
 
-// Add funds modal
+// --- Add Funds modal ---
 function openAddFundsModal() { const m = get('addFundsModal'); if (m) m.classList.add('active'); }
 function closeAddFundsModal() { const m = get('addFundsModal'); if (m) { m.classList.remove('active'); const f = get('addFundsForm'); if (f) f.reset(); } }
 
-// Email helper (uses EmailJS if configured)
+// --- Email helper (EmailJS optional) ---
 function sendEmailNotification(email, subject, message) {
     try {
         console.log('Email request', { email, subject, message });
@@ -190,7 +223,7 @@ function sendEmailNotification(email, subject, message) {
         }
     } catch (e) { console.warn(e); }
 
-    // also store in currentUser.notifications
+    // store in currentUser.notifications
     const cur = JSON.parse(localStorage.getItem('currentUser'));
     if (cur) {
         if (!cur.notifications) cur.notifications = [];
@@ -201,7 +234,7 @@ function sendEmailNotification(email, subject, message) {
     }
 }
 
-// Forgot password flow (dev-only: uses localStorage for code)
+// --- Forgot password flow (demo-only via localStorage) ---
 function handleForgotPasswordSubmit(e) {
     e.preventDefault();
     const email = (get('forgotEmail') && get('forgotEmail').value) || '';
@@ -215,7 +248,7 @@ function handleForgotPasswordSubmit(e) {
     localStorage.setItem('resetCode_' + email, JSON.stringify({ code, ts: Date.now(), expiresIn: 10 * 60 * 1000 }));
     sendEmailNotification(email, 'Password Reset Code', `Your code: ${code}`);
     showNotification('Verification code sent to your email');
-    const s1 = document.querySelector('.step-1'), s2 = document.querySelector('.step-2'), s3 = document.querySelector('.step-3');
+    const s1 = qs('.step-1'), s2 = qs('.step-2');
     if (s1) s1.style.display = 'none';
     if (s2) s2.style.display = 'block';
 }
@@ -228,7 +261,7 @@ function handleVerifyCode(e) {
     if (Date.now() - stored.ts > stored.expiresIn) { localStorage.removeItem('resetCode_' + email); showNotification('Code expired', 'error'); resetForgotPasswordForm(); showPage('login'); return; }
     if (stored.code !== entered) return showNotification('Invalid code', 'error');
     showNotification('Code verified');
-    const s2 = document.querySelector('.step-2'), s3 = document.querySelector('.step-3');
+    const s2 = qs('.step-2'), s3 = qs('.step-3');
     if (s2) s2.style.display = 'none';
     if (s3) s3.style.display = 'block';
 }
@@ -254,14 +287,14 @@ function resetForgotPasswordForm() {
     if (get('forgotPasswordForm')) get('forgotPasswordForm').reset();
     if (get('verifyCodeForm')) get('verifyCodeForm').reset();
     if (get('resetPasswordForm')) get('resetPasswordForm').reset();
-    const s1 = document.querySelector('.step-1'), s2 = document.querySelector('.step-2'), s3 = document.querySelector('.step-3');
+    const s1 = qs('.step-1'), s2 = qs('.step-2'), s3 = qs('.step-3');
     if (s1) s1.style.display = 'block';
     if (s2) s2.style.display = 'none';
     if (s3) s3.style.display = 'none';
     forgotPasswordState = { email: '', verificationCode: '', resetToken: '' };
 }
 
-// Login / Signup
+// --- Login / Signup ---
 function handleLogin(e) {
     e.preventDefault();
     const form = e.target;
@@ -281,7 +314,6 @@ function handleLogin(e) {
         showNotification('Invalid email or password', 'error');
     }
 }
-
 function handleSignup(e) {
     e.preventDefault();
     const form = e.target;
@@ -314,7 +346,6 @@ function handleSignup(e) {
     showPage('dashboard');
     showNotification('Account created');
 }
-
 function handleLogout() {
     localStorage.removeItem('currentUser');
     closeMenu();
@@ -322,7 +353,7 @@ function handleLogout() {
     showNotification('Logged out');
 }
 
-// Add Funds
+// --- Add Funds ---
 function handleAddFunds(e) {
     e.preventDefault();
     const cur = requireLogin();
@@ -350,7 +381,7 @@ function handleAddFunds(e) {
     showNotification(`$${amount.toFixed(2)} added`);
 }
 
-// Transfer
+// --- Transfer ---
 function handleTransfer(e) {
     e.preventDefault();
     const cur = requireLogin();
@@ -378,7 +409,7 @@ function handleTransfer(e) {
     loadRecentTransactions();
 }
 
-// Beneficiaries
+// --- Beneficiaries ---
 function handleAddBeneficiary(e) {
     e.preventDefault();
     const cur = requireLogin();
@@ -404,7 +435,6 @@ function handleAddBeneficiary(e) {
     form.reset();
     showNotification(`Beneficiary ${name} added`);
 }
-
 function addBeneficiaryToList(b) {
     const container = get('beneficiaryListContainer');
     if (!container) return;
@@ -414,18 +444,17 @@ function addBeneficiaryToList(b) {
     card.className = 'beneficiary-card';
     card.id = `beneficiary-${b.id}`;
     card.innerHTML = `
-        <div class="beneficiary-info">
-            <h4>${b.name}</h4>
-            <p>Account: ****${b.accountNumber.slice(-4)}</p>
-            <p>Bank: ${b.bankName}</p>
-        </div>
-        <button class="delete-btn" data-id="${b.id}"><i class="fas fa-trash"></i></button>
-    `;
+    <div class="beneficiary-info">
+      <h4>${b.name}</h4>
+      <p>Account: ****${b.accountNumber.slice(-4)}</p>
+      <p>Bank: ${b.bankName}</p>
+    </div>
+    <button class="delete-btn" data-id="${b.id}"><i class="fas fa-trash"></i></button>
+  `;
     container.appendChild(card);
     const btn = card.querySelector('.delete-btn');
     if (btn) btn.addEventListener('click', () => deleteBeneficiary(b.id));
 }
-
 function deleteBeneficiary(id) {
     const cur = requireLogin();
     if (!cur) return;
@@ -441,7 +470,7 @@ function deleteBeneficiary(id) {
     showNotification('Beneficiary deleted');
 }
 
-// Cards, loans, investments
+// --- Cards, loans, investments ---
 function handleAddCard(e) {
     e.preventDefault();
     const cur = requireLogin(); if (!cur) return;
@@ -458,7 +487,6 @@ function handleAddCard(e) {
     e.target.reset();
     showPage('dashboard');
 }
-
 function handleLoan(e) {
     e.preventDefault();
     const cur = requireLogin(); if (!cur) return;
@@ -475,7 +503,6 @@ function handleLoan(e) {
     e.target.reset();
     showPage('dashboard');
 }
-
 function selectInvestment(type, name) {
     selectedInvestment = { type, name };
     const opts = document.querySelector('.investment-options'); const form = get('investmentForm');
@@ -510,11 +537,11 @@ function handleInvestment(e) {
     showPage('dashboard');
 }
 
-// Dashboard display & transactions
+// --- Dashboard display & transactions ---
 function updateDashboardDisplay() {
     const cur = JSON.parse(localStorage.getItem('currentUser'));
-    const userBalance = get('userBalance') || document.querySelector('.balance-amount');
-    const accountNumberEl = document.querySelector('.account-number');
+    const userBalance = get('userBalance') || qs('.balance-amount');
+    const accountNumberEl = qs('.account-number');
     if (userBalance) userBalance.textContent = '$' + ((cur && cur.balance) ? cur.balance.toFixed(2) : '0.00');
     if (accountNumberEl) {
         if (cur && cur.accountNumber) accountNumberEl.textContent = 'Savings Account • ****' + cur.accountNumber.slice(-4);
@@ -535,6 +562,8 @@ function updateBeneficiarySelect() {
             sel.appendChild(option);
         });
     }
+    // update bank name autofill if selection exists
+    updateBeneficiaryBankName();
 }
 
 function loadRecentTransactions() {
@@ -549,10 +578,10 @@ function loadRecentTransactions() {
             t.className = 'transaction-item';
             const isCredit = tx.type === 'credit';
             t.innerHTML = `
-                <div class="transaction-icon ${isCredit ? 'received' : 'sent'}"><i class="fas ${isCredit ? 'fa-arrow-down' : 'fa-arrow-up'}"></i></div>
-                <div class="transaction-details"><p class="transaction-title">${tx.title}</p><p class="transaction-date">${new Date(tx.date).toLocaleDateString()}</p></div>
-                <p class="transaction-amount ${isCredit ? 'positive' : 'negative'}">${isCredit ? '+' : '-'}$${tx.amount.toFixed(2)}</p>
-            `;
+        <div class="transaction-icon ${isCredit ? 'received' : 'sent'}"><i class="fas ${isCredit ? 'fa-arrow-down' : 'fa-arrow-up'}"></i></div>
+        <div class="transaction-details"><p class="transaction-title">${tx.title}</p><p class="transaction-date">${new Date(tx.date).toLocaleDateString()}</p></div>
+        <p class="transaction-amount ${isCredit ? 'positive' : 'negative'}">${isCredit ? '+' : '-'}$${tx.amount.toFixed(2)}</p>
+      `;
             el.appendChild(t);
         });
     } else {
@@ -572,10 +601,10 @@ function loadFullTransactionHistory() {
             t.className = 'transaction-item';
             const isCredit = tx.type === 'credit';
             t.innerHTML = `
-                <div class="transaction-icon ${isCredit ? 'received' : 'sent'}"><i class="fas ${isCredit ? 'fa-arrow-down' : 'fa-arrow-up'}"></i></div>
-                <div class="transaction-details"><p class="transaction-title">${tx.title}</p><p class="transaction-date">${new Date(tx.date).toLocaleDateString()}</p><p class="transaction-ref">Ref: TXN${tx.id}</p></div>
-                <p class="transaction-amount ${isCredit ? 'positive' : 'negative'}">${isCredit ? '+' : '-'}$${tx.amount.toFixed(2)}</p>
-            `;
+        <div class="transaction-icon ${isCredit ? 'received' : 'sent'}"><i class="fas ${isCredit ? 'fa-arrow-down' : 'fa-arrow-up'}"></i></div>
+        <div class="transaction-details"><p class="transaction-title">${tx.title}</p><p class="transaction-date">${new Date(tx.date).toLocaleDateString()}</p><p class="transaction-ref">Ref: TXN${tx.id}</p></div>
+        <p class="transaction-amount ${isCredit ? 'positive' : 'negative'}">${isCredit ? '+' : '-'}$${tx.amount.toFixed(2)}</p>
+      `;
             el.appendChild(t);
         });
     } else {
@@ -583,12 +612,15 @@ function loadFullTransactionHistory() {
     }
 }
 
-// Startup
+// --- Startup ---
 document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     checkLoginStatus();
+    // initialize market display even if not started
+    updateMarketDisplay();
 });
 
+// --- Check login status ---
 function checkLoginStatus() {
     const cur = JSON.parse(localStorage.getItem('currentUser'));
     if (cur && cur.email) {
@@ -599,4 +631,86 @@ function checkLoginStatus() {
     } else {
         showPage('welcome');
     }
+}
+
+// ------- Market live simulation & beneficiary bank display -------
+
+let marketLiveInterval = null;
+let lastRates = {
+    'EURUSD': 1.08,
+    'GBPUSD': 1.25,
+    'BTCUSD': 38000
+};
+
+function formatRate(n, digits = 4) {
+    if (n >= 1000) return n.toFixed(0);
+    return n.toFixed(digits);
+}
+
+function updateMarketDisplay() {
+    const e = get('rate-eur-usd');
+    const g = get('rate-gbp-usd');
+    const b = get('rate-btc-usd');
+    const ts = get('marketTimestamp');
+    if (e) e.textContent = formatRate(lastRates.EURUSD, 4);
+    if (g) g.textContent = formatRate(lastRates.GBPUSD, 4);
+    if (b) b.textContent = formatRate(lastRates.BTCUSD, 0);
+    if (ts) ts.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+}
+
+function simulateMarketTick() {
+    lastRates.EURUSD *= (1 + (Math.random() - 0.5) * 0.002);
+    lastRates.GBPUSD *= (1 + (Math.random() - 0.5) * 0.002);
+    lastRates.BTCUSD *= (1 + (Math.random() - 0.5) * 0.01);
+    updateMarketDisplay();
+}
+
+function startMarketLive(intervalMs = 5000) {
+    if (marketLiveInterval) return;
+    simulateMarketTick();
+    marketLiveInterval = setInterval(simulateMarketTick, intervalMs);
+    const btn = get('marketToggleBtn');
+    if (btn) { btn.textContent = 'Stop Live'; btn.classList.add('active'); }
+}
+
+function stopMarketLive() {
+    if (!marketLiveInterval) return;
+    clearInterval(marketLiveInterval);
+    marketLiveInterval = null;
+    const btn = get('marketToggleBtn');
+    if (btn) { btn.textContent = 'Start Live'; btn.classList.remove('active'); }
+}
+
+function toggleMarketLive() {
+    if (marketLiveInterval) stopMarketLive();
+    else startMarketLive();
+}
+
+// Update beneficiary bank name and optionally autofill account/routing
+function updateBeneficiaryBankName() {
+    const sel = get('beneficiarySelect');
+    const bankNameEl = get('beneficiaryBankName');
+    const accEl = get('accountNumber');
+    const routEl = get('routingNumber');
+
+    if (!sel) return;
+    const val = sel.value;
+    if (!val) {
+        if (bankNameEl) bankNameEl.value = '';
+        if (accEl) accEl.value = '';
+        if (routEl) routEl.value = '';
+        return;
+    }
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser || !currentUser.beneficiaries) return;
+    const beneficiary = currentUser.beneficiaries.find(b => String(b.id) === String(val));
+    if (!beneficiary) {
+        if (bankNameEl) bankNameEl.value = '';
+        return;
+    }
+
+    if (bankNameEl) bankNameEl.value = beneficiary.bankName || '';
+    if (accEl && beneficiary.accountNumber) accEl.value = beneficiary.accountNumber;
+    if (routEl && beneficiary.routingNumber) routEl.value = beneficiary.routingNumber;
 }

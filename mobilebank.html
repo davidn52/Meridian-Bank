@@ -222,6 +222,26 @@
                 </div>
             </div>
 
+            <!-- Market Forecast (image + live readings) -->
+            <div class="market-section">
+                <h3>Market Forecast</h3>
+                <div class="market-row">
+                    <img src="images/online-banking-market.jpg" alt="Market Forecast" class="market-image" />
+                    <div class="market-live">
+                        <div class="market-controls">
+                            <button id="marketToggleBtn" class="btn btn-secondary">Start Live</button>
+                        </div>
+                        <div id="marketTicker" class="market-ticker">
+                            <p>EUR/USD: <strong><span id="rate-eur-usd">-</span></strong></p>
+                            <p>GBP/USD: <strong><span id="rate-gbp-usd">-</span></strong></p>
+                            <p>BTC/USD: <strong><span id="rate-btc-usd">-</span></strong></p>
+                        </div>
+                        <p id="marketTimestamp" class="market-timestamp">Last updated: -</p>
+                    </div>
+                </div>
+                <p class="market-info">Monitor currency trends and market predictions</p>
+            </div>
+
             <div class="recent-transactions">
                 <h3>Recent Transactions</h3>
                 <div id="recentTransactionsList" class="transaction-list">
@@ -250,6 +270,11 @@
                             <select id="beneficiarySelect" required>
                                 <option value="">Choose a beneficiary</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Beneficiary Bank</label>
+                            <input type="text" id="beneficiaryBankName" readonly
+                                placeholder="Bank name will appear here" />
                         </div>
                         <div class="form-group">
                             <label>Account Number</label>
