@@ -1,0 +1,973 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.main-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Hamburger Menu */
+.hamburger-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn:hover {
+    background: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.hamburger-btn.active {
+    background: #667eea;
+    color: white;
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    z-index: 998;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+.sidebar-menu.active {
+    left: 0;
+}
+
+.menu-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-header h3 {
+    font-size: 20px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.sidebar-menu ul {
+    list-style: none;
+    padding: 10px 0;
+}
+
+.sidebar-menu li {
+    margin: 0;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.menu-item:hover {
+    background: #f5f5f5;
+    color: #667eea;
+    padding-left: 25px;
+}
+
+.menu-item i {
+    width: 20px;
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 997;
+    display: none;
+}
+
+.menu-overlay.active {
+    display: block;
+}
+
+/* Pages */
+.page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: none;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+}
+
+.page.active {
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Welcome Page */
+#welcomePage {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    max-width: 400px;
+    color: white;
+}
+
+.welcome-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-container h1 {
+    font-size: 28px;
+    margin: 15px 0 10px;
+    font-weight: 700;
+}
+
+.welcome-container p {
+    font-size: 16px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+/* Buttons */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 10px 5px;
+}
+
+.btn-primary {
+    background: white;
+    color: #667eea;
+}
+
+.btn-primary:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-secondary:hover {
+    background: white;
+    color: #667eea;
+}
+
+/* Form Pages */
+.form-wrapper {
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    transform: translateX(-5px);
+}
+
+.page-header h2 {
+    flex: 1;
+    font-size: 22px;
+    margin: 0;
+}
+
+.menu-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.form-container {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #333;
+}
+
+.radio-label input[type="radio"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Dashboard */
+.dashboard-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.dashboard-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px 20px;
+    margin: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balance-info {
+    flex: 1;
+}
+
+.balance-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.balance-amount {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.account-number {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.card-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 0 20px 20px;
+}
+
+.action-btn {
+    background: white;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    color: #333;
+}
+
+.action-btn:hover {
+    background: #f5f5f5;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn i {
+    font-size: 24px;
+    color: #667eea;
+}
+
+.action-btn span {
+    font-size: 12px;
+}
+
+/* Add Funds Section */
+.add-funds-section {
+    padding: 0 20px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #333;
+    transform: rotate(90deg);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Market Section */
+.market-section {
+    padding: 20px;
+}
+
+.market-section h3 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.market-image {
+    width: 100%;
+    border-radius: 12px;
+    object-fit: cover;
+    max-height: 200px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.market-info {
+    color: white;
+    font-size: 13px;
+    margin-top: 10px;
+    opacity: 0.9;
+}
+
+/* Recent Transactions */
+.recent-transactions {
+    padding: 0 20px 30px;
+}
+
+.recent-transactions h3 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.transaction-list {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: #f0f0f0;
+    color: #667eea;
+}
+
+.transaction-icon.received {
+    background: #e8f5e9;
+    color: #4caf50;
+}
+
+.transaction-icon.sent {
+    background: #ffebee;
+    color: #f44336;
+}
+
+.transaction-details {
+    flex: 1;
+}
+
+.transaction-title {
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    font-size: 14px;
+}
+
+.transaction-date {
+    font-size: 12px;
+    color: #999;
+    margin: 5px 0 0;
+}
+
+.transaction-ref {
+    font-size: 11px;
+    color: #bbb;
+    margin: 3px 0 0;
+}
+
+.transaction-amount {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.transaction-amount.positive {
+    color: #4caf50;
+}
+
+.transaction-amount.negative {
+    color: #f44336;
+}
+
+/* Card Page */
+.card-guide {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.guide-image {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.card-guide p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Investment Section */
+.investment-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.investment-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.investment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.investment-card h4 {
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 16px;
+}
+
+.investment-description {
+    color: #666;
+    font-size: 13px;
+    margin: 5px 0;
+}
+
+.investment-return {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 13px;
+    margin: 8px 0 12px;
+}
+
+/* Transaction History */
+.filters {
+    padding: 20px;
+    background: white;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.filter-input {
+    padding: 10px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.transaction-history {
+    padding: 0 20px 30px;
+}
+
+/* Beneficiary */
+.beneficiary-list {
+    margin-top: 20px;
+}
+
+.beneficiary-card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.beneficiary-info h4 {
+    margin: 0 0 5px;
+    color: #333;
+    font-size: 14px;
+}
+
+.beneficiary-info p {
+    margin: 3px 0;
+    color: #666;
+    font-size: 12px;
+}
+
+.delete-btn {
+    background: #ffebee;
+    border: none;
+    color: #f44336;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    background: #f44336;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hamburger-btn {
+        display: flex;
+    }
+
+    .main-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .page {
+        width: 100%;
+        height: 100%;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .add-funds-section {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .investment-options {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .balance-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .card-logo {
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .balance-amount {
+        font-size: 24px;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 0 10px 15px;
+    }
+
+    .add-funds-section {
+        grid-template-columns: 1fr;
+        padding: 0 10px 15px;
+    }
+
+    .action-btn {
+        padding: 12px;
+        font-size: 11px;
+    }
+
+    .action-btn i {
+        font-size: 20px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 18px;
+    }
+
+    .page-header h2 {
+        font-size: 18px;
+    }
+
+    .welcome-container {
+        padding: 15px;
+    }
+
+    .welcome-image {
+        max-width: 250px;
+    }
+
+    .welcome-container h1 {
+        font-size: 24px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        margin: 8px 3px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .transaction-item {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .transaction-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .transaction-title {
+        font-size: 13px;
+    }
+
+    .transaction-date {
+        font-size: 11px;
+    }
+
+    .transaction-amount {
+        font-size: 13px;
+    }
+
+    .beneficiary-card {
+        padding: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .delete-btn {
+        margin-top: 10px;
+        align-self: flex-end;
+    }
+
+    .filters {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 15px;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    .modal-header h3 {
+        font-size: 16px;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+    }
+
+    .hamburger-btn,
+    .sidebar-menu,
+    .menu-overlay {
+        display: none !important;
+    }
+}
