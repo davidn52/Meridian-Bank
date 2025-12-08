@@ -2,58 +2,57 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <title>Mobile Bank - Premium Banking Experience</title>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js">
-    </script>
-    <script type="text/javascript">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <title>Mobile Bank</title>
+
+    <!-- EmailJS (optional) -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
+    <script>
         (function () {
-            emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your public key
+            try { emailjs.init("YOUR_PUBLIC_KEY"); } catch (e) { /* optional */ }
         })();
     </script>
 </head>
 
 <body>
     <div class="main-container">
-        <!-- Hamburger Menu Button -->
-        <button class="hamburger-btn" id="hamburgerBtn">
-            <i class="fas fa-bars"></i>
-        </button>
+        <!-- Hamburger -->
+        <button class="hamburger-btn" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
 
-        <!-- Hamburger Menu -->
+        <!-- Sidebar -->
         <nav class="sidebar-menu" id="sidebarMenu">
             <div class="menu-header">
                 <h3>Menu</h3>
                 <button class="close-btn" id="closeMenuBtn">&times;</button>
             </div>
             <ul>
-                <li><button class="menu-item" id="dashboardMenuBtn"><i class="fas fa-home"></i> Dashboard</button></li>
-                <li><button class="menu-item" id="transferMenuBtn"><i class="fas fa-exchange-alt"></i> Transfer
+                <li><button id="dashboardMenuBtn" class="menu-item"><i class="fas fa-home"></i> Dashboard</button></li>
+                <li><button id="transferMenuBtn" class="menu-item"><i class="fas fa-exchange-alt"></i> Transfer
                         Funds</button></li>
-                <li><button class="menu-item" id="beneficiaryMenuBtn"><i class="fas fa-users"></i> Beneficiary</button>
+                <li><button id="beneficiaryMenuBtn" class="menu-item"><i class="fas fa-users"></i>
+                        Beneficiaries</button></li>
+                <li><button id="cardMenuBtn" class="menu-item"><i class="fas fa-credit-card"></i> Add Card</button></li>
+                <li><button id="loanMenuBtn" class="menu-item"><i class="fas fa-file-contract"></i> Apply Loan</button>
                 </li>
-                <li><button class="menu-item" id="cardMenuBtn"><i class="fas fa-credit-card"></i> Add Card</button></li>
-                <li><button class="menu-item" id="loanMenuBtn"><i class="fas fa-file-contract"></i> Apply Loan</button>
-                </li>
-                <li><button class="menu-item" id="investmentMenuBtn"><i class="fas fa-chart-line"></i>
-                        Investment</button></li>
-                <li><button class="menu-item" id="transactionMenuBtn"><i class="fas fa-history"></i>
+                <li><button id="investmentMenuBtn" class="menu-item"><i class="fas fa-chart-line"></i>
+                        Investments</button></li>
+                <li><button id="transactionMenuBtn" class="menu-item"><i class="fas fa-history"></i>
                         Transactions</button></li>
-                <li><button class="menu-item" id="logoutMenuBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                <li><button id="logoutMenuBtn" class="menu-item"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </li>
             </ul>
         </nav>
 
-        <!-- Overlay for menu -->
         <div class="menu-overlay" id="menuOverlay"></div>
 
-        <!-- Welcome Section -->
-        <div class="page" id="welcomePage">
+        <!-- Pages -->
+        <!-- Welcome -->
+        <div class="page active" id="welcomePage">
             <div class="welcome-container">
-                <img src="images/Huge Bank Account.jpeg" alt="Welcome" class="welcome-image">
+                <img src="images/Huge Bank Account.jpeg" alt="Welcome" class="welcome-image" />
                 <h1>Welcome to Mobile Bank</h1>
                 <p>Premium Banking at Your Fingertips</p>
                 <button class="btn btn-primary" id="showLoginBtn">Login</button>
@@ -61,136 +60,153 @@
             </div>
         </div>
 
-    <!-- Login Section -->
-    <div class="page" id="loginPage">
-        <div class="form-wrapper">
-            <button class="back-btn" id="backFromLoginBtn">&larr; Back</button>
-            <div class="form-container">
-                <h2>Login</h2>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" placeholder="Enter your password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
-                <p>Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
-                <p>Forgot your password? <a href="#" id="showForgotPassword">Reset Password</a></p>
+        <!-- Login -->
+        <div class="page" id="loginPage">
+            <div class="form-wrapper">
+                <button class="back-btn" id="backFromLoginBtn">&larr; Back</button>
+                <div class="form-container">
+                    <h2>Login</h2>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="Enter your email" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="Enter your password" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                    <p>Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
+                    <p>Forgot your password? <a href="#" id="showForgotPassword">Reset Password</a></p>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Forgot Password Section -->
-    <div class="page" id="forgotPasswordPage">
-        <div class="form-wrapper">
-            <button class="back-btn" id="backFromForgotPasswordBtn">&larr; Back</button>
-            <div class="form-container">
-                <h2>Reset Password</h2>
-                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Enter your email address and we'll send you a
-                    link to reset your password</p>
-    
-                <form id="forgotPasswordForm" style="display: block;" class="step-1">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="forgotEmail" placeholder="Enter your registered email" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Reset Link</button>
-                </form>
-    
-                <form id="verifyCodeForm" style="display: none;" class="step-2">
-                    <div class="form-group">
-                        <label>Verification Code</label>
-                        <p style="color: #999; font-size: 12px; margin-bottom: 10px;">We've sent a code to your email</p>
-                        <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Verify Code</button>
-                </form>
-    
-                <form id="resetPasswordForm" style="display: none;" class="step-3">
-                    <div class="form-group">
-                        <label>New Password</label>
-                        <input type="password" id="newPassword" placeholder="Enter new password" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Confirm Password</label>
-                        <input type="password" id="confirmNewPassword" placeholder="Confirm new password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Reset Password</button>
-                </form>
-    
-                <p style="text-align: center; margin-top: 20px; color: #666;">
-                    Remember your password? <a href="#" id="backToLogin">Back to Login</a>
-                </p>
-            </div>
-        </div>
-    </div>
 
-        <!-- Dashboard Section -->
+        <!-- Signup -->
+        <div class="page" id="signupPage">
+            <div class="form-wrapper">
+                <button class="back-btn" id="backFromSignupBtn">&larr; Back</button>
+                <div class="form-container">
+                    <h2>Create Account</h2>
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="John Doe" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" placeholder="you@example.com" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" placeholder="+1234567890" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="Password" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" placeholder="Confirm Password" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                    </form>
+                    <p>Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forgot Password (multi-step) -->
+        <div class="page" id="forgotPasswordPage">
+            <div class="form-wrapper">
+                <button class="back-btn" id="backFromForgotPasswordBtn">&larr; Back</button>
+                <div class="form-container">
+                    <h2>Reset Password</h2>
+
+                    <form id="forgotPasswordForm" class="step-1" style="display:block;">
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="forgotEmail" placeholder="Registered email" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Code</button>
+                    </form>
+
+                    <form id="verifyCodeForm" class="step-2" style="display:none;">
+                        <div class="form-group">
+                            <label>Verification Code</label>
+                            <input type="text" id="verificationCode" maxlength="6" placeholder="123456" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Verify</button>
+                    </form>
+
+                    <form id="resetPasswordForm" class="step-3" style="display:none;">
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" placeholder="New password" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" id="confirmNewPassword" placeholder="Confirm" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Reset Password</button>
+                    </form>
+
+                    <p style="text-align:center; margin-top:12px;">
+                        Remembered? <a href="#" id="backToLogin">Back to Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
         <div class="page" id="dashboardPage">
             <div class="dashboard-header">
                 <h2>Dashboard</h2>
                 <button class="menu-toggle" id="dashboardMenuToggle"><i class="fas fa-bars"></i></button>
             </div>
 
-            <!-- Balance Card -->
             <div class="balance-card">
                 <div class="balance-info">
                     <p class="balance-label">Available Balance</p>
-                    <h1 class="balance-amount">$0.00</h1>
-                    <p class="account-number">Savings Account • ****1234</p>
+                    <h1 id="userBalance" class="balance-amount">$0.00</h1>
+                    <p class="account-number">Savings Account • ****----</p>
                 </div>
-                <img src="images/ads.jpg" alt="Card" class="card-logo">
+                <img src="images/ads.jpg" alt="card" class="card-logo" />
             </div>
 
-            <!-- Quick Actions -->
             <div class="quick-actions">
-                <button class="action-btn" id="quickTransferBtn">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Transfer</span>
-                </button>
-                <button class="action-btn" id="quickCardBtn">
-                    <i class="fas fa-credit-card"></i>
-                    <span>Add Card</span>
-                </button>
-                <button class="action-btn" id="quickLoanBtn">
-                    <i class="fas fa-file-contract"></i>
-                    <span>Loan</span>
-                </button>
-                <button class="action-btn" id="quickInvestBtn">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Invest</span>
-                </button>
+                <button id="quickTransferBtn" class="action-btn"><i
+                        class="fas fa-exchange-alt"></i><span>Transfer</span></button>
+                <button id="quickCardBtn" class="action-btn"><i class="fas fa-credit-card"></i><span>Add
+                        Card</span></button>
+                <button id="quickLoanBtn" class="action-btn"><i
+                        class="fas fa-file-contract"></i><span>Loan</span></button>
+                <button id="quickInvestBtn" class="action-btn"><i
+                        class="fas fa-chart-line"></i><span>Invest</span></button>
             </div>
 
-            <!-- Add Funds Section -->
             <div class="add-funds-section">
-                <button class="action-btn" id="addFundsBtn">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Add Funds</span>
-                </button>
+                <button id="addFundsBtn" class="action-btn"><i class="fas fa-plus-circle"></i><span>Add
+                        Funds</span></button>
             </div>
 
             <!-- Add Funds Modal -->
             <div class="modal" id="addFundsModal">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3>Add Funds to Your Account</h3>
-                        <button class="modal-close" id="closeAddFundsModal">&times;</button>
+                        <h3>Add Funds</h3>
+                        <button id="closeAddFundsModal" class="modal-close">&times;</button>
                     </div>
                     <form id="addFundsForm">
                         <div class="form-group">
-                            <label>Amount to Add</label>
-                            <input type="number" id="fundAmount" placeholder="Enter amount" step="0.01" min="1"
-                                required>
+                            <label>Amount</label>
+                            <input type="number" id="fundAmount" step="0.01" min="1" required />
                         </div>
                         <div class="form-group">
                             <label>Payment Method</label>
                             <select id="paymentMethod" required>
-                                <option value="">Select payment method</option>
+                                <option value="">Select</option>
                                 <option value="debit">Debit Card</option>
                                 <option value="credit">Credit Card</option>
                                 <option value="bank">Bank Transfer</option>
@@ -198,306 +214,190 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="notifyEmail" checked>
-                                Send confirmation email
-                            </label>
+                            <label><input type="checkbox" id="notifyEmail" checked /> Send confirmation email</label>
                         </div>
-                        <button type="submit" class="btn btn-primary">Add Funds</button>
-                        <button type="button" class="btn btn-secondary" id="cancelAddFundsBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="button" id="cancelAddFundsBtn" class="btn btn-secondary">Cancel</button>
                     </form>
                 </div>
             </div>
 
-            <!-- Market Forecast -->
-            <div class="market-section">
-                <h3>Market Forecast</h3>
-                <img src="images/online-banking-market.jpg" alt="Market Forecast" class="market-image">
-                <p class="market-info">Monitor currency trends and market predictions</p>
-            </div>
-
-            <!-- Recent Transactions -->
             <div class="recent-transactions">
                 <h3>Recent Transactions</h3>
-                <div class="transaction-list" id="recentTransactionsList">
-                    <p style="text-align: center; color: #999; padding: 20px;">No transactions yet</p>
+                <div id="recentTransactionsList" class="transaction-list">
+                    <p style="text-align:center;color:#999;padding:20px">No transactions yet</p>
                 </div>
             </div>
         </div>
 
-        <!-- Transfer Section -->
+        <!-- Transfer -->
         <div class="page" id="transferPage">
             <div class="page-header">
                 <button class="back-btn" id="backFromTransferBtn">&larr; Back</button>
                 <h2>Transfer Funds</h2>
             </div>
-
             <div class="form-wrapper">
                 <div class="form-container">
                     <form id="transferForm">
                         <div class="form-group">
-                            <label>From Account</label>
+                            <label>From</label>
                             <select required>
-                                <option>Savings Account ****1234</option>
-                                <option>Checking Account ****5678</option>
+                                <option>Savings Account</option>
                             </select>
                         </div>
-
-                        <div class="form-group">
-                            <label>Transfer Type</label>
-                            <div class="radio-group">
-                                <label class="radio-label">
-                                    <input type="radio" name="transferType" value="beneficiary" checked>
-                                    To Beneficiary
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="transferType" value="own">
-                                    Own Account
-                                </label>
-                            </div>
-                        </div>
-
                         <div class="form-group">
                             <label>Select Beneficiary</label>
                             <select id="beneficiarySelect" required>
                                 <option value="">Choose a beneficiary</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label>Account Number</label>
-                            <input type="text" id="accountNumber" placeholder="Enter account number" required>
+                            <input type="text" id="accountNumber" required />
                         </div>
-
                         <div class="form-group">
                             <label>Routing Number</label>
-                            <input type="text" id="routingNumber" placeholder="Enter routing number" required>
+                            <input type="text" id="routingNumber" required />
                         </div>
-
                         <div class="form-group">
                             <label>Amount</label>
-                            <input type="number" placeholder="Enter amount" step="0.01" required>
+                            <input type="number" step="0.01" required />
                         </div>
-
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea placeholder="Add a note (optional)" rows="3"></textarea>
+                            <textarea rows="2"></textarea>
                         </div>
-
                         <button type="submit" class="btn btn-primary">Confirm Transfer</button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Beneficiary Section -->
+        <!-- Beneficiaries -->
         <div class="page" id="beneficiaryPage">
             <div class="page-header">
                 <button class="back-btn" id="backFromBeneficiaryBtn">&larr; Back</button>
                 <h2>Manage Beneficiaries</h2>
             </div>
-
             <div class="form-wrapper">
                 <div class="form-container">
                     <h3>Add New Beneficiary</h3>
                     <form id="beneficiaryForm">
-                        <div class="form-group">
-                            <label>Beneficiary Name</label>
-                            <input type="text" placeholder="Full name" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Account Number</label>
-                            <input type="text" placeholder="12345678901" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Routing Number</label>
-                            <input type="text" placeholder="021000021" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Bank Name</label>
-                            <input type="text" placeholder="Bank name" required>
-                        </div>
+                        <div class="form-group"><label>Name</label><input type="text" required /></div>
+                        <div class="form-group"><label>Account Number</label><input type="text" required /></div>
+                        <div class="form-group"><label>Routing Number</label><input type="text" required /></div>
+                        <div class="form-group"><label>Bank Name</label><input type="text" required /></div>
                         <button type="submit" class="btn btn-primary">Add Beneficiary</button>
                     </form>
 
-                    <h3 style="margin-top: 30px;">Saved Beneficiaries</h3>
-                    <div class="beneficiary-list" id="beneficiaryListContainer">
-                        <p style="text-align: center; color: #999; padding: 20px;">No beneficiaries added yet</p>
+                    <h3 style="margin-top:20px">Saved Beneficiaries</h3>
+                    <div id="beneficiaryListContainer" class="beneficiary-list">
+                        <p style="text-align:center;color:#999;padding:20px">No beneficiaries added yet</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Add Card Section -->
+        <!-- Add Card -->
         <div class="page" id="cardPage">
             <div class="page-header">
                 <button class="back-btn" id="backFromCardBtn">&larr; Back</button>
                 <h2>Add Card</h2>
             </div>
-
             <div class="form-wrapper">
-                <div class="card-guide">
-                    <img src="images/add-credit-card.webp" alt="Add Card Guide" class="guide-image">
-                    <p>Where to find your card details</p>
-                </div>
-
                 <div class="form-container">
                     <form id="cardForm">
-                        <div class="form-group">
-                            <label>Card Number</label>
-                            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        <div class="form-group"><label>Card Number</label><input type="text" maxlength="19" required />
                         </div>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label>Expiry Date</label>
-                                <input type="text" placeholder="MM/YY" maxlength="5" required>
+                            <div class="form-group"><label>Expiry</label><input type="text" maxlength="5" required />
                             </div>
-                            <div class="form-group">
-                                <label>CVV</label>
-                                <input type="text" placeholder="123" maxlength="4" required>
-                            </div>
+                            <div class="form-group"><label>CVV</label><input type="text" maxlength="4" required /></div>
                         </div>
-                        <div class="form-group">
-                            <label>Cardholder Name</label>
-                            <input type="text" placeholder="Name on card" required>
-                        </div>
+                        <div class="form-group"><label>Cardholder Name</label><input type="text" required /></div>
                         <button type="submit" class="btn btn-primary">Add Card</button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Loan Section -->
+        <!-- Loan -->
         <div class="page" id="loanPage">
             <div class="page-header">
                 <button class="back-btn" id="backFromLoanBtn">&larr; Back</button>
                 <h2>Apply for Loan</h2>
             </div>
-
             <div class="form-wrapper">
                 <div class="form-container">
                     <form id="loanForm">
-                        <div class="form-group">
-                            <label>Loan Type</label>
+                        <div class="form-group"><label>Loan Type</label>
                             <select required>
-                                <option value="">Select loan type</option>
-                                <option value="personal">Personal Loan</option>
-                                <option value="home">Home Loan</option>
-                                <option value="auto">Auto Loan</option>
-                                <option value="business">Business Loan</option>
+                                <option value="">Select</option>
+                                <option value="personal">Personal</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Requested Amount</label>
-                            <input type="number" placeholder="Amount needed" step="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Loan Duration (Months)</label>
-                            <select required>
-                                <option value="">Select duration</option>
-                                <option value="12">12 months</option>
-                                <option value="24">24 months</option>
-                                <option value="36">36 months</option>
-                                <option value="60">60 months</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Purpose of Loan</label>
-                            <textarea placeholder="Describe the purpose" rows="3" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Annual Income</label>
-                            <input type="number" placeholder="Your annual income" step="1000" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit Application</button>
+                        <div class="form-group"><label>Amount</label><input type="number" required /></div>
+                        <div class="form-group"><label>Duration (Months)</label><select required>
+                                <option value="12">12</option>
+                            </select></div>
+                        <button type="submit" class="btn btn-primary">Apply</button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Investment Section -->
+        <!-- Investments -->
         <div class="page" id="investmentPage">
             <div class="page-header">
                 <button class="back-btn" id="backFromInvestmentBtn">&larr; Back</button>
-                <h2>Investment Portfolio</h2>
+                <h2>Investments</h2>
             </div>
-
             <div class="form-wrapper">
                 <div class="form-container">
-                    <h3>Available Investment Options</h3>
-
                     <div class="investment-options">
                         <div class="investment-card">
                             <h4>Tech Companies</h4>
-                            <p class="investment-description">Invest in leading technology companies</p>
-                            <p class="investment-return">Expected Return: 8-12% annually</p>
+                            <p class="investment-return">8-12%</p>
                             <button class="btn btn-secondary" data-investment="tech">Invest Now</button>
                         </div>
                         <div class="investment-card">
-                            <h4>Blue Chip Stocks</h4>
-                            <p class="investment-description">Stable stocks from established companies</p>
-                            <p class="investment-return">Expected Return: 5-8% annually</p>
+                            <h4>Blue Chip</h4>
+                            <p class="investment-return">5-8%</p>
                             <button class="btn btn-secondary" data-investment="bluechip">Invest Now</button>
                         </div>
                         <div class="investment-card">
-                            <h4>Real Estate Fund</h4>
-                            <p class="investment-description">Diversified real estate investment trust</p>
-                            <p class="investment-return">Expected Return: 6-9% annually</p>
+                            <h4>Real Estate</h4>
+                            <p class="investment-return">6-9%</p>
                             <button class="btn btn-secondary" data-investment="realestate">Invest Now</button>
-                        </div>
-                        <div class="investment-card">
-                            <h4>Cryptocurrency</h4>
-                            <p class="investment-description">Digital currency portfolio</p>
-                            <p class="investment-return">Expected Return: 10-20% annually</p>
-                            <button class="btn btn-secondary" data-investment="crypto">Invest Now</button>
                         </div>
                     </div>
 
                     <form id="investmentForm" style="display:none;">
                         <h4 id="investmentTitle"></h4>
-                        <div class="form-group">
-                            <label>Investment Amount</label>
-                            <input type="number" placeholder="Amount to invest" step="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Investment Duration (Years)</label>
-                            <select required>
-                                <option value="">Select duration</option>
-                                <option value="1">1 year</option>
-                                <option value="3">3 years</option>
-                                <option value="5">5 years</option>
-                                <option value="10">10 years</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Confirm Investment</button>
-                        <button type="button" class="btn btn-secondary" id="cancelInvestmentBtn">Cancel</button>
+                        <div class="form-group"><label>Amount</label><input type="number" required /></div>
+                        <div class="form-group"><label>Duration (Years)</label><select required>
+                                <option value="1">1</option>
+                            </select></div>
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                        <button type="button" id="cancelInvestmentBtn" class="btn btn-secondary">Cancel</button>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Transaction History Section -->
+        <!-- Transactions -->
         <div class="page" id="transactionPage">
             <div class="page-header">
                 <button class="back-btn" id="backFromTransactionBtn">&larr; Back</button>
                 <h2>Transaction History</h2>
             </div>
-
             <div class="form-wrapper">
-                <div class="filters">
-                    <input type="date" id="filterDate" class="filter-input">
-                    <select id="filterType" class="filter-input">
-                        <option value="">All Types</option>
-                        <option value="debit">Debit</option>
-                        <option value="credit">Credit</option>
-                    </select>
-                </div>
-
-                <div class="transaction-history" id="transactionHistoryList">
-                    <p style="text-align: center; color: #999; padding: 20px;">No transactions yet</p>
+                <div id="transactionHistoryList" class="transaction-history">
+                    <p style="text-align:center;color:#999;padding:20px">No transactions yet</p>
                 </div>
             </div>
         </div>
+
     </div>
 
     <script src="script.js"></script>
