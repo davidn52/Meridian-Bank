@@ -19,12 +19,24 @@ const pages = {
     card: 'cardPage',
     loan: 'loanPage',
     investment: 'investmentPage',
-    transaction: 'transactionPage'
+        transaction: 'transactionPage',
+            settings: 'settingsPage',
+            support: 'supportPage'
 };
 
 let currentPage = 'welcome';
 let selectedInvestment = null;
 let forgotPasswordState = { email: '', verificationCode: '', resetToken: '' };
+
+// EmailJS configuration (set from user-provided values)
+const EMAILJS_PUBLIC_KEY = 'bkOlw6TLOWjJAs5aW';
+const EMAILJS_SERVICE_ID = 'service_mdx02ak';
+const EMAILJS_TEMPLATE_ID = 'template_support'; // update if you use a different template
+// Helper to read configured template id from current user prefs or localStorage
+function getConfiguredTemplateId() {
+    const cur = JSON.parse(localStorage.getItem('currentUser')) || {};
+    return cur.preferences?.emailjsTemplateId || localStorage.getItem('emailjsTemplateId') || EMAILJS_TEMPLATE_ID;
+}
 
 // --- Helpers ---
 function get(id) { return document.getElementById(id); }
@@ -102,9 +114,8 @@ function initializeEventListeners() {
         if (switchToLogin) switchToLogin.addEventListener('click', e => { e.preventDefault(); showPage('login'); });
 
         // Dashboard quick actions
-        on('dashboardMenuToggle', 'click', openMenu);
         on('quickTransferBtn', 'click', () => showPage('transfer'));
-        on('quickCardBtn', 'click', () => showPage('card'));
+        on('quickCardBtn', 'click', () => { showPage('card'); initCardPage(); });
         on('quickLoanBtn', 'click', () => showPage('loan'));
         on('quickInvestBtn', 'click', () => showPage('investment'));
 
@@ -152,19 +163,44 @@ function initializeEventListeners() {
         // Transaction page
         on('backFromTransactionBtn', 'click', () => showPage('dashboard'));
 
+            // Settings page
+            on('backFromSettingsBtn', 'click', () => showPage('dashboard'));
+            on('settingsMenuBtn', 'click', () => { showPage('settings'); closeMenu(); loadSettingsData(); });
+
         // Hamburger menu & overlay
         on('hamburgerBtn', 'click', openMenu);
         on('closeMenuBtn', 'click', closeMenu);
         on('menuOverlay', 'click', closeMenu);
 
+        // Support page navigation + contact form
+        on('supportMenuBtn', 'click', () => { showPage('support'); closeMenu(); });
+        on('backFromSupportBtn', 'click', () => showPage('settings'));
+        if (get('contactForm')) get('contactForm').addEventListener('submit', handleContactForm);
+
+        // Theme toggle
+        if (get('themeToggle')) get('themeToggle').addEventListener('change', e => {
+            const theme = e.target.checked ? 'dark' : 'light';
+            saveSettingsPreference('theme', theme);
+            applyTheme(theme);
+        });
+
+        // EmailJS Template ID save
+        if (get('saveEmailJsTemplateBtn')) get('saveEmailJsTemplateBtn').addEventListener('click', () => {
+            const val = (get('emailjsTemplateId') && get('emailjsTemplateId').value) || '';
+            saveSettingsPreference('emailjsTemplateId', val);
+            localStorage.setItem('emailjsTemplateId', val);
+            showNotification('Template ID saved');
+        });
+
         // Sidebar menu items
         on('dashboardMenuBtn', 'click', () => { showPage('dashboard'); closeMenu(); });
         on('transferMenuBtn', 'click', () => { showPage('transfer'); closeMenu(); });
         on('beneficiaryMenuBtn', 'click', () => { showPage('beneficiary'); closeMenu(); });
-        on('cardMenuBtn', 'click', () => { showPage('card'); closeMenu(); });
+        on('cardMenuBtn', 'click', () => { showPage('card'); closeMenu(); initCardPage(); });
         on('loanMenuBtn', 'click', () => { showPage('loan'); closeMenu(); });
         on('investmentMenuBtn', 'click', () => { showPage('investment'); closeMenu(); });
         on('transactionMenuBtn', 'click', () => { showPage('transaction'); closeMenu(); });
+        on('settingsMenuBtn', 'click', () => { showPage('settings'); closeMenu(); loadSettingsData(); });
         on('logoutMenuBtn', 'click', handleLogout);
 
         // Market live toggle (if present)
@@ -172,6 +208,10 @@ function initializeEventListeners() {
 
         // Beneficiary select change to update bank name/autofill
         if (get('beneficiarySelect')) get('beneficiarySelect').addEventListener('change', updateBeneficiaryBankName);
+        // Transfer inputs change to lookup account bearer name
+        if (get('accountNumber')) get('accountNumber').addEventListener('input', updateAccountBearerByDetails);
+        if (get('routingNumber')) get('routingNumber').addEventListener('input', updateAccountBearerByDetails);
+        if (get('bankSelect')) get('bankSelect').addEventListener('change', updateAccountBearerByDetails);
 
         console.log('Event listeners initialized (guarded).');
     } catch (err) {
@@ -192,6 +232,26 @@ function showPage(name) {
         currentPage = name;
     }
     if (name === 'transaction') loadFullTransactionHistory();
+    
+    // Show/hide hamburger menu and sidebar based on page
+    const hamburger = get('hamburgerBtn');
+    const sidebar = get('sidebarMenu');
+    const overlay = get('menuOverlay');
+    const authPages = ['welcome', 'login', 'signup', 'forgotPassword'];
+    
+    if (hamburger) {
+        if (authPages.includes(name)) {
+            hamburger.style.display = 'none';
+        } else {
+            hamburger.style.display = 'flex';
+        }
+    }
+    
+    // Also hide sidebar and overlay on auth pages
+    if (authPages.includes(name)) {
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+    }
 }
 
 // --- Menu ---
@@ -199,13 +259,23 @@ function openMenu() {
     const s = get('sidebarMenu'), o = get('menuOverlay'), h = get('hamburgerBtn');
     if (s) s.classList.add('active');
     if (o) o.classList.add('active');
-    if (h) h.classList.add('active');
+    if (h) {
+        // hide the floating hamburger when the sidebar is open
+        h.style.display = 'none';
+        h.classList.add('active');
+    }
 }
 function closeMenu() {
     const s = get('sidebarMenu'), o = get('menuOverlay'), h = get('hamburgerBtn');
     if (s) s.classList.remove('active');
     if (o) o.classList.remove('active');
-    if (h) h.classList.remove('active');
+    if (h) {
+        h.classList.remove('active');
+        // restore hamburger visibility only on non-auth pages
+        const authPages = ['welcome', 'login', 'signup', 'forgotPassword'];
+        if (authPages.includes(currentPage)) h.style.display = 'none';
+        else h.style.display = 'flex';
+    }
 }
 
 // --- Add Funds modal ---
@@ -217,7 +287,8 @@ function sendEmailNotification(email, subject, message) {
     try {
         console.log('Email request', { email, subject, message });
         if (typeof emailjs !== 'undefined') {
-            emailjs.send('service_YOUR_SERVICE_ID', 'template_YOUR_TEMPLATE_ID', {
+            // Use configured service/template constants
+            emailjs.send(EMAILJS_SERVICE_ID, getConfiguredTemplateId(), {
                 to_email: email, subject, message
             }).then(r => console.log('email sent', r)).catch(e => console.warn('email err', e));
         }
@@ -384,29 +455,21 @@ function handleAddFunds(e) {
 // --- Transfer ---
 function handleTransfer(e) {
     e.preventDefault();
-    const cur = requireLogin();
-    if (!cur) return;
+    // Transfers are currently disabled — account on hold message
     const form = e.target;
     const amount = parseFloat(form.querySelector('input[type="number"]').value);
-    const beneficiaryId = (get('beneficiarySelect') && get('beneficiarySelect').value) || '';
-    if (!(amount > 0) || !beneficiaryId) return showNotification('Enter amount and beneficiary', 'error');
-    if ((cur.balance || 0) < amount) return showNotification('Insufficient balance', 'error');
-
-    const beneficiary = (cur.beneficiaries || []).find(b => b.id == beneficiaryId) || { name: 'Recipient' };
-    cur.balance -= amount;
-    if (!cur.transactions) cur.transactions = [];
-    cur.transactions.push({ id: Date.now(), type: 'debit', title: `Transfer to ${beneficiary.name}`, amount, date: new Date().toISOString() });
-
-    localStorage.setItem('currentUser', JSON.stringify(cur));
-    const users = JSON.parse(localStorage.getItem('users')) || {};
-    if (cur.email) { users[cur.email] = cur; localStorage.setItem('users', JSON.stringify(users)); }
-
-    sendEmailNotification(cur.email, 'Transfer Complete', `To: ${beneficiary.name}\nAmount: $${amount}`);
-    showNotification(`Transfer of $${amount.toFixed(2)} successful`);
-    form.reset();
-    showPage('dashboard');
-    updateDashboardDisplay();
-    loadRecentTransactions();
+    if (!(amount > 0)) return showNotification('Enter a valid amount', 'error');
+    // show account on hold message and do not process the transfer
+    showNotification('Account on hold. Transfers are temporarily disabled.', 'error');
+    // Optionally, reveal a visible message on the transfer page
+    const existing = document.getElementById('transferHoldNotice');
+    if (!existing) {
+        const notice = document.createElement('div');
+        notice.id = 'transferHoldNotice';
+        notice.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;background:#fff3cd;color:#856404;border:1px solid #ffeeba;';
+        notice.textContent = 'Account on hold — transfers are temporarily unavailable. Please contact support.';
+        form.appendChild(notice);
+    }
 }
 
 // --- Beneficiaries ---
@@ -485,7 +548,11 @@ function handleAddCard(e) {
     sendEmailNotification(cur.email, 'Card Added', `Card ending ${cardNumber.slice(-4)} added`);
     showNotification('Card added');
     e.target.reset();
-    showPage('dashboard');
+    
+    // Hide preview and show saved cards list
+    const preview = get('cardPreview');
+    if (preview) preview.style.display = 'none';
+    loadSavedCards();
 }
 function handleLoan(e) {
     e.preventDefault();
@@ -615,9 +682,23 @@ function loadFullTransactionHistory() {
 // --- Startup ---
 document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
+    // Ensure EmailJS is initialized with provided public key (safe if already init'ed in HTML)
+    try { if (typeof emailjs !== 'undefined' && emailjs.init) emailjs.init(EMAILJS_PUBLIC_KEY); } catch (e) { /* ignore */ }
     checkLoginStatus();
     // initialize market display even if not started
     updateMarketDisplay();
+    // populate bank list for transfer page
+    populateBankSelect();
+    // Apply saved theme preference (user or localStorage)
+    try {
+        const cur = JSON.parse(localStorage.getItem('currentUser')) || {};
+        const themePref = cur.preferences?.theme || localStorage.getItem('theme') || 'light';
+        if (get('themeToggle')) get('themeToggle').checked = (themePref === 'dark');
+        applyTheme(themePref);
+        // fill EmailJS template id field if present
+        const tpl = cur.preferences?.emailjsTemplateId || localStorage.getItem('emailjsTemplateId') || '';
+        if (get('emailjsTemplateId')) get('emailjsTemplateId').value = tpl;
+    } catch (e) { console.warn('theme init', e); }
 });
 
 // --- Check login status ---
@@ -642,6 +723,15 @@ let lastRates = {
     'BTCUSD': 38000
 };
 
+// Add spending overview and goal spending to live values
+lastRates.SpendingOverview = 0;
+lastRates.GoalSpending = 500; // default monthly goal
+
+function formatMoney(n) {
+    if (isNaN(n)) return '$-';
+    return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function formatRate(n, digits = 4) {
     if (n >= 1000) return n.toFixed(0);
     return n.toFixed(digits);
@@ -656,13 +746,65 @@ function updateMarketDisplay() {
     if (g) g.textContent = formatRate(lastRates.GBPUSD, 4);
     if (b) b.textContent = formatRate(lastRates.BTCUSD, 0);
     if (ts) ts.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+
+    // Ensure we have initial spending numbers based on current user data
+    try {
+        if ((!lastRates.SpendingOverview || lastRates.SpendingOverview === 0) && JSON.parse(localStorage.getItem('currentUser'))) {
+            computeInitialSpending();
+        }
+    } catch (e) { /* ignore */ }
+
+    // Update spending overview and goal UI
+    const spendEl = get('rate-spend-overview');
+    const goalEl = get('rate-goal-spending');
+    const progEl = get('goalProgress');
+    if (spendEl) spendEl.textContent = formatMoney(lastRates.SpendingOverview);
+    if (goalEl) goalEl.textContent = formatMoney(lastRates.GoalSpending);
+    if (progEl) {
+        const pct = lastRates.GoalSpending > 0 ? Math.min(100, (lastRates.SpendingOverview / lastRates.GoalSpending) * 100) : 0;
+        progEl.style.width = pct + '%';
+    }
 }
 
 function simulateMarketTick() {
     lastRates.EURUSD *= (1 + (Math.random() - 0.5) * 0.002);
     lastRates.GBPUSD *= (1 + (Math.random() - 0.5) * 0.002);
     lastRates.BTCUSD *= (1 + (Math.random() - 0.5) * 0.01);
+    // Small simulated fluctuations for spending overview (real values come from transactions)
+    if (typeof lastRates.SpendingOverview === 'number') {
+        const change = (Math.random() - 0.4) * 5; // -2 to +3 dollars approx per tick
+        lastRates.SpendingOverview = Math.max(0, lastRates.SpendingOverview + change);
+    }
+    // Allow small drift in goal target (user may update via settings normally)
+    if (typeof lastRates.GoalSpending === 'number') {
+        lastRates.GoalSpending = Math.max(1, lastRates.GoalSpending + (Math.random() - 0.5) * 2);
+    }
     updateMarketDisplay();
+}
+
+// Compute initial spending overview from user's recent debit transactions (30 days)
+function computeInitialSpending() {
+    try {
+        const cur = JSON.parse(localStorage.getItem('currentUser')) || null;
+        if (!cur) return;
+        const now = Date.now();
+        const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+        let sum = 0;
+        if (Array.isArray(cur.transactions)) {
+            cur.transactions.forEach(tx => {
+                try {
+                    if (tx && tx.type === 'debit' && tx.amount) {
+                        const tDate = tx.date ? new Date(tx.date).getTime() : now;
+                        if ((now - tDate) <= THIRTY_DAYS) sum += Number(tx.amount) || 0;
+                    }
+                } catch (e) { /* ignore per-tx parse errors */ }
+            });
+        }
+        lastRates.SpendingOverview = Math.max(0, sum);
+        // Goal: read from preferences or user object
+        const goal = cur.preferences?.spendingGoal || cur.spendingGoal || 500;
+        lastRates.GoalSpending = Number(goal) || 500;
+    } catch (e) { console.warn('computeInitialSpending error', e); }
 }
 
 function startMarketLive(intervalMs = 5000) {
@@ -713,4 +855,370 @@ function updateBeneficiaryBankName() {
     if (bankNameEl) bankNameEl.value = beneficiary.bankName || '';
     if (accEl && beneficiary.accountNumber) accEl.value = beneficiary.accountNumber;
     if (routEl && beneficiary.routingNumber) routEl.value = beneficiary.routingNumber;
+}
+
+// Lookup and display account bearer name based on entered account number, routing number and bank
+function updateAccountBearerByDetails() {
+    const accEl = get('accountNumber');
+    const routEl = get('routingNumber');
+    const bankSel = get('bankSelect');
+    const bearerEl = get('accountBearerName');
+    const bankNameEl = get('beneficiaryBankName');
+
+    const acc = accEl ? accEl.value.trim() : '';
+    const rout = routEl ? routEl.value.trim() : '';
+    const bank = bankSel ? bankSel.value : (bankNameEl ? bankNameEl.value : '');
+
+    const noticeEl = get('accountLookupNotice');
+    if (!acc || !rout || !bank) {
+        if (bearerEl) bearerEl.value = '';
+        if (noticeEl) { noticeEl.style.display = 'none'; noticeEl.textContent = ''; }
+        return;
+    }
+
+    let found = null;
+    const cur = JSON.parse(localStorage.getItem('currentUser')) || {};
+    // Search in current user's beneficiaries first
+    if (cur.beneficiaries && cur.beneficiaries.length) {
+        found = cur.beneficiaries.find(b => String(b.accountNumber) === String(acc) && String(b.routingNumber) === String(rout) && (b.bankName === bank || b.bankName === (bankNameEl ? bankNameEl.value : '')));
+        if (found) {
+            // select the beneficiary in the dropdown
+            const sel = get('beneficiarySelect');
+            if (sel) {
+                sel.value = found.id;
+                updateBeneficiaryBankName();
+            }
+        }
+    }
+
+    // If not found in user's beneficiaries, search all users (best-effort)
+    if (!found) {
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+        Object.values(users).some(u => {
+            if (String(u.accountNumber) === String(acc) && String(u.routingNumber) === String(rout)) {
+                found = { name: u.fullName || u.name || u.email, isExternal: true };
+                return true;
+            }
+            return false;
+        });
+        // If found externally, add a temporary option to beneficiarySelect
+        if (found && found.isExternal) {
+            const sel = get('beneficiarySelect');
+            if (sel) {
+                // remove any previous temporary option
+                const prevTmp = sel.querySelector('option[data-temp]');
+                if (prevTmp) prevTmp.remove();
+                const tmpVal = 'tmp-' + Date.now();
+                const opt = document.createElement('option');
+                opt.value = tmpVal;
+                opt.textContent = `Matched: ${found.name}`;
+                opt.setAttribute('data-temp', '1');
+                sel.appendChild(opt);
+                sel.value = tmpVal;
+                // autofill bank name display
+                if (bankNameEl) bankNameEl.value = bank;
+            }
+        }
+    }
+
+    if (found) {
+        if (bearerEl) bearerEl.value = found.name || found.cardholder || 'Account Holder';
+        if (noticeEl) { noticeEl.style.display = 'block'; noticeEl.textContent = `Matched account holder: ${bearerEl.value}`; noticeEl.style.background = '#e8f6ef'; noticeEl.style.color = '#1b5e20'; noticeEl.style.border = '1px solid #c8e6c9'; }
+    } else {
+        if (bearerEl) bearerEl.value = '';
+        if (noticeEl) { noticeEl.style.display = 'block'; noticeEl.textContent = 'No match found — proceed with caution'; noticeEl.style.background = '#fff3cd'; noticeEl.style.color = '#856404'; noticeEl.style.border = '1px solid #ffeeba'; }
+        // if there was a previous temporary option, remove it
+        const sel = get('beneficiarySelect');
+        if (sel) { const prevTmp = sel.querySelector('option[data-temp]'); if (prevTmp) prevTmp.remove(); }
+    }
+}
+
+// Update card preview UI while user types
+function updateCardPreview() {
+    const form = get('cardForm');
+    const preview = get('cardPreview');
+    const img = get('cardPreviewImage');
+    const pNumber = get('previewNumber');
+    const pName = get('previewName');
+    const pExpiry = get('previewExpiry');
+    if (!form || !preview) return;
+    const inputs = form.querySelectorAll('input[type="text"]');
+    // inputs ordering in form: cardNumber, expiry, cvv, cardholder (may vary)
+    const cardNumber = inputs[0] ? inputs[0].value.replace(/\s+/g, '') : '';
+    const expiry = inputs[1] ? inputs[1].value : '';
+    const cardholder = inputs[3] ? inputs[3].value : '';
+
+    // Mask and format card number into groups of 4
+    let displayNumber = '';
+    if (!cardNumber) displayNumber = '•••• •••• •••• ••••';
+    else {
+        const groups = []; for (let i = 0; i < cardNumber.length; i += 4) groups.push(cardNumber.substring(i, i + 4));
+        displayNumber = groups.join(' ');
+        if (cardNumber.length < 16) displayNumber += ' ' + '•'.repeat( Math.max(0, 19 - displayNumber.length) );
+    }
+    if (pNumber) pNumber.textContent = displayNumber;
+    if (pName) pName.textContent = cardholder ? cardholder.toUpperCase() : 'CARDHOLDER NAME';
+    if (pExpiry) pExpiry.textContent = expiry || 'MM/YY';
+
+    // Simple detection: start with 4 or 5 -> credit, otherwise debit
+    const first = cardNumber ? cardNumber.charAt(0) : '';
+    const creditPrefixes = ['4','5'];
+    if (img) img.src = creditPrefixes.includes(first) ? 'images/creditcard.jpg' : 'images/debitcard.webp';
+    preview.setAttribute('aria-hidden', 'false');
+}
+
+// Populate bank select if present (ensures dynamic content can be extended)
+function populateBankSelect() {
+    const sel = get('bankSelect');
+    if (!sel) return;
+    // If options already exist, don't overwrite — but ensure a default exists
+    if (sel.options && sel.options.length > 1) return;
+    const banks = {
+        'US Banks': ['Bank of America','Chase','Wells Fargo','Citibank'],
+        'Offshore Banks': ['Cayman Trust','Isle Finance'],
+        'International Banks': ['HSBC','Standard Chartered','Deutsche Bank']
+    };
+    // clear except first
+    sel.innerHTML = '<option value="">Choose bank</option>';
+    Object.keys(banks).forEach(group => {
+        const og = document.createElement('optgroup'); og.label = group;
+        banks[group].forEach(b => { const o = document.createElement('option'); o.value = b; o.text = b; og.appendChild(o); });
+        sel.appendChild(og);
+    });
+    sel.addEventListener('change', () => {
+        const bn = get('beneficiaryBankName'); if (bn && sel.value) bn.value = sel.value;
+    });
+}
+
+// Initialize card page: show preview and set up input listeners
+function initCardPage() {
+    const cardFormEl = get('cardForm');
+    const preview = get('cardPreview');
+    const savedCardsList = get('savedCardsList');
+    
+    // Show preview
+    if (preview) preview.style.display = 'flex';
+    
+    // Wire up input listeners
+    if (cardFormEl) {
+        const cardInputs = cardFormEl.querySelectorAll('input');
+        cardInputs.forEach(i => i.addEventListener('input', updateCardPreview));
+        updateCardPreview();
+    }
+    
+    // Load saved cards
+    loadSavedCards();
+}
+
+// Load and display saved cards
+function loadSavedCards() {
+    const cur = JSON.parse(localStorage.getItem('currentUser'));
+    const container = get('savedCardsList');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    if (cur && cur.cards && cur.cards.length) {
+        const title = document.createElement('h3');
+        title.textContent = 'Your Cards';
+        title.style.marginTop = '25px';
+        container.appendChild(title);
+        
+        cur.cards.forEach(card => {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'saved-card-item';
+            cardEl.id = `card-${card.id}`;
+            const lastFour = card.cardNumber.slice(-4);
+            const first = card.cardNumber.charAt(0);
+            const isCredit = ['4','5'].includes(first);
+            const cardType = isCredit ? 'Credit Card' : 'Debit Card';
+            
+            cardEl.innerHTML = `
+                <div class="saved-card-display">
+                    <img src="${isCredit ? 'images/creditcard.jpg' : 'images/debitcard.webp'}" alt="${cardType}" class="saved-card-image" />
+                    <div class="saved-card-info">
+                        <p class="saved-card-type">${cardType}</p>
+                        <p class="saved-card-number">•••• •••• •••• ${lastFour}</p>
+                        <p class="saved-card-holder">${card.cardholder.toUpperCase()}</p>
+                        <p class="saved-card-expiry">Expires: ${card.expiry}</p>
+                    </div>
+                    <button class="delete-card-btn" data-id="${card.id}"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            container.appendChild(cardEl);
+            
+            const deleteBtn = cardEl.querySelector('.delete-card-btn');
+            if (deleteBtn) deleteBtn.addEventListener('click', () => deleteCard(card.id));
+        });
+    }
+}
+
+// Delete a saved card
+function deleteCard(id) {
+    const cur = requireLogin();
+    if (!cur) return;
+    cur.cards = (cur.cards || []).filter(c => c.id !== id);
+    localStorage.setItem('currentUser', JSON.stringify(cur));
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (cur.email) { users[cur.email] = cur; localStorage.setItem('users', JSON.stringify(users)); }
+    const el = get(`card-${id}`);
+    if (el) el.remove();
+    loadSavedCards();
+    showNotification('Card deleted');
+}
+
+// Load settings page data
+function loadSettingsData() {
+    const cur = JSON.parse(localStorage.getItem('currentUser'));
+    if (!cur) return;
+    
+    // Populate account info
+    const fullName = get('settingFullName');
+    const email = get('settingEmail');
+    const phone = get('settingPhone');
+    if (fullName) fullName.textContent = cur.fullName || '-';
+    if (email) email.textContent = cur.email || '-';
+    if (phone) phone.textContent = cur.phone || '-';
+    
+    // Load notification preferences
+    const emailNotif = get('emailNotifToggle');
+    const smsNotif = get('smsNotifToggle');
+    const txnAlert = get('transactionAlertToggle');
+    if (emailNotif) emailNotif.checked = cur.preferences?.emailNotif !== false;
+    if (smsNotif) smsNotif.checked = cur.preferences?.smsNotif || false;
+    if (txnAlert) txnAlert.checked = cur.preferences?.transactionAlert !== false;
+    
+    // Load 2FA
+    const twoFactor = get('twoFactorToggle');
+    if (twoFactor) twoFactor.checked = cur.preferences?.twoFactorAuth || false;
+    
+    // Wire up toggle change listeners
+    if (emailNotif) emailNotif.addEventListener('change', () => saveSettingsPreference('emailNotif', emailNotif.checked));
+    if (smsNotif) smsNotif.addEventListener('change', () => saveSettingsPreference('smsNotif', smsNotif.checked));
+    if (txnAlert) txnAlert.addEventListener('change', () => saveSettingsPreference('transactionAlert', txnAlert.checked));
+    if (twoFactor) twoFactor.addEventListener('change', () => { saveSettingsPreference('twoFactorAuth', twoFactor.checked); showNotification(twoFactor.checked ? '2FA enabled' : '2FA disabled'); });
+    
+    // Wire action buttons
+    const editProfileBtn = get('editProfileBtn');
+    const changePasswordBtn = get('changePasswordBtn');
+    const requestLimitBtn = get('requestLimitChangeBtn');
+    const linkAccountBtn = get('linkAccountBtn');
+    const downloadDataBtn = get('downloadDataBtn');
+    const deactivateBtn = get('deactivateAccountBtn');
+    
+    if (editProfileBtn) editProfileBtn.addEventListener('click', () => showNotification('Profile editing coming soon', 'info'));
+    if (changePasswordBtn) changePasswordBtn.addEventListener('click', () => showNotification('Password change feature coming soon', 'info'));
+    if (requestLimitBtn) requestLimitBtn.addEventListener('click', () => showNotification('Request submitted to support team', 'success'));
+    if (linkAccountBtn) linkAccountBtn.addEventListener('click', () => showNotification('Account linking coming soon', 'info'));
+    if (downloadDataBtn) downloadDataBtn.addEventListener('click', downloadUserData);
+    if (deactivateBtn) deactivateBtn.addEventListener('click', deactivateAccount);
+}
+
+// Save settings preference
+function saveSettingsPreference(key, value) {
+    const cur = JSON.parse(localStorage.getItem('currentUser'));
+    if (!cur) return;
+    if (!cur.preferences) cur.preferences = {};
+    cur.preferences[key] = value;
+    localStorage.setItem('currentUser', JSON.stringify(cur));
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (cur.email) { users[cur.email] = cur; localStorage.setItem('users', JSON.stringify(users)); }
+}
+
+// Apply theme to the document body
+function applyTheme(theme) {
+    try {
+        if (theme === 'dark') {
+            document.documentElement.style.setProperty('--bg-gradient-1', '#0f172a');
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+        }
+    } catch (e) { console.warn('applyTheme error', e); }
+}
+
+// Download user data
+function downloadUserData() {
+    const cur = JSON.parse(localStorage.getItem('currentUser'));
+    if (!cur) return;
+    const dataStr = JSON.stringify(cur, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `bank-data-${cur.email}-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showNotification('Data downloaded successfully');
+}
+
+// Deactivate account
+function deactivateAccount() {
+    const confirmed = confirm('Are you sure you want to deactivate your account? This action cannot be undone.');
+    if (!confirmed) return;
+    const cur = JSON.parse(localStorage.getItem('currentUser'));
+    if (cur) {
+        cur.status = 'deactivated';
+        cur.deactivatedAt = new Date().toISOString();
+        localStorage.setItem('currentUser', JSON.stringify(cur));
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+        if (cur.email) { users[cur.email] = cur; localStorage.setItem('users', JSON.stringify(users)); }
+        showNotification('Account deactivated');
+        setTimeout(() => { localStorage.removeItem('currentUser'); showPage('welcome'); }, 1500);
+    }
+}
+
+// Handle contact support form submit
+function handleContactForm(e) {
+    e.preventDefault();
+    const name = (get('contactName') && get('contactName').value) || '';
+    const email = (get('contactEmail') && get('contactEmail').value) || '';
+    const subject = (get('contactSubject') && get('contactSubject').value) || 'Support Request';
+    const message = (get('contactMessage') && get('contactMessage').value) || '';
+    const sendCopy = !!(get('contactSendCopy') && get('contactSendCopy').checked);
+
+    if (!subject || !message) return showNotification('Please fill subject and message', 'error');
+
+    const templateParams = {
+        from_name: name || 'Anonymous',
+        from_email: email || (JSON.parse(localStorage.getItem('currentUser'))?.email || ''),
+        subject,
+        message,
+        send_copy: sendCopy ? 'yes' : 'no'
+    };
+
+    // Try sending via EmailJS, fallback to storing locally
+    if (typeof emailjs !== 'undefined') {
+        emailjs.send(EMAILJS_SERVICE_ID, getConfiguredTemplateId(), templateParams)
+            .then(() => {
+                showNotification('Message sent to support');
+                if (sendCopy && email) showNotification('A copy was sent to your email');
+                e.target.reset();
+            }).catch(err => {
+                console.warn('EmailJS send failed', err);
+                // fallback: store in currentUser.supportMessages
+                const cur = JSON.parse(localStorage.getItem('currentUser')) || null;
+                if (cur) {
+                    if (!cur.supportMessages) cur.supportMessages = [];
+                    cur.supportMessages.push({ id: Date.now(), name, email, subject, message, createdAt: new Date().toISOString(), sent: false });
+                    localStorage.setItem('currentUser', JSON.stringify(cur));
+                    const users = JSON.parse(localStorage.getItem('users')) || {};
+                    if (cur.email) { users[cur.email] = cur; localStorage.setItem('users', JSON.stringify(users)); }
+                }
+                showNotification('Support message saved locally (send failed)', 'error');
+            });
+    } else {
+        // EmailJS not available — store locally
+        const cur = JSON.parse(localStorage.getItem('currentUser')) || null;
+        if (cur) {
+            if (!cur.supportMessages) cur.supportMessages = [];
+            cur.supportMessages.push({ id: Date.now(), name, email, subject, message, createdAt: new Date().toISOString(), sent: false });
+            localStorage.setItem('currentUser', JSON.stringify(cur));
+            const users = JSON.parse(localStorage.getItem('users')) || {};
+            if (cur.email) { users[cur.email] = cur; localStorage.setItem('users', JSON.stringify(users)); }
+        }
+        showNotification('Support message saved locally (Email service not configured)', 'info');
+        e.target.reset();
+    }
 }

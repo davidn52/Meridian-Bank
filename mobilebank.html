@@ -12,7 +12,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
     <script>
         (function () {
-            try { emailjs.init("YOUR_PUBLIC_KEY"); } catch (e) { /* optional */ }
+            try { emailjs.init("bkOlw6TLOWjJAs5aW"); } catch (e) { /* optional */ }
         })();
     </script>
 </head>
@@ -20,7 +20,7 @@
 <body>
     <div class="main-container">
         <!-- Hamburger -->
-        <button class="hamburger-btn" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+        <button class="hamburger-btn" id="hamburgerBtn" style="display: none;"><i class="fas fa-bars"></i></button>
 
         <!-- Sidebar -->
         <nav class="sidebar-menu" id="sidebarMenu">
@@ -41,7 +41,9 @@
                         Investments</button></li>
                 <li><button id="transactionMenuBtn" class="menu-item"><i class="fas fa-history"></i>
                         Transactions</button></li>
-                <li><button id="logoutMenuBtn" class="menu-item"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <li><button id="settingsMenuBtn" class="menu-item"><i class="fas fa-cog"></i> Settings</button></li>
+                    <li><button id="supportMenuBtn" class="menu-item"><i class="fas fa-headset"></i> Contact Support</button></li>
+                    <li><button id="logoutMenuBtn" class="menu-item"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </li>
             </ul>
         </nav>
@@ -52,8 +54,8 @@
         <!-- Welcome -->
         <div class="page active" id="welcomePage">
             <div class="welcome-container">
-                <img src="images/Huge Bank Account.jpeg" alt="Welcome" class="welcome-image" />
-                <h1>Welcome to Mobile Bank</h1>
+                <img src="images/logo.png" alt="Welcome" class="welcome-image" />
+                <h1>Welcome to Meridian Bank</h1>
                 <p>Premium Banking at Your Fingertips</p>
                 <button class="btn btn-primary" id="showLoginBtn">Login</button>
                 <button class="btn btn-secondary" id="showSignupBtn">Sign Up</button>
@@ -163,7 +165,6 @@
         <div class="page" id="dashboardPage">
             <div class="dashboard-header">
                 <h2>Dashboard</h2>
-                <button class="menu-toggle" id="dashboardMenuToggle"><i class="fas fa-bars"></i></button>
             </div>
 
             <div class="balance-card">
@@ -172,7 +173,7 @@
                     <h1 id="userBalance" class="balance-amount">$0.00</h1>
                     <p class="account-number">Savings Account • ****----</p>
                 </div>
-                <img src="images/ads.jpg" alt="card" class="card-logo" />
+                <img src="images/creditcard.jpg" alt="card" class="card-logo" />
             </div>
 
             <div class="quick-actions">
@@ -235,6 +236,12 @@
                             <p>EUR/USD: <strong><span id="rate-eur-usd">-</span></strong></p>
                             <p>GBP/USD: <strong><span id="rate-gbp-usd">-</span></strong></p>
                             <p>BTC/USD: <strong><span id="rate-btc-usd">-</span></strong></p>
+                            <hr style="margin:10px 0;border:none;border-top:1px solid rgba(255,255,255,0.06);" />
+                            <p>Spending Overview: <strong><span id="rate-spend-overview">$-</span></strong></p>
+                            <p>Goal Spending: <strong><span id="rate-goal-spending">$-</span></strong></p>
+                            <div class="goal-progress-bar" style="margin-top:8px">
+                                <div class="goal-progress" id="goalProgress" style="width:0%"></div>
+                            </div>
                         </div>
                         <p id="marketTimestamp" class="market-timestamp">Last updated: -</p>
                     </div>
@@ -266,15 +273,34 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Select Beneficiary</label>
-                            <select id="beneficiarySelect" required>
-                                <option value="">Choose a beneficiary</option>
+                            <label>Select Beneficiary (optional)</label>
+                            <select id="beneficiarySelect">
+                                <option value="">Choose a beneficiary (optional)</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Beneficiary Bank</label>
-                            <input type="text" id="beneficiaryBankName" readonly
-                                placeholder="Bank name will appear here" />
+                            <input type="text" id="beneficiaryBankName" readonly placeholder="Bank name will appear here" />
+                        </div>
+                        <div class="form-group">
+                            <label>Select Bank</label>
+                            <select id="bankSelect" required>
+                                <option value="">Choose bank</option>
+                                <optgroup label="US Banks">
+                                    <option value="Bank of America">Bank of America</option>
+                                    <option value="Chase">Chase</option>
+                                    <option value="Wells Fargo">Wells Fargo</option>
+                                </optgroup>
+                                <optgroup label="Offshore Banks">
+                                    <option value="Cayman Trust">Cayman Trust</option>
+                                    <option value="Isle Finance">Isle Finance</option>
+                                </optgroup>
+                                <optgroup label="International Banks">
+                                    <option value="HSBC">HSBC</option>
+                                    <option value="Standard Chartered">Standard Chartered</option>
+                                    <option value="Deutsche Bank">Deutsche Bank</option>
+                                </optgroup>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Account Number</label>
@@ -284,6 +310,11 @@
                             <label>Routing Number</label>
                             <input type="text" id="routingNumber" required />
                         </div>
+                        <div class="form-group">
+                            <label>Account Bearer</label>
+                            <input type="text" id="accountBearerName" readonly placeholder="Account bearer will appear here" />
+                        </div>
+                        <div id="accountLookupNotice" class="lookup-notice" aria-live="polite" style="display:none;margin-bottom:12px"></div>
                         <div class="form-group">
                             <label>Amount</label>
                             <input type="number" step="0.01" required />
@@ -331,6 +362,18 @@
             </div>
             <div class="form-wrapper">
                 <div class="form-container">
+                    <!-- Card preview (initially hidden) -->
+                    <div class="card-preview" id="cardPreview" style="display: none;">
+                        <img src="images/debitcard.webp" alt="Card preview" id="cardPreviewImage" />
+                        <div class="card-preview-overlay">
+                            <div id="previewNumber">•••• •••• •••• ••••</div>
+                            <div class="card-preview-meta">
+                                <span id="previewName">CARDHOLDER NAME</span>
+                                <span id="previewExpiry">MM/YY</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <form id="cardForm">
                         <div class="form-group"><label>Card Number</label><input type="text" maxlength="19" required />
                         </div>
@@ -342,6 +385,9 @@
                         <div class="form-group"><label>Cardholder Name</label><input type="text" required /></div>
                         <button type="submit" class="btn btn-primary">Add Card</button>
                     </form>
+
+                    <!-- Saved cards list -->
+                    <div id="savedCardsList" class="saved-cards-list"></div>
                 </div>
             </div>
         </div>
@@ -419,6 +465,155 @@
             <div class="form-wrapper">
                 <div id="transactionHistoryList" class="transaction-history">
                     <p style="text-align:center;color:#999;padding:20px">No transactions yet</p>
+                </div>
+            </div>
+        </div>
+
+            <!-- Settings -->
+            <div class="page" id="settingsPage">
+                <div class="page-header">
+                    <button class="back-btn" id="backFromSettingsBtn">&larr; Back</button>
+                    <h2>Settings</h2>
+                </div>
+                <div class="form-wrapper">
+                    <div class="form-container">
+                        <!-- Account Settings -->
+                        <div class="settings-section">
+                            <h3><i class="fas fa-user"></i> Account Settings</h3>
+                            <div class="settings-item">
+                                <div class="settings-label">Full Name</div>
+                                <div id="settingFullName" class="settings-value">-</div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-label">Email Address</div>
+                                <div id="settingEmail" class="settings-value">-</div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-label">Phone Number</div>
+                                <div id="settingPhone" class="settings-value">-</div>
+                            </div>
+                            <button class="btn btn-secondary" id="editProfileBtn">Edit Profile</button>
+                        </div>
+        
+                        <!-- Contact Support (moved to top-level page) -->
+                        <!-- Security Settings -->
+                        <div class="settings-section">
+                            <h3><i class="fas fa-lock"></i> Security</h3>
+                            <div class="settings-item">
+                                <div class="settings-label">Password</div>
+                                <button class="btn btn-secondary" id="changePasswordBtn">Change Password</button>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-label">Two-Factor Authentication</div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="twoFactorToggle" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Notification Settings -->
+                        <div class="settings-section">
+                            <h3><i class="fas fa-bell"></i> Notifications</h3>
+                            <div class="settings-item">
+                                <div class="settings-label">Email Notifications</div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="emailNotifToggle" checked />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-label">SMS Notifications</div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="smsNotifToggle" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-label">Transaction Alerts</div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="transactionAlertToggle" checked />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Display Settings -->
+                        <div class="settings-section">
+                            <h3><i class="fas fa-eye"></i> Display</h3>
+                            <div class="settings-item">
+                                <div class="settings-label">Theme (Dark Mode)</div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="themeToggle" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Support / EmailJS template configuration -->
+                        <div class="settings-section">
+                            <h3><i class="fas fa-envelope"></i> Support Settings</h3>
+                            <div class="form-group">
+                                <label>EmailJS Template ID (for contact form)</label>
+                                <input type="text" id="emailjsTemplateId" placeholder="template_xxx" />
+                                <button class="btn btn-secondary" id="saveEmailJsTemplateBtn" style="margin-top:10px;">Save Template ID</button>
+                            </div>
+                        </div>
+
+                        <!-- Account Limits -->
+                        <div class="settings-section">
+                            <h3><i class="fas fa-landmark"></i> Account Limits</h3>
+                            <div class="settings-item">
+                                <div class="settings-label">Daily Transfer Limit</div>
+                                <div id="settingDailyLimit" class="settings-value">$10,000</div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-label">Daily Withdrawal Limit</div>
+                                <div id="settingWithdrawLimit" class="settings-value">$5,000</div>
+                            </div>
+                            <button class="btn btn-secondary" id="requestLimitChangeBtn">Request Limit Change</button>
+                        </div>
+
+                        <!-- Linked Accounts -->
+                        <div class="settings-section">
+                            <h3><i class="fas fa-link"></i> Linked Accounts</h3>
+                            <div id="linkedAccountsList" class="linked-accounts">
+                                <p style="color: #999;">No linked accounts</p>
+                            </div>
+                            <button class="btn btn-secondary" id="linkAccountBtn">Link New Account</button>
+                        </div>
+
+                        <!-- Privacy & Data -->
+                        <div class="settings-section">
+                            <h3><i class="fas fa-shield-alt"></i> Privacy & Data</h3>
+                            <div class="settings-item">
+                                <button class="btn btn-secondary" id="downloadDataBtn">Download My Data</button>
+                            </div>
+                            <div class="settings-item">
+                                <button class="btn btn-danger" id="deactivateAccountBtn">Deactivate Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    
+        <!-- Contact Support -->
+        <div class="page" id="supportPage">
+            <div class="page-header">
+                <button class="back-btn" id="backFromSupportBtn">&larr; Back</button>
+                <h2>Contact Support</h2>
+            </div>
+            <div class="form-wrapper">
+                <div class="form-container">
+                    <form id="contactForm">
+                        <div class="form-group"><label>Your Name</label><input type="text" id="contactName" placeholder="Your full name" /></div>
+                        <div class="form-group"><label>Your Email</label><input type="email" id="contactEmail" placeholder="you@example.com" /></div>
+                        <div class="form-group"><label>Subject</label><input type="text" id="contactSubject" placeholder="Subject" required /></div>
+                        <div class="form-group"><label>Message</label><textarea id="contactMessage" rows="6" placeholder="Describe your issue" required></textarea></div>
+                        <div class="form-group"><label>Send copy to my email</label><input type="checkbox" id="contactSendCopy" checked /></div>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
                 </div>
             </div>
         </div>
