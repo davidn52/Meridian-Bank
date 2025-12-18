@@ -12,6 +12,34 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
     <script>
         (function () {
+                    <!-- Admin Decision Modal (for admin actions on requests) -->
+                    <div class="modal" id="adminDecisionModal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Admin Decision</h3>
+                                <button class="modal-close" id="closeAdminDecisionModal">&times;</button>
+                            </div>
+                            <div class="form-container">
+                                <div id="adminDecisionSummary" style="margin-bottom:8px;color:#111;font-size:14px"></div>
+                                <div class="form-group">
+                                    <label>Action</label>
+                                    <div style="display:flex;gap:10px">
+                                        <label class="radio-label"><input type="radio" name="adminDecisionAction" value="approve" checked /> Approve</label>
+                                        <label class="radio-label"><input type="radio" name="adminDecisionAction" value="deny" /> Deny</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Decision Note (optional)</label>
+                                    <textarea id="adminDecisionNote" rows="4" placeholder="Enter reason or comments (optional)"></textarea>
+                                </div>
+                                <div id="adminDecisionHistory" style="margin-top:12px;color:#6b7280;font-size:13px"></div>
+                                <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+                                    <button id="adminDecisionCancel" class="btn btn-secondary">Cancel</button>
+                                    <button id="adminDecisionConfirm" class="btn btn-primary">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             try { emailjs.init("bkOlw6TLOWjJAs5aW"); } catch (e) { /* optional */ }
         })();
     </script>
@@ -42,6 +70,7 @@
                 <li><button id="transactionMenuBtn" class="menu-item"><i class="fas fa-history"></i>
                         Transactions</button></li>
                     <li><button id="settingsMenuBtn" class="menu-item"><i class="fas fa-cog"></i> Settings</button></li>
+                    <li class="admin-menu" style="display:none"><button id="adminMenuBtn" class="menu-item"><i class="fas fa-user-shield"></i> Admin</button></li>
                     <li><button id="supportMenuBtn" class="menu-item"><i class="fas fa-headset"></i> Contact Support</button></li>
                     <li><button id="logoutMenuBtn" class="menu-item"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </li>
@@ -165,6 +194,13 @@
         <div class="page" id="dashboardPage">
             <div class="dashboard-header">
                 <h2>Dashboard</h2>
+                <div class="dashboard-user">
+                    <div style="text-align:right;line-height:1">
+                        <div style="font-size:12px;opacity:0.9">Welcome back,</div>
+                        <div id="headerUserName" style="font-weight:700">Guest</div>
+                    </div>
+                    <div class="user-avatar" id="headerAvatar">G</div>
+                </div>
             </div>
 
             <div class="balance-card">
@@ -242,8 +278,43 @@
                             <div class="goal-progress-bar" style="margin-top:8px">
                                 <div class="goal-progress" id="goalProgress" style="width:0%"></div>
                             </div>
+                            <div style="margin-top:8px">
+                                <canvas id="spendSparkline" class="sparkline" width="300" height="40"></canvas>
+                            </div>
                         </div>
                         <p id="marketTimestamp" class="market-timestamp">Last updated: -</p>
+                    </div>
+                </div>
+                <!-- Live Market Forecast Chart -->
+                <div style="margin-top:12px;padding:12px;background:linear-gradient(180deg,#fff,#fbfdff);border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.04);">
+                    <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+                        <label style="font-size:13px;color:#6b7280">Instrument</label>
+                        <select id="mfInstrument" style="padding:6px;border-radius:8px">
+                            <option value="EURUSD">EUR/USD</option>
+                            <option value="GBPUSD">GBP/USD</option>
+                            <option value="BTCUSD">BTC/USD</option>
+                        </select>
+                        <label style="font-size:13px;color:#6b7280">Timeframe</label>
+                        <select id="mfTimeframe" style="padding:6px;border-radius:8px">
+                            <option value="365">1Y</option>
+                            <option value="180">6M</option>
+                            <option value="90">3M</option>
+                            <option value="30">1M</option>
+                        </select>
+                        <button id="mfRefresh" class="btn btn-secondary" style="margin-left:auto">Refresh</button>
+                        <button id="mfExport" class="btn btn-secondary">Export PNG</button>
+                    </div>
+                    <div style="position:relative">
+                        <canvas id="mr_forecast_chart" width="1000" height="300" class="mr-chart" tabindex="0" aria-label="Market forecast chart"></canvas>
+                        <div id="mfLegend" style="position:absolute;right:12px;top:10px;font-size:12px;color:#374151;display:flex;gap:10px;align-items:center" aria-hidden="false">
+                            <div class="legend-item"><span class="legend-swatch" style="background:#2563EB"></span><span class="legend-label">Historical</span></div>
+                            <div class="legend-item"><span class="legend-swatch" style="background:#F97316"></span><span class="legend-label">Predicted</span></div>
+                            <div class="legend-item"><span class="legend-swatch" style="background:#9CA3AF"></span><span class="legend-label">Confidence band</span></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+                        <button id="mfExportCSV" class="btn btn-secondary">Export CSV</button>
+                        <span style="color:#6b7280;font-size:12px;margin-left:6px">CSV includes historical and predicted values</span>
                     </div>
                 </div>
                 <p class="market-info">Monitor currency trends and market predictions</p>
@@ -463,6 +534,15 @@
                 <h2>Transaction History</h2>
             </div>
             <div class="form-wrapper">
+                <div style="display:flex;gap:12px;align-items:center;padding:0 20px 10px;">
+                    <div style="flex:1;display:flex;gap:8px;">
+                        <input type="date" id="txFromDate" class="form-input" />
+                        <input type="date" id="txToDate" class="form-input" />
+                        <select id="txTypeFilter" class="form-input"><option value="all">All</option><option value="credit">Credits</option><option value="debit">Debits</option></select>
+                    </div>
+                    <button id="txFilterBtn" class="btn btn-secondary">Filter</button>
+                    <button id="txClearFilterBtn" class="btn btn-primary">Clear</button>
+                </div>
                 <div id="transactionHistoryList" class="transaction-history">
                     <p style="text-align:center;color:#999;padding:20px">No transactions yet</p>
                 </div>
@@ -592,6 +672,15 @@
                             <div class="settings-item">
                                 <button class="btn btn-danger" id="deactivateAccountBtn">Deactivate Account</button>
                             </div>
+                            <div style="margin-top:12px">
+                                <button id="settingsOpenLimitBtn" class="btn btn-secondary">Account Limit</button>
+                            </div>
+                            <div style="margin-top:12px">
+                                <button id="settingsOpenUserInfoBtn" class="btn btn-secondary">User's Info</button>
+                            </div>
+                            <div style="margin-top:12px">
+                                <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="simulateAdminChk" /> <span>Simulate Admin (show admin tools)</span></label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -614,6 +703,231 @@
                         <div class="form-group"><label>Send copy to my email</label><input type="checkbox" id="contactSendCopy" checked /></div>
                         <button type="submit" class="btn btn-primary">Send</button>
                     </form>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Admin Page (simple simulator) -->
+        <div class="page" id="adminPage">
+            <div class="page-header">
+                <button class="back-btn" id="backFromAdminBtn">&larr; Back</button>
+                <h2>Admin — Limit Requests</h2>
+            </div>
+            <div class="form-wrapper">
+                <div class="form-container">
+                    <div id="adminRequestsList">
+                        <p style="color:#6b7280">No requests yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating support icon (dashboard bottom-left) -->
+        <button id="dashboardSupportBtn" class="floating-support" aria-label="Contact Support"><i class="fas fa-headset"></i></button>
+
+        <!-- Bottom navigation (dashboard quick nav) -->
+        <nav id="dashboardBottomNav" class="bottom-nav" aria-label="Dashboard quick actions">
+            <button id="navInvestBtn" class="bottom-nav-btn" aria-label="Invest"><i class="fas fa-chart-line"></i><span>Invest</span></button>
+            <button id="navLoanBtn" class="bottom-nav-btn" aria-label="Loan"><i class="fas fa-file-contract"></i><span>Loan</span></button>
+            <button id="navCardBtn" class="bottom-nav-btn" aria-label="Card"><i class="fas fa-credit-card"></i><span>Card</span></button>
+            <button id="navMeBtn" class="bottom-nav-btn" aria-label="Me"><i class="fas fa-user"></i><span>Me</span></button>
+            <!-- Me quick actions (appears above bottom nav when Me is tapped) -->
+            <div id="meQuickActions" class="me-quick" style="display:none" aria-hidden="true">
+                <button id="meQuickUserInfo" class="btn btn-secondary">User's Info</button>
+                <button id="meQuickAccountLimit" class="btn btn-primary">Account Limit</button>
+                <button id="meQuickIncreaseLimit" class="btn btn-secondary">Increase Limit</button>
+            </div>
+        </nav>
+
+        <!-- Me / Profile Page -->
+        <div class="page" id="mePage">
+            <div class="page-header">
+                <button class="back-btn" id="backFromMeBtn">&larr; Back</button>
+                <h2>My Profile</h2>
+            </div>
+            <div class="form-wrapper">
+                <div class="form-container">
+                    <h3 id="meFullName">Your Name</h3>
+                    <p id="meEmail" style="color:#666;margin-bottom:8px">email@example.com</p>
+                    <p id="mePhone" style="color:#666;margin-bottom:16px">+123456789</p>
+                    <div class="me-top-controls" style="display:flex;gap:12px;align-items:center;justify-content:space-between;margin:10px 0;padding:10px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(15,23,42,0.04);">
+                        <div style="display:flex;gap:12px;align-items:center">
+                            <div>
+                                <div style="font-size:12px;color:#6b7280">Daily Transfer</div>
+                                <div id="meCurrentTransfer" style="font-weight:700">$20,000</div>
+                            </div>
+                            <div>
+                                <div style="font-size:12px;color:#6b7280">Daily Withdraw</div>
+                                <div id="meCurrentWithdraw" style="font-weight:700">$50,000</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <button id="openAccountLimitBtn" class="btn btn-secondary">Account Limit</button>
+                            <button id="increaseLimitQuickBtn" class="btn btn-primary">Increase Limit</button>
+                            <button id="openUserInfoBtn" class="btn btn-secondary">User's Info</button>
+                            <button id="openMeSettingsBtn" class="btn btn-secondary">Settings</button>
+                        </div>
+                    </div>
+                    <div id="meLoginBanner" class="me-login-banner" style="display:none;margin:8px 0;padding:10px;border-radius:8px;background:#fffbf8;border:1px solid #fee2e2;color:#7c2d2d;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div id="meLoginBannerMsg">Please log in to access Account Limit and profile features.</div><div><button id="meBannerLoginBtn" class="btn btn-primary">Login</button><button id="meBannerDismissBtn" class="btn btn-secondary" style="margin-left:8px">Dismiss</button></div></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <input id="meAccountNumber" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa" />
+                            <button id="copyAccountBtn" class="btn btn-secondary">Copy</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Routing Number</label>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <input id="meRoutingNumber" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa" />
+                            <button id="copyRoutingBtn" class="btn btn-secondary">Copy</button>
+                        </div>
+                    </div>
+                    <!-- Settings & Account Limits -->
+                    <div class="form-group" style="margin-top:18px">
+                        <h4>Account Settings</h4>
+                        <label>Daily Transfer Limit</label>
+                        <input id="meTransferLimit" type="number" min="0" placeholder="Enter amount" style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%" />
+                    </div>
+                    <div class="form-group">
+                        <label>Daily Withdrawal Limit</label>
+                        <input id="meWithdrawLimit" type="number" min="0" placeholder="Enter amount" style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%" />
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:8px">
+                        <button id="saveAccountLimitsBtn" class="btn btn-primary">Save Limits</button>
+                        <button id="resetAccountNumberBtn" class="btn btn-secondary">Regenerate Account #</button>
+                        <button id="meLogoutBtn" class="btn btn-danger" style="margin-left:auto">Logout</button>
+                    </div>
+
+                    <!-- Account Limits moved to top of page -->
+
+                    <!-- Account Sessions: consolidated user actions -->
+                    <div class="form-group" style="margin-top:20px">
+                        <h4>Account Sessions</h4>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                            <button id="meSessionUserInfo" class="btn btn-secondary">User's Info</button>
+                            <button id="meSessionAccountLimits" class="btn btn-secondary">Account Limits</button>
+                            <button id="meSessionSettings" class="btn btn-secondary">Settings</button>
+                            <button id="meSessionMarketReader" class="btn btn-primary">Market Predictions</button>
+                        </div>
+                    </div>
+                    <div id="meLimitRequestsList" style="margin-top:12px"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Limit Modal -->
+        <div class="modal" id="limitModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Request Limit Increase</h3>
+                    <button class="modal-close" id="closeLimitModal">&times;</button>
+                </div>
+                <div class="form-container">
+                    <p>Current Transfer Limit: <strong id="limitModalTransfer">$-</strong></p>
+                    <p>Current Withdrawal Limit: <strong id="limitModalWithdraw">$-</strong></p>
+                    <form id="limitRequestForm">
+                        <div class="form-group"><label>Requested Transfer Limit</label><input type="number" id="reqTransfer" min="0" placeholder="e.g., 50000" required /></div>
+                        <div class="form-group"><label>Requested Withdrawal Limit</label><input type="number" id="reqWithdraw" min="0" placeholder="e.g., 100000" required /></div>
+                        <div class="form-group"><label>Government ID (PDF or Image)</label><input type="file" id="reqGovId" accept="image/*,.pdf" required /></div>
+                        <div class="form-group"><label>Note</label><textarea id="reqNote" rows="3" placeholder="Reason for increase (business needs, travel, etc.)"></textarea></div>
+                        <div style="display:flex;gap:8px;align-items:center"><button class="btn btn-primary" type="submit">Submit Request</button><button type="button" id="cancelLimitRequest" class="btn btn-secondary">Cancel</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info Modal -->
+        <div class="modal" id="userInfoModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>User's Info</h3>
+                    <button class="modal-close" id="closeUserInfoModal">&times;</button>
+                </div>
+                <div class="form-container">
+                    <div class="form-group"><label>Full Name</label><input id="userInfoFullName" readonly style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%"/></div>
+                    <div class="form-group"><label>Email</label><input id="userInfoEmail" readonly style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%"/></div>
+                    <div class="form-group"><label>Phone</label><input id="userInfoPhone" readonly style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%"/></div>
+                    <div class="form-group"><label>Account Number</label><div style="display:flex;gap:8px"><input id="userInfoAccount" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa"/><button id="userInfoCopyAccount" class="btn btn-secondary">Copy</button></div></div>
+                    <div class="form-group"><label>Routing Number</label><div style="display:flex;gap:8px"><input id="userInfoRouting" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa"/><button id="userInfoCopyRouting" class="btn btn-secondary">Copy</button></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Reader Modal (Professional Reader) -->
+        <div class="modal" id="marketReaderModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Market Predictions — Professional Reader</h3>
+                    <button class="modal-close" id="closeMarketReaderBtn">&times;</button>
+                </div>
+                <div class="form-container">
+                    <div id="marketReaderContent" style="min-height:120px;color:#333">
+                        <div id="marketReaderHeader" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+                            <div>
+                                <div style="font-size:13px;color:#6b7280">Professional Market Reader</div>
+                                <div style="font-weight:700;font-size:16px">Short-term Market Outlook</div>
+                            </div>
+                            <div style="text-align:right">
+                                <div style="font-size:12px;color:#6b7280">Confidence</div>
+                                <div id="marketConfidence" style="font-weight:800;font-size:18px">--%</div>
+                                <div id="marketConfidenceLabel" style="font-size:12px;color:#6b7280">—</div>
+                            </div>
+                        </div>
+                        <div id="marketReaderSummary" style="margin-top:8px;color:#333"></div>
+                        <div id="marketReaderCharts" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+                            <div style="flex:1;min-width:180px">
+                                <div style="font-size:12px;color:#6b7280">EUR/USD</div>
+                                <canvas id="mr_eurusd" width="260" height="60" class="mr-chart"></canvas>
+                                <div class="mr-news"><a id="mr_news_eur" href="#" target="_blank">View news</a></div>
+                            </div>
+                            <div style="flex:1;min-width:180px">
+                                <div style="font-size:12px;color:#6b7280">GBP/USD</div>
+                                <canvas id="mr_gbpusd" width="260" height="60" class="mr-chart"></canvas>
+                                <div class="mr-news"><a id="mr_news_gbp" href="#" target="_blank">View news</a></div>
+                            </div>
+                            <div style="flex:1;min-width:180px">
+                                <div style="font-size:12px;color:#6b7280">BTC/USD</div>
+                                <canvas id="mr_btcusd" width="260" height="60" class="mr-chart"></canvas>
+                                <div class="mr-news"><a id="mr_news_btc" href="#" target="_blank">View news</a></div>
+                            </div>
+                        </div>
+                        <div id="marketPredictionSection" style="margin-top:14px">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <div style="font-size:13px;color:#6b7280">Market Prediction</div>
+                                <div style="font-size:12px;color:#6b7280">Flow</div>
+                            </div>
+                            <div style="margin-top:8px">
+                                <div class="mr-controls" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                                    <label style="font-size:13px;color:#6b7280">Instrument</label>
+                                    <select id="mrInstrumentSelect" style="padding:6px;border-radius:8px">
+                                        <option value="EURUSD">EUR/USD</option>
+                                        <option value="GBPUSD">GBP/USD</option>
+                                        <option value="BTCUSD">BTC/USD</option>
+                                    </select>
+                                    <label style="font-size:13px;color:#6b7280">Timeframe</label>
+                                    <select id="mrTimeframeSelect" style="padding:6px;border-radius:8px">
+                                        <option value="365">1Y</option>
+                                        <option value="180">6M</option>
+                                        <option value="90">3M</option>
+                                        <option value="30">1M</option>
+                                    </select>
+                                    <button id="refreshYearlyChartBtn" class="btn btn-secondary" style="margin-left:auto">Refresh</button>
+                                </div>
+                                <canvas id="mr_prediction" width="760" height="180" class="mr-chart"></canvas>
+                                <div style="margin-top:10px">
+                                    <canvas id="mr_yearly" width="900" height="260" class="mr-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+                        <button id="refreshMarketReaderBtn" class="btn btn-primary">Refresh</button>
+                        <button id="closeMarketReaderBtn2" class="btn btn-secondary">Close</button>
+                    </div>
                 </div>
             </div>
         </div>

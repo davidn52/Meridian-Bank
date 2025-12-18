@@ -4,6 +4,17 @@
     box-sizing: border-box;
 }
 
+/* Design tokens */
+:root {
+    --bg-1: #0f1724;
+    --primary-500: #4f46e5; /* indigo-600-ish */
+    --primary-400: #6366f1;
+    --accent: #06b6d4; /* teal */
+    --surface: #0b1220;
+    --muted: #94a3b8;
+    --card-bg: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
 html,
 body {
     height: 100%;
@@ -11,10 +22,22 @@ body {
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: Inter, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
     min-height: 100vh;
-    overflow: hidden;
+    overflow: auto; /* allow scrolling on small screens */
+    color: #0f1724;
+}
+
+/* Lookup notice (used in transfer/account lookup) */
+.lookup-notice {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    background: rgba(99,102,241,0.08);
+    color: var(--primary-500);
+    border: 1px solid rgba(99,102,241,0.12);
+    display: inline-block;
 }
 
 /* Dark mode adjustments */
@@ -36,17 +59,11 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 .main-container {
     position: relative;
     width: 100%;
-
-    .lookup-notice {
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 13px;
-    }
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
 }
 
 /* Hamburger Menu */
@@ -75,7 +92,7 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 }
 
 .hamburger-btn.active {
-    background: #667eea;
+    background: var(--primary-500);
     color: white;
 }
 
@@ -99,7 +116,7 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 
 .menu-header {
     padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, var(--primary-500), var(--primary-400));
     color: white;
     display: flex;
     justify-content: space-between;
@@ -130,22 +147,25 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 
 .menu-item {
     width: 100%;
-    padding: 15px 20px;
+    padding: 16px 20px;
     background: none;
     border: none;
     text-align: left;
     cursor: pointer;
     font-size: 16px;
     color: #333;
-    transition: all 0.3s ease;
+    transition: all 0.22s ease;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
+    min-height: 48px; /* larger tap area */
+    border-radius: 8px;
 }
+.menu-item:focus { outline: none; box-shadow: 0 6px 18px rgba(79,70,229,0.06); }
 
 .menu-item:hover {
-    background: #f5f5f5;
-    color: #667eea;
+    background: #f7f8ff;
+    color: var(--primary-500);
     padding-left: 25px;
 }
 
@@ -159,13 +179,15 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 997;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1050;
     display: none;
+    pointer-events: none;
 }
 
 .menu-overlay.active {
     display: block;
+    pointer-events: auto;
 }
 
 /* Pages */
@@ -246,14 +268,21 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 }
 
 .btn-primary {
-    background: white;
-    color: #667eea;
+    background: var(--primary-500);
+    color: white;
+    box-shadow: 0 6px 18px rgba(79,70,229,0.12);
 }
 
 .btn-primary:hover {
-    background: #f0f0f0;
+    background: var(--primary-400);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 28px rgba(79,70,229,0.14);
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+}
 }
 
 .btn-secondary {
@@ -278,7 +307,7 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 
 .page-header {
     padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, var(--primary-500), var(--primary-400));
     color: white;
     display: flex;
     align-items: center;
@@ -319,8 +348,8 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 .form-container {
     background: white;
     padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(15, 23, 36, 0.06);
     margin: 20px;
 }
 
@@ -384,8 +413,8 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 
 /* Dashboard */
 .dashboard-header {
-    padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 12px 20px;
+    background: linear-gradient(90deg, var(--primary-500), var(--primary-400));
     color: white;
     display: flex;
     justify-content: space-between;
@@ -393,6 +422,7 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
     position: sticky;
     top: 0;
     z-index: 10;
+    gap: 12px;
 }
 
 .dashboard-header h2 {
@@ -401,36 +431,55 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 }
 
 .balance-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Make the balance card stand out with a stronger brand gradient */
+    background: linear-gradient(90deg, var(--primary-500), var(--primary-400));
     color: white;
-    padding: 30px 20px;
-    margin: 20px;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    padding: 26px 20px;
+    margin: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(2,6,23,0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    z-index: 5;
 }
 
 .balance-info {
     flex: 1;
+    min-width: 0; /* allow children to truncate instead of overflow */
 }
 
 .balance-label {
     font-size: 14px;
-    opacity: 0.9;
-    margin-bottom: 5px;
+    opacity: 0.85;
+    margin-bottom: 8px;
+    color: rgba(255,255,255,0.95);
 }
 
 .balance-amount {
-    font-size: 32px;
-    font-weight: 700;
+    font-size: 36px;
+    font-weight: 800;
     margin: 10px 0;
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(90deg, var(--primary-500), var(--accent));
+    box-shadow: 0 8px 20px rgba(79,70,229,0.12), 0 2px 6px rgba(6,182,212,0.08);
+    white-space: nowrap;
+    overflow: visible;
 }
 
 .account-number {
     font-size: 13px;
-    opacity: 0.8;
+    opacity: 0.9;
+    color: rgba(255,255,255,0.9);
+}
+
+@media (max-width: 700px) {
+    .balance-amount { font-size: 22px; padding: 8px 12px; }
+    .balance-card { flex-direction: column; align-items: flex-start; gap: 12px; padding: 18px; }
+    .card-logo { width: 50px; height: 50px; }
 }
 
 .card-logo {
@@ -449,7 +498,7 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 }
 
 .action-btn {
-    background: white;
+    background: linear-gradient(180deg,#fff,#f8fafc);
     border: none;
     padding: 15px;
     border-radius: 12px;
@@ -473,7 +522,7 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 
 .action-btn i {
     font-size: 24px;
-    color: #667eea;
+    color: var(--primary-500);
 }
 
 .action-btn span {
@@ -530,7 +579,43 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 
 .market-controls {
     margin-bottom: 8px;
+    display:flex;
+    gap:12px;
+    align-items:center;
+    flex-wrap:wrap;
 }
+
+#marketToggleBtn {
+    padding:10px 14px;
+    border-radius:10px;
+    border:2px solid var(--primary-500);
+    color:var(--primary-500);
+    background:transparent;
+    font-weight:700;
+    cursor:pointer;
+    transition: all 0.18s ease;
+}
+#marketToggleBtn:hover { transform: translateY(-2px); }
+#marketToggleBtn:focus { outline:none; box-shadow: 0 6px 18px rgba(79,70,229,0.12); }
+#marketToggleBtn.active { background:var(--primary-500); color:white; border-color:transparent; box-shadow: 0 8px 20px rgba(79,70,229,0.12); }
+
+/* Make controls stack on small screens and ensure large tap targets */
+@media (max-width:640px) {
+    .market-controls { flex-direction:column; align-items:stretch; }
+    #marketToggleBtn { width:100%; margin-left:0; }
+}
+
+/* Me page login banner */
+.me-login-banner { font-size:13px }
+.me-login-banner .btn { padding:8px 10px; font-size:13px }
+
+/* Spending goal readability on light backgrounds */
+.market-live p { color: #374151; }
+.market-live p strong { color: #065f46; font-weight:700 }
+
+/* Slightly larger progress bar on small screens for tap/readability */
+.goal-progress-bar { height: 12px; }
+@media (max-width:640px) { .goal-progress-bar { height:14px; } }
 
 .market-ticker p {
     margin: 6px 0;
@@ -568,6 +653,28 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
     box-sizing: border-box;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+    --bg: #f7f8fb;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --text: #0f172a;
+    --primary-500: #4f46e5;
+    --primary-400: #6366f1;
+    --accent: #10b981;
+    --danger: #ef4444;
+    --surface-2: #f1f5f9;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+
 @media (max-width:700px) {
     .market-row {
         flex-direction: column;
@@ -582,20 +689,98 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 1300; /* higher so it sits above overlays */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    animation: fadeIn 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.45);
+    animation: fadeIn 0.25s ease;
+    pointer-events: none; /* default non-interactive when hidden */
 }
 
 .modal.active {
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: auto; /* allow interaction when active */
 }
+
+.modal-content { max-width: 640px; width: 94%; }
+
+.modal-close { cursor: pointer; }
+
+#meLimitRequestsList .limit-request {
+    padding: 10px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(2,6,23,0.04);
+    margin-top: 8px;
+}
+#meLimitRequestsList .limit-request .meta { font-size: 12px; color: #6b7280; }
+#meLimitRequestsList .limit-request .status { font-weight:700; margin-left:8px; }
+
+#adminRequestsList .admin-request {
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(2,6,23,0.04);
+    margin-top: 10px;
+}
+#adminRequestsList .admin-request .meta { font-size: 12px; color: #6b7280; }
+#adminRequestsList .admin-request .status { font-weight:700; margin-left:8px; }
+
+/* Admin decision modal tweaks */
+#adminDecisionModal .form-container { max-width: 520px; }
+#adminDecisionModal #adminDecisionSummary { font-size: 13px; color: #111; }
+#adminDecisionModal #adminDecisionHistory { background: #f8fafc; padding: 8px; border-radius: 8px; margin-top: 8px; }
+#adminDecisionModal .radio-label input { margin-right:6px; }
+#adminDecisionModal textarea { min-height: 90px; }
+
+.me-quick {
+    position: absolute;
+    bottom: 68px; /* above bottom nav */
+    left: 50%; transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    background: rgba(255,255,255,0.98);
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(2,6,23,0.12);
+    z-index: 1200;
+}
+.me-quick .btn { padding: 8px 12px; font-size: 14px; }
+
+body.dark-mode .me-quick { background: rgba(15,21,34,0.95); color: #d6e6ff; }
+
+#userInfoModal .form-group input[readonly] { background:#fafafa; }
+
+/* Market Reader Modal tweaks */
+#marketReaderModal .modal-content { max-width:520px; }
+#marketReaderModal #marketReaderContent { color:#111; line-height:1.45; }
+#marketReaderModal .mr-chart { background:#fff;border-radius:6px;box-shadow:0 4px 10px rgba(2,6,23,0.04);display:block;width:100%; }
+#marketReaderModal .mr-news { margin-top:6px; }
+#marketReaderModal .mr-news a { color: var(--primary-500); text-decoration:none; font-size:13px }
+#marketReaderModal .mr-chart canvas { width: 100%; height: 48px; display: block; }
+#marketReaderModal #mr_prediction { width: 100%; height: 180px; max-height: 220px; display: block; border-radius: 8px; }
+#marketReaderModal #mr_yearly { width: 100%; height: 260px; max-height: 320px; display: block; border-radius: 8px; box-shadow: 0 8px 30px rgba(2,6,23,0.06); background: linear-gradient(180deg, #fff, #fbfdff); }
+#marketReaderModal .mr-controls { align-items: center; }
+#mr_yearly_tooltip, #mr_forecast_chart_tooltip { position: absolute; pointer-events: none; background: rgba(2,6,23,0.95); color: white; padding: 8px 10px; border-radius: 6px; font-size: 12px; transform: translate(-50%, -120%); display: none; z-index: 1400; box-shadow: 0 6px 20px rgba(2,6,23,0.2); }
+#mfLegend .legend-item { display:flex;align-items:center;gap:6px}
+#mfLegend .legend-swatch { width:10px;height:10px;border-radius:2px;display:inline-block }
+#mfLegend .legend-label { font-size:12px;color:#374151 }
+#mr_forecast_chart[tabindex="0"]:focus { outline: none; box-shadow: 0 8px 24px rgba(79,70,229,0.08); }
+
+
+/* Forecast section tweaks */
+.market-section .mr-chart { border-radius: 8px; }
+.market-section .mr-chart:focus { outline: none; box-shadow: 0 8px 24px rgba(79,70,229,0.08); }
+.market-section .mr-controls { gap: 10px; }
+#marketReaderModal .mr-confidence { font-weight:700; color: var(--primary-500); font-size:14px; }
+
+/* Modal content specific tweaks for limit modal */
+#limitModal .form-container { background: transparent; box-shadow: none; padding: 0; }
+#limitModal .form-group input[type="file"] { padding: 6px; }
 
 .modal-content {
     background-color: white;
@@ -606,6 +791,29 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     animation: slideUp 0.3s ease;
 }
+
+/* Avatar in dashboard */
+.user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, var(--primary-400), var(--accent));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    margin-left: 12px;
+}
+
+.dashboard-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Sparkline canvas */
+.sparkline { width: 100%; height: 40px; display:block; }
 
 .modal-header {
     display: flex;
@@ -662,11 +870,79 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
     padding: 20px;
 }
 
-.market-section h3 {
+/* Bottom nav and floating support */
+.floating-support {
+    position: fixed;
+    left: 18px;
+    bottom: 88px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(90deg,var(--primary-400),var(--primary-500));
     color: white;
+    border: none;
+    display: none; /* shown on dashboard via JS */
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    box-shadow: 0 8px 20px rgba(79,70,229,0.12);
+}
+
+.floating-support i { font-size: 20px; }
+
+.bottom-nav {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 14px;
+    width: min(640px, calc(100% - 40px));
+    max-width: 640px;
+    background: white;
+    border-radius: 12px;
+    padding: 8px;
+    display: none; /* shown only on dashboard */
+    align-items: center;
+    justify-content: space-around;
+    gap: 8px;
+    box-shadow: 0 8px 24px rgba(2,6,23,0.08);
+    z-index: 1100;
+}
+
+.bottom-nav-btn {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    color: #334155;
+    font-weight: 700;
+    border-radius: 10px;
+    min-width: 54px;
+    min-height: 54px; /* larger touch target */
+}
+.bottom-nav-btn:focus, .bottom-nav-btn:active {
+    outline: none;
+    background: rgba(99,102,241,0.06);
+    box-shadow: 0 6px 16px rgba(79,70,229,0.06);
+}
+.bottom-nav-btn i { font-size: 18px; color: var(--primary-500); }
+.bottom-nav-btn span { font-size: 12px; }
+
+@media (max-width:480px) {
+    .bottom-nav { width: calc(100% - 28px); padding: 6px; bottom: 10px; }
+    .floating-support { left: 12px; bottom: 78px; }
+}
+
+.market-section h3 {
+    color: var(--primary-500);
     margin-bottom: 15px;
     font-size: 18px;
 }
+
+body.dark-mode .market-section h3 { color: white; }
 
 .market-image {
     width: 100%;
@@ -800,6 +1076,7 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
     display: flex;
     align-items: center;
     gap: 16px;
+    position: relative; /* make overlay positioning robust */
 }
 .card-preview img {
     width: 320px;
@@ -809,16 +1086,19 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
     display: block;
 }
 .card-preview-overlay {
-    position: relative;
-    margin-left: -320px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     padding: 24px;
     color: white;
-    width: 320px;
     pointer-events: none;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    height: 200px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.06));
 }
 #previewNumber {
     font-size: 18px;
@@ -1111,10 +1391,22 @@ body.dark-mode .btn-secondary { color: #cbd5e1; border-color: rgba(255,255,255,0
     }
 
     .btn {
-        padding: 10px 20px;
-        font-size: 14px;
+        padding: 10px 18px;
+        font-size: 15px;
         margin: 8px 3px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 10px;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
     }
+    .btn:active { transform: translateY(1px); }
+    @media (max-width:640px) { .btn { width: 100%; } }
+
+.btn-saving { box-shadow: 0 8px 20px rgba(0,0,0,0.06) !important; }
+.btn[disabled] { opacity: 0.6; pointer-events: none; }
 
     .form-group input,
     .form-group select,
