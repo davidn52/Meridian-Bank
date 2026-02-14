@@ -119,6 +119,13 @@ function initializeEventListeners() {
 
         // Signup
         on('signupForm', 'submit', handleSignup);
+        // KYC file input previews
+        const idFileEl = get('signupIdFile'); if (idFileEl) idFileEl.addEventListener('change', (e) => {
+            const f = e.target.files && e.target.files[0]; const disp = get('signupIdFileName'); if (disp) disp.textContent = f ? f.name : '';
+        });
+        const proofFileEl = get('signupProofFile'); if (proofFileEl) proofFileEl.addEventListener('change', (e) => {
+            const f = e.target.files && e.target.files[0]; const disp = get('signupProofFileName'); if (disp) disp.textContent = f ? f.name : '';
+        });
         on('backFromSignupBtn', 'click', () => showPage('welcome'));
         const switchToLogin = get('switchToLogin');
         if (switchToLogin) switchToLogin.addEventListener('click', e => { e.preventDefault(); showPage('login'); });
@@ -195,6 +202,14 @@ function initializeEventListeners() {
         // When Me button is clicked, show Me page and expose quick actions panel
         on('navMeBtn', 'click', (e) => { showPage('me'); updateUserHeaderAndMePage(); showMeQuickActions(); });
         on('backFromMeBtn', 'click', () => { showPage('dashboard'); });
+        // Me page interactions
+        const saveProfileBtn = get('saveProfileBtn'); if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfileUpdates);
+        const biometricToggle = get('biometricToggle'); if (biometricToggle) biometricToggle.addEventListener('change', () => toggleBiometric(biometricToggle.checked));
+        const manageDevicesBtn = get('manageDevicesBtn'); if (manageDevicesBtn) manageDevicesBtn.addEventListener('click', () => showNotification('Open device management (demo)'));
+        const openSupportChatBtn = get('openSupportChatBtn'); if (openSupportChatBtn) openSupportChatBtn.addEventListener('click', openSupportChat);
+        const addTravelNoticeBtn = get('addTravelNoticeBtn'); if (addTravelNoticeBtn) addTravelNoticeBtn.addEventListener('click', () => showNotification('Travel notice added (demo)'));
+        const downloadStatementBtn = get('downloadStatementBtn'); if (downloadStatementBtn) downloadStatementBtn.addEventListener('click', downloadStatement);
+        const feedbackForm = get('feedbackForm'); if (feedbackForm) feedbackForm.addEventListener('submit', submitFeedback);
 
         // Copy account/routing clipboard
         if (get('copyAccountBtn')) get('copyAccountBtn').addEventListener('click', () => copyToClipboard(get('meAccountNumber')?.value || ''));
@@ -300,6 +315,63 @@ function initializeEventListeners() {
     } catch (err) {
         console.error('init listeners error', err);
     }
+}
+
+// --- Me page helpers ---
+function saveProfileUpdates(e) {
+    e && e.preventDefault();
+    try {
+        const cur = JSON.parse(localStorage.getItem('currentUser')) || null;
+        if (!cur) return showNotification('Please log in first', 'error');
+        const email = get('meEditEmail') && get('meEditEmail').value;
+        const phone = get('meEditPhone') && get('meEditPhone').value;
+        if (email) cur.email = email;
+        if (phone) cur.phone = phone;
+        localStorage.setItem('currentUser', JSON.stringify(cur));
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+        if (cur.email) { users[cur.email] = cur; localStorage.setItem('users', JSON.stringify(users)); }
+        updateUserHeaderAndMePage();
+        showNotification('Profile saved');
+    } catch (e) { console.warn(e); showNotification('Save failed', 'error'); }
+}
+
+function toggleBiometric(enabled) {
+    const cur = JSON.parse(localStorage.getItem('currentUser')) || null;
+    if (!cur) return showNotification('Log in to change biometric settings', 'error');
+    if (!cur.preferences) cur.preferences = {};
+    cur.preferences.biometric = !!enabled;
+    localStorage.setItem('currentUser', JSON.stringify(cur));
+    showNotification(enabled ? 'Biometric enabled' : 'Biometric disabled');
+}
+
+function openSupportChat() {
+    showNotification('Opening secure chat (demo)');
+    // In a real app this would open a secure messaging channel
+}
+
+function downloadStatement() {
+    const cur = JSON.parse(localStorage.getItem('currentUser')) || null;
+    if (!cur) return showNotification('Login to download statements', 'error');
+    // generate a small CSV as demo
+    const csv = 'date,description,amount\n2026-02-01,Opening deposit,2000.00';
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'statement.csv'; a.click();
+    URL.revokeObjectURL(url);
+    showNotification('Statement downloaded');
+}
+
+function submitFeedback(e) {
+    e.preventDefault();
+    const txt = get('feedbackText') && get('feedbackText').value;
+    if (!txt) return showNotification('Please enter feedback', 'error');
+    // store feedback locally for demo
+    const feedback = JSON.parse(localStorage.getItem('feedback')) || [];
+    feedback.push({ id: Date.now(), text: txt, createdAt: new Date().toISOString() });
+    localStorage.setItem('feedback', JSON.stringify(feedback));
+    get('feedbackText').value = '';
+    showNotification('Feedback sent — thank you');
 }
 
 // --- Navigation ---
@@ -477,36 +549,86 @@ function handleLogin(e) {
 function handleSignup(e) {
     e.preventDefault();
     const form = e.target;
-    const name = form.querySelector('input[type="text"]').value;
-    const email = form.querySelector('input[type="email"]').value;
-    const phone = form.querySelector('input[type="tel"]').value;
-    const password = form.querySelector('input[type="password"]').value;
-    const confirm = form.querySelectorAll('input[type="password"]')[1] ? form.querySelectorAll('input[type="password"]')[1].value : password;
+    const name = (get('signupFullName') && get('signupFullName').value) || '';
+    const dob = (get('signupDob') && get('signupDob').value) || '';
+    const email = (get('signupEmail') && get('signupEmail').value) || '';
+    const phone = (get('signupPhone') && get('signupPhone').value) || '';
+    const password = (get('signupPassword') && get('signupPassword').value) || '';
+    const confirm = (get('signupConfirmPassword') && get('signupConfirmPassword').value) || '';
     if (password !== confirm) return showNotification('Passwords do not match', 'error');
 
-    const users = JSON.parse(localStorage.getItem('users')) || {};
-    if (users[email]) return showNotification('Email already registered', 'error');
+    // basic validation
+    if (!name || !email || !phone || !password) return showNotification('Please fill required personal fields', 'error');
 
-    const accountNumber = generateAccountNumber();
-    const routingNumber = generateRoutingNumber();
-    const userData = {
-        fullName: name, email, phone, password,
-        accountNumber, routingNumber, balance: 0,
-        notifications: [], transactions: [], beneficiaries: [], cards: [], loans: [], investments: [],
-        // account defaults
-        preferences: { dailyTransferLimit: 20000, dailyWithdrawalLimit: 50000, emailNotif: true, smsNotif: false, transactionAlert: true, twoFactorAuth: false },
-        createdAt: new Date().toISOString()
-    };
-    users[email] = userData;
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-    sendEmailNotification(email, 'Welcome', `Welcome ${name}!\nAccount: ${accountNumber}\nRouting: ${routingNumber}`);
-    form.reset();
-    updateDashboardDisplay();
-    updateBeneficiarySelect();
-    loadRecentTransactions();
-    showPage('dashboard');
-    showNotification('Account created');
+    const idFileInput = get('signupIdFile');
+    const proofFileInput = get('signupProofFile');
+    if (!idFileInput || !idFileInput.files || !idFileInput.files[0]) return showNotification('Please upload an ID document', 'error');
+    if (!proofFileInput || !proofFileInput.files || !proofFileInput.files[0]) return showNotification('Please upload a proof of address', 'error');
+
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    if (users[email]) return showNotification('Email already registered or application exists', 'error');
+
+    // helper to read small files as dataURL (limit 512KB)
+    function readFileData(file) {
+        const LIMIT = 512 * 1024;
+        return new Promise((resolve) => {
+            if (!file) return resolve({ name: '', size: 0, type: '', data: null });
+            const reader = new FileReader();
+            reader.onload = () => {
+                const data = file.size <= LIMIT ? reader.result : null; // store data for small files only
+                resolve({ name: file.name, size: file.size, type: file.type, data });
+            };
+            reader.onerror = () => resolve({ name: file.name, size: file.size, type: file.type, data: null });
+            reader.readAsDataURL(file);
+        });
+    }
+
+    Promise.all([readFileData(idFileInput.files[0]), readFileData(proofFileInput.files[0])]).then(([idFileData, proofFileData]) => {
+        const accountNumber = generateAccountNumber();
+        const routingNumber = generateRoutingNumber();
+        const kyc = {
+            idType: (get('signupIdType') && get('signupIdType').value) || '',
+            idNumber: (get('signupIdNumber') && get('signupIdNumber').value) || '',
+            idFile: { name: idFileData.name, size: idFileData.size, type: idFileData.type, dataUrl: idFileData.data },
+            proofOfAddress: { name: proofFileData.name, size: proofFileData.size, type: proofFileData.type, dataUrl: proofFileData.data }
+        };
+
+        const userData = {
+            fullName: name,
+            dob,
+            email,
+            phone,
+            password,
+            accountNumber,
+            routingNumber,
+            balance: parseFloat((get('signupInitialDeposit') && get('signupInitialDeposit').value) || 0),
+            kyc,
+            kycStatus: 'pending',
+            taxId: (get('signupTin') && get('signupTin').value) || '',
+            taxCountry: (get('signupTaxCountry') && get('signupTaxCountry').value) || '',
+            employment: (get('signupEmployment') && get('signupEmployment').value) || '',
+            employer: (get('signupEmployer') && get('signupEmployer').value) || '',
+            annualIncome: (get('signupIncome') && parseFloat(get('signupIncome').value)) || 0,
+            sourceOfFunds: (get('signupSourceOfFunds') && get('signupSourceOfFunds').value) || '',
+            notarized: (get('signupNotarized') && get('signupNotarized').checked) || false,
+            address: (get('signupAddress') && get('signupAddress').value) || '',
+            notifications: [], transactions: [], beneficiaries: [], cards: [], loans: [], investments: [],
+            preferences: { dailyTransferLimit: 20000, dailyWithdrawalLimit: 50000, emailNotif: true, smsNotif: false, transactionAlert: true, twoFactorAuth: false },
+            createdAt: new Date().toISOString(),
+            applicationAt: new Date().toISOString()
+        };
+
+        users[email] = userData;
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        sendEmailNotification(email, 'Application Received', `Thank you ${name}, your application (${accountNumber}) has been received and is pending KYC review.`);
+        form.reset();
+        updateDashboardDisplay();
+        updateBeneficiarySelect();
+        loadRecentTransactions();
+        showPage('dashboard');
+        showNotification('Application submitted — KYC pending review');
+    });
 }
 function handleLogout() {
     localStorage.removeItem('currentUser');
@@ -961,6 +1083,25 @@ function wireTransactionFilters() {
             ['limitModal','userInfoModal','addFundsModal','adminDecisionModal'].forEach(id => { const m = get(id); if (m) m.classList.remove('active'); });
             document.body.style.pointerEvents = 'auto';
         } catch (e) { console.warn('cleanupBlockingUI', e); }
+    })();
+
+    // If opened with a hash or ?page= param, navigate to that page automatically
+    (function handleInitialRoute() {
+        try {
+            const hash = (location.hash || '').replace('#', '').toLowerCase();
+            const params = new URLSearchParams(location.search);
+            const pageParam = (params.get('page') || '').toLowerCase();
+            const route = hash || pageParam;
+            const map = { login: 'login', signup: 'signup', dashboard: 'dashboard', transfer: 'transfer', me: 'me' };
+            if (route && map[route]) {
+                showPage(map[route]);
+                // For login/signup, focus the first input for quick access
+                setTimeout(() => {
+                    const first = document.querySelector(`#${map[route]}Page input, #${map[route]}Page select, #${map[route]}Page textarea`);
+                    if (first) first.focus();
+                }, 150);
+            }
+        } catch (e) { /* ignore */ }
     })();
 
     // Temporary click feedback for first 10s to help debug unresponsive UI

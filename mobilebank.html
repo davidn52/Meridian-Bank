@@ -120,30 +120,128 @@
                 <button class="back-btn" id="backFromSignupBtn">&larr; Back</button>
                 <div class="form-container">
                     <h2>Create Account</h2>
-                    <form id="signupForm">
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" placeholder="John Doe" required />
+                    <p class="muted">We're required to verify identity for compliance. Please have your ID and proof of address ready.</p>
+                    <form id="signupForm" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input id="signupFullName" type="text" placeholder="John Doe" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Date of Birth</label>
+                                <input id="signupDob" type="date" required />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input id="signupEmail" type="email" placeholder="you@example.com" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input id="signupPhone" type="tel" placeholder="+1234567890" required />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input id="signupPassword" type="password" placeholder="Password" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input id="signupConfirmPassword" type="password" placeholder="Confirm Password" required />
+                            </div>
+                        </div>
+
+                        <h3>KYC — Identity & Documents</h3>
+                        <div class="form-row kyc-row">
+                            <div class="form-group">
+                                <label>ID Type</label>
+                                <select id="signupIdType" required>
+                                    <option value="passport">Passport</option>
+                                    <option value="driver">Driver's License</option>
+                                    <option value="national">National ID</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>ID Number</label>
+                                <input id="signupIdNumber" type="text" required />
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" placeholder="you@example.com" required />
+                            <label>Upload ID (passport/ID) — JPG/PNG/PDF</label>
+                            <input id="signupIdFile" type="file" accept="image/*,.pdf" required />
+                            <div id="signupIdFileName" class="file-name muted"></div>
                         </div>
                         <div class="form-group">
-                            <label>Phone</label>
-                            <input type="tel" placeholder="+1234567890" required />
+                            <label>Proof of Address (utility bill/bank statement &lt; 6 months)</label>
+                            <input id="signupProofFile" type="file" accept="image/*,.pdf" required />
+                            <div id="signupProofFileName" class="file-name muted"></div>
                         </div>
+
+                        <h3>Additional Info</h3>
                         <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" placeholder="Password" required />
+                            <label>Residential Address</label>
+                            <input id="signupAddress" type="text" placeholder="Street, City, Postcode" required />
                         </div>
-                        <div class="form-group">
-                            <label>Confirm Password</label>
-                            <input type="password" placeholder="Confirm Password" required />
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tax Identification Number (TIN)</label>
+                                <input id="signupTin" type="text" />
+                            </div>
+                            <div class="form-group">
+                                <label>Country of Tax Residence</label>
+                                <input id="signupTaxCountry" type="text" />
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Sign Up</button>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Employment Status</label>
+                                <select id="signupEmployment">
+                                    <option value="employed">Employed</option>
+                                    <option value="self">Self-employed</option>
+                                    <option value="student">Student</option>
+                                    <option value="retired">Retired</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Employer / Business</label>
+                                <input id="signupEmployer" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Annual Income (optional)</label>
+                                <input id="signupIncome" type="number" min="0" step="100" />
+                            </div>
+                            <div class="form-group">
+                                <label>Source of Funds</label>
+                                <select id="signupSourceOfFunds">
+                                    <option value="salary">Salary</option>
+                                    <option value="business">Business</option>
+                                    <option value="savings">Savings</option>
+                                    <option value="inheritance">Inheritance</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Initial Deposit (minimum: 2,000)</label>
+                                <input id="signupInitialDeposit" type="number" min="0" step="1" placeholder="2000" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Notarized Documents?</label>
+                                <label class="toggle-switch"><input id="signupNotarized" type="checkbox" /><span class="toggle-slider"></span></label>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between;">
+                            <label style="display:flex;gap:8px;align-items:center"><input id="signupAgree" type="checkbox" required /> I confirm the documents are authentic and I consent to identity verification.</label>
+                            <button type="submit" class="btn btn-primary">Submit Application</button>
+                        </div>
                     </form>
-                    <p>Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+                    <p style="margin-top:12px">Already applied or have an account? <a href="#" id="switchToLogin">Login</a></p>
                 </div>
             </div>
         </div>
@@ -746,75 +844,84 @@
                 <button class="back-btn" id="backFromMeBtn">&larr; Back</button>
                 <h2>My Profile</h2>
             </div>
-            <div class="form-wrapper">
-                <div class="form-container">
-                    <h3 id="meFullName">Your Name</h3>
-                    <p id="meEmail" style="color:#666;margin-bottom:8px">email@example.com</p>
-                    <p id="mePhone" style="color:#666;margin-bottom:16px">+123456789</p>
-                    <div class="me-top-controls" style="display:flex;gap:12px;align-items:center;justify-content:space-between;margin:10px 0;padding:10px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(15,23,42,0.04);">
-                        <div style="display:flex;gap:12px;align-items:center">
-                            <div>
-                                <div style="font-size:12px;color:#6b7280">Daily Transfer</div>
-                                <div id="meCurrentTransfer" style="font-weight:700">$20,000</div>
+            <div class="form-wrapper me-section">
+                <div class="me-grid">
+                    <div>
+                        <div class="me-panel">
+                            <h3>Personal Profile & Settings</h3>
+                            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+                                <div class="user-avatar" id="meAvatarLarge">G</div>
+                                <div style="flex:1">
+                                    <div id="meFullName">Your Name</div>
+                                    <div id="meEmail" class="muted">email@example.com</div>
+                                    <div id="mePhone" class="muted">+123456789</div>
+                                </div>
+                                <button id="editProfileBtn" class="btn btn-secondary">Edit</button>
                             </div>
-                            <div>
-                                <div style="font-size:12px;color:#6b7280">Daily Withdraw</div>
-                                <div id="meCurrentWithdraw" style="font-weight:700">$50,000</div>
+                            <div style="margin-top:8px">
+                                <label>Update Email</label>
+                                <input id="meEditEmail" type="email" placeholder="you@example.com" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-bottom:8px" />
+                                <label>Update Phone</label>
+                                <input id="meEditPhone" type="tel" placeholder="+123456789" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-bottom:8px" />
+                                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px"><button id="saveProfileBtn" class="btn btn-primary">Save Profile</button></div>
                             </div>
                         </div>
-                        <div style="display:flex;gap:8px;align-items:center">
-                            <button id="openAccountLimitBtn" class="btn btn-secondary">Account Limit</button>
-                            <button id="increaseLimitQuickBtn" class="btn btn-primary">Increase Limit</button>
-                            <button id="openUserInfoBtn" class="btn btn-secondary">User's Info</button>
-                            <button id="openMeSettingsBtn" class="btn btn-secondary">Settings</button>
+
+                        <div class="me-panel" style="margin-top:12px">
+                            <h3>Security & Login</h3>
+                            <div class="settings-item"><div>Biometric (Face ID / Touch ID)</div><div><label class="toggle-switch"><input id="biometricToggle" type="checkbox" /><span class="toggle-slider"></span></label></div></div>
+                            <div class="settings-item"><div>Change App PIN / Password</div><div><button id="changePinBtn" class="small-btn btn btn-secondary">Change</button></div></div>
+                            <div class="settings-item"><div>Two-Factor Authentication</div><div><label class="toggle-switch"><input id="meTwoFactorToggle" type="checkbox" /><span class="toggle-slider"></span></label></div></div>
+                            <div class="settings-item"><div>Linked Devices</div><div><button id="manageDevicesBtn" class="small-btn btn btn-secondary">Manage</button></div></div>
                         </div>
-                    </div>
-                    <div id="meLoginBanner" class="me-login-banner" style="display:none;margin:8px 0;padding:10px;border-radius:8px;background:#fffbf8;border:1px solid #fee2e2;color:#7c2d2d;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div id="meLoginBannerMsg">Please log in to access Account Limit and profile features.</div><div><button id="meBannerLoginBtn" class="btn btn-primary">Login</button><button id="meBannerDismissBtn" class="btn btn-secondary" style="margin-left:8px">Dismiss</button></div></div>
-                    </div>
-                    <div class="form-group">
-                        <label>Account Number</label>
-                        <div style="display:flex;gap:8px;align-items:center">
-                            <input id="meAccountNumber" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa" />
-                            <button id="copyAccountBtn" class="btn btn-secondary">Copy</button>
+
+                        <div class="me-panel" style="margin-top:12px">
+                            <h3>Security & Card Controls</h3>
+                            <div class="settings-item"><div>Card Management</div><div class="card-controls"><button class="small-btn btn btn-secondary" id="lockAllCardsBtn">Lock All</button><button class="small-btn btn btn-secondary" id="unlockAllCardsBtn">Unlock All</button></div></div>
+                            <div class="settings-item"><div>Travel Notices</div><div><button id="addTravelNoticeBtn" class="small-btn btn btn-secondary">Add Notice</button></div></div>
+                            <div class="settings-item"><div>Fraud Alerts & Limits</div><div><button id="manageAlertsBtn" class="small-btn btn btn-secondary">Manage</button></div></div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Routing Number</label>
-                        <div style="display:flex;gap:8px;align-items:center">
-                            <input id="meRoutingNumber" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa" />
-                            <button id="copyRoutingBtn" class="btn btn-secondary">Copy</button>
+
+                        <div class="me-panel" style="margin-top:12px">
+                            <h3>Account & Documents</h3>
+                            <div class="settings-item"><div>Account Statements</div><div><button id="downloadStatementBtn" class="small-btn btn btn-secondary">Download</button></div></div>
+                            <div class="settings-item"><div>KYC Status</div><div id="kycStatus">Pending</div></div>
+                            <div class="settings-item"><div>Linked Accounts</div><div><button id="manageLinkedAccountsBtn" class="small-btn btn btn-secondary">Manage</button></div></div>
                         </div>
-                    </div>
-                    <!-- Settings & Account Limits -->
-                    <div class="form-group" style="margin-top:18px">
-                        <h4>Account Settings</h4>
-                        <label>Daily Transfer Limit</label>
-                        <input id="meTransferLimit" type="number" min="0" placeholder="Enter amount" style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%" />
-                    </div>
-                    <div class="form-group">
-                        <label>Daily Withdrawal Limit</label>
-                        <input id="meWithdrawLimit" type="number" min="0" placeholder="Enter amount" style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%" />
-                    </div>
-                    <div style="display:flex;gap:8px;margin-top:8px">
-                        <button id="saveAccountLimitsBtn" class="btn btn-primary">Save Limits</button>
-                        <button id="resetAccountNumberBtn" class="btn btn-secondary">Regenerate Account #</button>
-                        <button id="meLogoutBtn" class="btn btn-danger" style="margin-left:auto">Logout</button>
+
+                        <div class="me-panel" style="margin-top:12px">
+                            <h3>Communication & Support</h3>
+                            <div class="settings-item"><div>Notification Preferences</div><div><button id="manageNotificationsBtn" class="small-btn btn btn-secondary">Manage</button></div></div>
+                            <div class="settings-item"><div>Help Center / FAQ</div><div><a href="#support" class="small-btn btn btn-secondary">Open</a></div></div>
+                            <div class="settings-item"><div>Customer Support Chat</div><div><button id="openSupportChatBtn" class="small-btn btn btn-primary">Chat</button></div></div>
+                            <div style="margin-top:12px">
+                                <h4>Feedback</h4>
+                                <form id="feedbackForm">
+                                    <div class="form-group"><textarea id="feedbackText" rows="3" placeholder="Share feedback" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8"></textarea></div>
+                                    <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary" type="submit">Send Feedback</button></div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Account Limits moved to top of page -->
-
-                    <!-- Account Sessions: consolidated user actions -->
-                    <div class="form-group" style="margin-top:20px">
-                        <h4>Account Sessions</h4>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-                            <button id="meSessionUserInfo" class="btn btn-secondary">User's Info</button>
-                            <button id="meSessionAccountLimits" class="btn btn-secondary">Account Limits</button>
-                            <button id="meSessionSettings" class="btn btn-secondary">Settings</button>
-                            <button id="meSessionMarketReader" class="btn btn-primary">Market Predictions</button>
+                    <aside>
+                        <div class="me-panel">
+                            <h3>Account Snapshot</h3>
+                            <div style="margin-bottom:10px"><label>Account Number</label><div style="display:flex;gap:8px"><input id="meAccountNumber" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa" /><button id="copyAccountBtn" class="btn btn-secondary">Copy</button></div></div>
+                            <div style="margin-bottom:10px"><label>Routing Number</label><div style="display:flex;gap:8px"><input id="meRoutingNumber" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa" /><button id="copyRoutingBtn" class="btn btn-secondary">Copy</button></div></div>
+                            <div style="margin-bottom:10px"><label>Daily Transfer Limit</label><div id="meCurrentTransfer" style="font-weight:700">$20,000</div></div>
+                            <div style="margin-bottom:10px"><label>Daily Withdraw Limit</label><div id="meCurrentWithdraw" style="font-weight:700">$50,000</div></div>
+                            <div style="display:flex;gap:8px;margin-top:8px"><button id="openAccountLimitBtn" class="btn btn-secondary">Request Increase</button><button id="meLogoutBtn" class="btn btn-danger" style="margin-left:auto">Logout</button></div>
                         </div>
-                    </div>
-                    <div id="meLimitRequestsList" style="margin-top:12px"></div>
+
+                        <div class="me-panel" style="margin-top:12px">
+                            <h3>Linked Devices</h3>
+                            <div id="linkedDevicesList" class="linked-devices-list">
+                                <div class="device-item"><div>iPhone 14 — iOS</div><div><button class="small-btn btn btn-secondary" data-device-id="1">Revoke</button></div></div>
+                                <div class="device-item"><div>Windows Edge — Desktop</div><div><button class="small-btn btn btn-secondary" data-device-id="2">Revoke</button></div></div>
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>
