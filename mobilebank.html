@@ -1,1047 +1,523 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <title>Mobile Bank</title>
-
-    <!-- EmailJS (optional) -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
-    <script>
-        (function () {
-                    <!-- Admin Decision Modal (for admin actions on requests) -->
-                    <div class="modal" id="adminDecisionModal">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3>Admin Decision</h3>
-                                <button class="modal-close" id="closeAdminDecisionModal">&times;</button>
-                            </div>
-                            <div class="form-container">
-                                <div id="adminDecisionSummary" style="margin-bottom:8px;color:#111;font-size:14px"></div>
-                                <div class="form-group">
-                                    <label>Action</label>
-                                    <div style="display:flex;gap:10px">
-                                        <label class="radio-label"><input type="radio" name="adminDecisionAction" value="approve" checked /> Approve</label>
-                                        <label class="radio-label"><input type="radio" name="adminDecisionAction" value="deny" /> Deny</label>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Decision Note (optional)</label>
-                                    <textarea id="adminDecisionNote" rows="4" placeholder="Enter reason or comments (optional)"></textarea>
-                                </div>
-                                <div id="adminDecisionHistory" style="margin-top:12px;color:#6b7280;font-size:13px"></div>
-                                <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-                                    <button id="adminDecisionCancel" class="btn btn-secondary">Cancel</button>
-                                    <button id="adminDecisionConfirm" class="btn btn-primary">Confirm</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-            try { emailjs.init("bkOlw6TLOWjJAs5aW"); } catch (e) { /* optional */ }
-        })();
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meridian Bank - Mobile App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-    <div class="main-container">
-        <!-- Hamburger -->
-        <button class="hamburger-btn" id="hamburgerBtn" style="display: none;"><i class="fas fa-bars"></i></button>
-
-        <!-- Sidebar -->
-        <nav class="sidebar-menu" id="sidebarMenu">
-            <div class="menu-header">
-                <h3>Menu</h3>
-                <button class="close-btn" id="closeMenuBtn">&times;</button>
-            </div>
-            <ul>
-                <li><button id="dashboardMenuBtn" class="menu-item"><i class="fas fa-home"></i> Dashboard</button></li>
-                <li><button id="transferMenuBtn" class="menu-item"><i class="fas fa-exchange-alt"></i> Transfer
-                        Funds</button></li>
-                <li><button id="beneficiaryMenuBtn" class="menu-item"><i class="fas fa-users"></i>
-                        Beneficiaries</button></li>
-                <li><button id="cardMenuBtn" class="menu-item"><i class="fas fa-credit-card"></i> Add Card</button></li>
-                <li><button id="loanMenuBtn" class="menu-item"><i class="fas fa-file-contract"></i> Apply Loan</button>
-                </li>
-                <li><button id="investmentMenuBtn" class="menu-item"><i class="fas fa-chart-line"></i>
-                        Investments</button></li>
-                <li><button id="transactionMenuBtn" class="menu-item"><i class="fas fa-history"></i>
-                        Transactions</button></li>
-                    <li><button id="settingsMenuBtn" class="menu-item"><i class="fas fa-cog"></i> Settings</button></li>
-                    <li class="admin-menu" style="display:none"><button id="adminMenuBtn" class="menu-item"><i class="fas fa-user-shield"></i> Admin</button></li>
-                    <li><button id="supportMenuBtn" class="menu-item"><i class="fas fa-headset"></i> Contact Support</button></li>
-                    <li><button id="logoutMenuBtn" class="menu-item"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="menu-overlay" id="menuOverlay"></div>
-
-        <!-- Pages -->
-        <!-- Welcome -->
-        <div class="page active" id="welcomePage">
-            <div class="welcome-container">
-                <img src="images/logo.png" alt="Welcome" class="welcome-image" />
-                <h1>Welcome to Meridian Bank</h1>
-                <p>Premium Banking at Your Fingertips</p>
-                <button class="btn btn-primary" id="showLoginBtn">Login</button>
-                <button class="btn btn-secondary" id="showSignupBtn">Sign Up</button>
-            </div>
-        </div>
-
-        <!-- Login -->
-        <div class="page" id="loginPage">
-            <div class="form-wrapper">
-                <button class="back-btn" id="backFromLoginBtn">&larr; Back</button>
-                <div class="form-container">
-                    <h2>Login</h2>
-                    <form id="loginForm">
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" placeholder="Enter your email" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" placeholder="Enter your password" required />
-                        </div>
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </form>
-                    <p>Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
-                    <p>Forgot your password? <a href="#" id="showForgotPassword">Reset Password</a></p>
+    <div class="app-container">
+        <!-- Welcome Page -->
+        <section id="welcomePage" class="page active">
+            <div class="welcome-box">
+                <img src="images/logo.png" alt="Meridian Bank" class="logo-large">
+                <h1>Meridian Bank</h1>
+                <p class="subtitle">Your trusted offshore banking partner</p>
+                <div class="button-group">
+                    <button id="toSignupBtn" class="btn btn-primary">Create Account</button>
+                    <button id="toLoginBtn" class="btn btn-secondary">Sign In</button>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Signup -->
-        <div class="page" id="signupPage">
-            <div class="form-wrapper">
-                <button class="back-btn" id="backFromSignupBtn">&larr; Back</button>
-                <div class="form-container">
-                    <h2>Create Account</h2>
-                    <p class="muted">We're required to verify identity for compliance. Please have your ID and proof of address ready.</p>
-                    <form id="signupForm" enctype="multipart/form-data">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <input id="signupFullName" type="text" placeholder="John Doe" required />
-                            </div>
-                            <div class="form-group">
-                                <label>Date of Birth</label>
-                                <input id="signupDob" type="date" required />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input id="signupEmail" type="email" placeholder="you@example.com" required />
-                            </div>
-                            <div class="form-group">
-                                <label>Phone</label>
-                                <input id="signupPhone" type="tel" placeholder="+1234567890" required />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input id="signupPassword" type="password" placeholder="Password" required />
-                            </div>
-                            <div class="form-group">
-                                <label>Confirm Password</label>
-                                <input id="signupConfirmPassword" type="password" placeholder="Confirm Password" required />
-                            </div>
-                        </div>
-
-                        <h3>KYC — Identity & Documents</h3>
-                        <div class="form-row kyc-row">
-                            <div class="form-group">
-                                <label>ID Type</label>
-                                <select id="signupIdType" required>
-                                    <option value="passport">Passport</option>
-                                    <option value="driver">Driver's License</option>
-                                    <option value="national">National ID</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>ID Number</label>
-                                <input id="signupIdNumber" type="text" required />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Upload ID (passport/ID) — JPG/PNG/PDF</label>
-                            <input id="signupIdFile" type="file" accept="image/*,.pdf" required />
-                            <div id="signupIdFileName" class="file-name muted"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Proof of Address (utility bill/bank statement &lt; 6 months)</label>
-                            <input id="signupProofFile" type="file" accept="image/*,.pdf" required />
-                            <div id="signupProofFileName" class="file-name muted"></div>
-                        </div>
-
-                        <h3>Additional Info</h3>
-                        <div class="form-group">
-                            <label>Residential Address</label>
-                            <input id="signupAddress" type="text" placeholder="Street, City, Postcode" required />
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Tax Identification Number (TIN)</label>
-                                <input id="signupTin" type="text" />
-                            </div>
-                            <div class="form-group">
-                                <label>Country of Tax Residence</label>
-                                <input id="signupTaxCountry" type="text" />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Employment Status</label>
-                                <select id="signupEmployment">
-                                    <option value="employed">Employed</option>
-                                    <option value="self">Self-employed</option>
-                                    <option value="student">Student</option>
-                                    <option value="retired">Retired</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Employer / Business</label>
-                                <input id="signupEmployer" type="text" />
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Annual Income (optional)</label>
-                                <input id="signupIncome" type="number" min="0" step="100" />
-                            </div>
-                            <div class="form-group">
-                                <label>Source of Funds</label>
-                                <select id="signupSourceOfFunds">
-                                    <option value="salary">Salary</option>
-                                    <option value="business">Business</option>
-                                    <option value="savings">Savings</option>
-                                    <option value="inheritance">Inheritance</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Initial Deposit (minimum: 2,000)</label>
-                                <input id="signupInitialDeposit" type="number" min="0" step="1" placeholder="2000" required />
-                            </div>
-                            <div class="form-group">
-                                <label>Notarized Documents?</label>
-                                <label class="toggle-switch"><input id="signupNotarized" type="checkbox" /><span class="toggle-slider"></span></label>
-                            </div>
-                        </div>
-
-                        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between;">
-                            <label style="display:flex;gap:8px;align-items:center"><input id="signupAgree" type="checkbox" required /> I confirm the documents are authentic and I consent to identity verification.</label>
-                            <button type="submit" class="btn btn-primary">Submit Application</button>
-                        </div>
-                    </form>
-                    <p style="margin-top:12px">Already applied or have an account? <a href="#" id="switchToLogin">Login</a></p>
-                </div>
+        <!-- Signup Page -->
+        <section id="signupPage" class="page">
+            <div class="page-header">
+                <button id="backFromSignupBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Create Your Account</h2>
             </div>
-        </div>
-
-        <!-- Forgot Password (multi-step) -->
-        <div class="page" id="forgotPasswordPage">
-            <div class="form-wrapper">
-                <button class="back-btn" id="backFromForgotPasswordBtn">&larr; Back</button>
-                <div class="form-container">
-                    <h2>Reset Password</h2>
-
-                    <form id="forgotPasswordForm" class="step-1" style="display:block;">
+            <form id="signupForm" class="form-container">
+                <fieldset>
+                    <legend>Personal Information</legend>
+                    <div class="form-row">
                         <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" id="forgotEmail" placeholder="Registered email" required />
-                        </div>
-                        <button type="submit" class="btn btn-primary">Send Code</button>
-                    </form>
-
-                    <form id="verifyCodeForm" class="step-2" style="display:none;">
-                        <div class="form-group">
-                            <label>Verification Code</label>
-                            <input type="text" id="verificationCode" maxlength="6" placeholder="123456" required />
-                        </div>
-                        <button type="submit" class="btn btn-primary">Verify</button>
-                    </form>
-
-                    <form id="resetPasswordForm" class="step-3" style="display:none;">
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <input type="password" id="newPassword" placeholder="New password" required />
+                            <label for="signupFirstName">First Name *</label>
+                            <input type="text" id="signupFirstName" name="firstName" required>
                         </div>
                         <div class="form-group">
-                            <label>Confirm Password</label>
-                            <input type="password" id="confirmNewPassword" placeholder="Confirm" required />
+                            <label for="signupLastName">Last Name *</label>
+                            <input type="text" id="signupLastName" name="lastName" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Reset Password</button>
-                    </form>
-
-                    <p style="text-align:center; margin-top:12px;">
-                        Remembered? <a href="#" id="backToLogin">Back to Login</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dashboard -->
-        <div class="page" id="dashboardPage">
-            <div class="dashboard-header">
-                <h2>Dashboard</h2>
-                <div class="dashboard-user">
-                    <div style="text-align:right;line-height:1">
-                        <div style="font-size:12px;opacity:0.9">Welcome back,</div>
-                        <div id="headerUserName" style="font-weight:700">Guest</div>
                     </div>
-                    <div class="user-avatar" id="headerAvatar">G</div>
-                </div>
-            </div>
-
-            <div class="balance-card">
-                <div class="balance-info">
-                    <p class="balance-label">Available Balance</p>
-                    <h1 id="userBalance" class="balance-amount">$0.00</h1>
-                    <p class="account-number">Savings Account • ****----</p>
-                </div>
-                <img src="images/creditcard.jpg" alt="card" class="card-logo" />
-            </div>
-
-            <div class="quick-actions">
-                <button id="quickTransferBtn" class="action-btn"><i
-                        class="fas fa-exchange-alt"></i><span>Transfer</span></button>
-                <button id="quickCardBtn" class="action-btn"><i class="fas fa-credit-card"></i><span>Add
-                        Card</span></button>
-                <button id="quickLoanBtn" class="action-btn"><i
-                        class="fas fa-file-contract"></i><span>Loan</span></button>
-                <button id="quickInvestBtn" class="action-btn"><i
-                        class="fas fa-chart-line"></i><span>Invest</span></button>
-            </div>
-
-            <div class="add-funds-section">
-                <button id="addFundsBtn" class="action-btn"><i class="fas fa-plus-circle"></i><span>Add
-                        Funds</span></button>
-            </div>
-
-            <!-- Add Funds Modal -->
-            <div class="modal" id="addFundsModal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Add Funds</h3>
-                        <button id="closeAddFundsModal" class="modal-close">&times;</button>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address *</label>
+                        <input type="email" id="signupEmail" name="email" required autocomplete="email">
                     </div>
-                    <form id="addFundsForm">
-                        <div class="form-group">
-                            <label>Amount</label>
-                            <input type="number" id="fundAmount" step="0.01" min="1" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Payment Method</label>
-                            <select id="paymentMethod" required>
-                                <option value="">Select</option>
-                                <option value="debit">Debit Card</option>
-                                <option value="credit">Credit Card</option>
-                                <option value="bank">Bank Transfer</option>
-                                <option value="paypal">PayPal</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label><input type="checkbox" id="notifyEmail" checked /> Send confirmation email</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                        <button type="button" id="cancelAddFundsBtn" class="btn btn-secondary">Cancel</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Market Forecast (image + live readings) -->
-            <div class="market-section">
-                <h3>Market Forecast</h3>
-                <div class="market-row">
-                    <img src="images/online-banking-market.jpg" alt="Market Forecast" class="market-image" />
-                    <div class="market-live">
-                        <div class="market-controls">
-                            <button id="marketToggleBtn" class="btn btn-secondary">Start Live</button>
-                        </div>
-                        <div id="marketTicker" class="market-ticker">
-                            <p>EUR/USD: <strong><span id="rate-eur-usd">-</span></strong></p>
-                            <p>GBP/USD: <strong><span id="rate-gbp-usd">-</span></strong></p>
-                            <p>BTC/USD: <strong><span id="rate-btc-usd">-</span></strong></p>
-                            <hr style="margin:10px 0;border:none;border-top:1px solid rgba(255,255,255,0.06);" />
-                            <p>Spending Overview: <strong><span id="rate-spend-overview">$-</span></strong></p>
-                            <p>Goal Spending: <strong><span id="rate-goal-spending">$-</span></strong></p>
-                            <div class="goal-progress-bar" style="margin-top:8px">
-                                <div class="goal-progress" id="goalProgress" style="width:0%"></div>
-                            </div>
-                            <div style="margin-top:8px">
-                                <canvas id="spendSparkline" class="sparkline" width="300" height="40"></canvas>
-                            </div>
-                        </div>
-                        <p id="marketTimestamp" class="market-timestamp">Last updated: -</p>
+                    <div class="form-group">
+                        <label for="signupPhone">Phone Number *</label>
+                        <input type="tel" id="signupPhone" name="phone" required>
                     </div>
-                </div>
-                <!-- Live Market Forecast Chart -->
-                <div style="margin-top:12px;padding:12px;background:linear-gradient(180deg,#fff,#fbfdff);border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.04);">
-                    <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
-                        <label style="font-size:13px;color:#6b7280">Instrument</label>
-                        <select id="mfInstrument" style="padding:6px;border-radius:8px">
-                            <option value="EURUSD">EUR/USD</option>
-                            <option value="GBPUSD">GBP/USD</option>
-                            <option value="BTCUSD">BTC/USD</option>
+                    <div class="form-group">
+                        <label for="signupDob">Date of Birth *</label>
+                        <input type="date" id="signupDob" name="dob" required>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Address Information</legend>
+                    <div class="form-group">
+                        <label for="signupAddress">Street Address *</label>
+                        <input type="text" id="signupAddress" name="address" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="signupCity">City *</label>
+                            <input type="text" id="signupCity" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signupCountry">Country *</label>
+                            <input type="text" id="signupCountry" name="country" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Security</legend>
+                    <div class="form-group">
+                        <label for="signupPassword">Password *</label>
+                        <input type="password" id="signupPassword" name="password" required placeholder="Min 8 characters">
+                        <small>Use uppercase, numbers, and special characters</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPasswordConfirm">Confirm Password *</label>
+                        <input type="password" id="signupPasswordConfirm" name="passwordConfirm" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupTransactionPin">Transaction PIN</label>
+                        <input type="password" id="signupTransactionPin" maxlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupSecurityQuestion">Security question</label>
+                        <input type="text" id="signupSecurityQuestion">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupSecurityAnswer">Answer</label>
+                        <input type="text" id="signupSecurityAnswer">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="signupTerms" name="terms" required>
+                        <label for="signupTerms">I agree to the Terms & Conditions</label>
+                    </div>
+                </fieldset>
+
+                <!-- KYC / AML -->
+                <fieldset>
+                    <legend>Identity Verification (KYC / AML)</legend>
+                    <div class="form-group">
+                        <label for="signupPassportFile">Passport upload</label>
+                        <input type="file" id="signupPassportFile" accept="image/*,.pdf">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupGovIdFile">Government ID upload</label>
+                        <input type="file" id="signupGovIdFile" accept="image/*,.pdf">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupProofAddressFile">Proof of address</label>
+                        <input type="file" id="signupProofAddressFile" accept="image/*,.pdf">
+                    </div>
+                </fieldset>
+
+                <!-- Financial Information -->
+                <fieldset>
+                    <legend>Financial Information</legend>
+                    <div class="form-group">
+                        <label for="signupEmploymentStatus">Employment status</label>
+                        <select id="signupEmploymentStatus">
+                            <option value="employed">Employed</option>
+                            <option value="self_employed">Self-employed</option>
+                            <option value="unemployed">Unemployed</option>
+                            <option value="student">Student</option>
+                            <option value="retired">Retired</option>
                         </select>
-                        <label style="font-size:13px;color:#6b7280">Timeframe</label>
-                        <select id="mfTimeframe" style="padding:6px;border-radius:8px">
-                            <option value="365">1Y</option>
-                            <option value="180">6M</option>
-                            <option value="90">3M</option>
-                            <option value="30">1M</option>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupSourceIncome">Source of income</label>
+                        <input type="text" id="signupSourceIncome">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupAnnualIncome">Annual income range</label>
+                        <select id="signupAnnualIncome">
+                            <option value="0-25000">$0–25,000</option>
+                            <option value="25001-75000">$25,001–75,000</option>
+                            <option value="75001-150000">$75,001–150,000</option>
+                            <option value="150001+">$150,001+</option>
                         </select>
-                        <button id="mfRefresh" class="btn btn-secondary" style="margin-left:auto">Refresh</button>
-                        <button id="mfExport" class="btn btn-secondary">Export PNG</button>
                     </div>
-                    <div style="position:relative">
-                        <canvas id="mr_forecast_chart" width="1000" height="300" class="mr-chart" tabindex="0" aria-label="Market forecast chart"></canvas>
-                        <div id="mfLegend" style="position:absolute;right:12px;top:10px;font-size:12px;color:#374151;display:flex;gap:10px;align-items:center" aria-hidden="false">
-                            <div class="legend-item"><span class="legend-swatch" style="background:#2563EB"></span><span class="legend-label">Historical</span></div>
-                            <div class="legend-item"><span class="legend-swatch" style="background:#F97316"></span><span class="legend-label">Predicted</span></div>
-                            <div class="legend-item"><span class="legend-swatch" style="background:#9CA3AF"></span><span class="legend-label">Confidence band</span></div>
-                        </div>
+                    <div class="form-group">
+                        <label for="signupPurposeAccount">Purpose of the account</label>
+                        <input type="text" id="signupPurposeAccount">
                     </div>
-                    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-                        <button id="mfExportCSV" class="btn btn-secondary">Export CSV</button>
-                        <span style="color:#6b7280;font-size:12px;margin-left:6px">CSV includes historical and predicted values</span>
+                </fieldset>
+
+                <!-- Tax Compliance -->
+                <fieldset>
+                    <legend>Tax Compliance</legend>
+                    <div class="form-group">
+                        <label for="signupTaxResidency">Tax residency</label>
+                        <input type="text" id="signupTaxResidency">
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="signupFatca"> FATCA declaration (US citizens)</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupCrsFormFile">CRS tax residency form</label>
+                        <input type="file" id="signupCrsFormFile" accept="image/*,.pdf">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupTin">Tax Identification Number (TIN)</label>
+                        <input type="text" id="signupTin">
+                    </div>
+                </fieldset>
+
+                <!-- Email verification flag stored in script -->
+                <input type="hidden" id="signupEmailVerified" value="false">
+
+                <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                <p class="text-center">Already have an account? <a href="#" id="signupToLoginLink">Sign in here</a></p>
+            </form>
+        </section>
+
+        <!-- Login Page -->
+        <section id="loginPage" class="page">
+            <div class="page-header">
+                <button id="backFromLoginBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Sign In</h2>
+            </div>
+            <form id="loginForm" class="form-container">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address *</label>
+                    <input type="email" id="loginEmail" name="email" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password *</label>
+                    <div class="password-input-group">
+                        <input type="password" id="loginPassword" name="password" required autocomplete="current-password">
+                        <button type="button" id="togglePasswordBtn" class="btn-eye" aria-label="Show/hide password">👁</button>
                     </div>
                 </div>
-                <p class="market-info">Monitor currency trends and market predictions</p>
+                <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+                <p class="text-center"><a href="#" id="forgotPasswordLink">Forgot your password?</a></p>
+                <p class="text-center">Don't have an account? <a href="#" id="loginToSignupLink">Create one now</a></p>
+            </form>
+        </section>
+
+        <!-- Forgot Password Page -->
+        <section id="forgotPasswordPage" class="page">
+            <div class="page-header">
+                <button id="backFromForgotBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Reset Password</h2>
+            </div>
+            <form id="forgotPasswordForm" class="form-container">
+                <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: 14px;">Enter your email address and we'll send you a link to reset your password.</p>
+                <div class="form-group">
+                    <label for="forgotEmail">Email Address *</label>
+                    <input type="email" id="forgotEmail" name="email" required autocomplete="email">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Send Reset Link</button>
+                <p class="text-center">Remember your password? <a href="#" id="resetToLoginLink">Sign in</a></p>
+            </form>
+        </section>
+
+        <!-- Dashboard Page -->
+        <section id="dashboardPage" class="page">
+            <header class="app-header">
+                <div class="header-left">
+                    <img src="images/logo.png" alt="Logo" class="header-logo">
+                    <h1>Dashboard</h1>
+                </div>
+                <button id="navMenuBtn" class="btn-menu" aria-label="Menu">☰</button>
+            </header>
+
+                <!-- Account overview -->
+            <div class="account-overview">
+                <div class="overview-balance">
+                    <label>Total Balance</label>
+                    <h2 id="dashboardBalance">$0.00</h2>
+                </div>
+                <div class="overview-linked">
+                    <label>Linked Accounts</label>
+                    <ul id="linkedAccountsList">
+                        <li>No linked accounts</li>
+                    </ul>
+                </div>
+                <div class="overview-currencies">
+                    <label>Currency Balances</label>
+                    <ul id="currencyBalancesList">
+                        <li>No additional currencies</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="recent-transactions">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <label>Account Number</label>
+                    <p id="dashboardAcctNum">—</p>
+                </div>
+            </div>
+
+            <div class="dashboard-tiles">
+                <button id="toTransferBtn" class="tile">
+                    <div class="tile-icon">💸</div>
+                    <div class="tile-label">Send Money</div>
+                </button>
+
+                <button id="toAddFundsBtn" class="tile">
+                    <div class="tile-icon">➕</div>
+                    <div class="tile-label">Add Funds</div>
+                </button>
+
+                <button id="toCardMgmtBtn" class="tile">
+                    <div class="tile-icon">💳</div>
+                    <div class="tile-label">Cards</div>
+                </button>
+
+                <button id="toInvestmentBtn" class="tile">
+                    <div class="tile-icon">📈</div>
+                    <div class="tile-label">Investments</div>
+                </button>
+
+                <button id="toLoanBtn" class="tile">
+                    <div class="tile-icon">🏦</div>
+                    <div class="tile-label">Loans</div>
+                </button>
+
+                <button id="toForexBtn" class="tile">
+                    <div class="tile-icon">🌍</div>
+                    <div class="tile-label">Currency Exchange</div>
+                </button>
+
+                <button id="toHistoryBtn" class="tile">
+                    <div class="tile-icon">📜</div>
+                    <div class="tile-label">Transaction History</div>
+                </button>
+            </div>
+
+            <div class="section">
                 <h3>Recent Transactions</h3>
                 <div id="recentTransactionsList" class="transaction-list">
-                    <p style="text-align:center;color:#999;padding:20px">No transactions yet</p>
+                    <p class="empty-state">No transactions yet</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Transfer -->
-        <div class="page" id="transferPage">
+        <!-- Transfer Page -->
+        <section id="transferPage" class="page">
             <div class="page-header">
-                <button class="back-btn" id="backFromTransferBtn">&larr; Back</button>
-                <h2>Transfer Funds</h2>
+                <button id="backFromTransferBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Send Money</h2>
             </div>
-            <div class="form-wrapper">
-                <div class="form-container">
-                    <form id="transferForm">
-                        <div class="form-group">
-                            <label>From</label>
-                            <select required>
-                                <option>Savings Account</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Select Beneficiary (optional)</label>
-                            <select id="beneficiarySelect">
-                                <option value="">Choose a beneficiary (optional)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Beneficiary Bank</label>
-                            <input type="text" id="beneficiaryBankName" readonly placeholder="Bank name will appear here" />
-                        </div>
-                        <div class="form-group">
-                            <label>Select Bank</label>
-                            <select id="bankSelect" required>
-                                <option value="">Choose bank</option>
-                                <optgroup label="US Banks">
-                                    <option value="Bank of America">Bank of America</option>
-                                    <option value="Chase">Chase</option>
-                                    <option value="Wells Fargo">Wells Fargo</option>
-                                </optgroup>
-                                <optgroup label="Offshore Banks">
-                                    <option value="Cayman Trust">Cayman Trust</option>
-                                    <option value="Isle Finance">Isle Finance</option>
-                                </optgroup>
-                                <optgroup label="International Banks">
-                                    <option value="HSBC">HSBC</option>
-                                    <option value="Standard Chartered">Standard Chartered</option>
-                                    <option value="Deutsche Bank">Deutsche Bank</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Account Number</label>
-                            <input type="text" id="accountNumber" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Routing Number</label>
-                            <input type="text" id="routingNumber" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Account Bearer</label>
-                            <input type="text" id="accountBearerName" readonly placeholder="Account bearer will appear here" />
-                        </div>
-                        <div id="accountLookupNotice" class="lookup-notice" aria-live="polite" style="display:none;margin-bottom:12px"></div>
-                        <div class="form-group">
-                            <label>Amount</label>
-                            <input type="number" step="0.01" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea rows="2"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Confirm Transfer</button>
-                    </form>
+            <form id="transferForm" class="form-container">
+                <div class="form-group">
+                    <label for="transferRecipientName">Recipient Name *</label>
+                    <input type="text" id="transferRecipientName" required>
                 </div>
-            </div>
-        </div>
+                <div class="form-group">
+                    <label for="transferRecipientEmail">Recipient Email *</label>
+                    <input type="email" id="transferRecipientEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="transferAmount">Amount (USD) *</label>
+                    <input type="number" id="transferAmount" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="transferDescription">Description</label>
+                    <textarea id="transferDescription" rows="3" placeholder="What is this transfer for?"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Confirm Transfer</button>
+            </form>
+        </section>
 
-        <!-- Beneficiaries -->
-        <div class="page" id="beneficiaryPage">
+        <!-- Add Funds Page -->
+        <section id="addFundsPage" class="page">
             <div class="page-header">
-                <button class="back-btn" id="backFromBeneficiaryBtn">&larr; Back</button>
-                <h2>Manage Beneficiaries</h2>
+                <button id="backFromAddFundsBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Add Funds</h2>
             </div>
-            <div class="form-wrapper">
-                <div class="form-container">
-                    <h3>Add New Beneficiary</h3>
-                    <form id="beneficiaryForm">
-                        <div class="form-group"><label>Name</label><input type="text" required /></div>
-                        <div class="form-group"><label>Account Number</label><input type="text" required /></div>
-                        <div class="form-group"><label>Routing Number</label><input type="text" required /></div>
-                        <div class="form-group"><label>Bank Name</label><input type="text" required /></div>
-                        <button type="submit" class="btn btn-primary">Add Beneficiary</button>
-                    </form>
+            <form id="addFundsForm" class="form-container">
+                <div class="form-group">
+                    <label for="addFundsAmount">Amount (USD) *</label>
+                    <input type="number" id="addFundsAmount" min="0" step="0.01" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label for="addFundsMethod">Payment Method *</label>
+                    <select id="addFundsMethod" required>
+                        <option value="">Select a method...</option>
+                        <option value="card">Credit/Debit Card</option>
+                        <option value="bank">Bank Transfer</option>
+                        <option value="wire">Wire Transfer</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Add Funds</button>
+            </form>
+        </section>
 
-                    <h3 style="margin-top:20px">Saved Beneficiaries</h3>
-                    <div id="beneficiaryListContainer" class="beneficiary-list">
-                        <p style="text-align:center;color:#999;padding:20px">No beneficiaries added yet</p>
+        <!-- Settings Page -->
+        <section id="settingsPage" class="page">
+            <div class="page-header">
+                <button id="backFromSettingsBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Settings</h2>
+            </div>
+            <div class="settings-container">
+                <div class="settings-section">
+                    <h3>Account Information</h3>
+                    <div class="setting-item">
+                        <span>Email</span>
+                        <p id="settingEmail">—</p>
+                    </div>
+                    <div class="setting-item">
+                        <span>Phone</span>
+                        <p id="settingPhone">—</p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Add Card -->
-        <div class="page" id="cardPage">
-            <div class="page-header">
-                <button class="back-btn" id="backFromCardBtn">&larr; Back</button>
-                <h2>Add Card</h2>
-            </div>
-            <div class="form-wrapper">
-                <div class="form-container">
-                    <!-- Card preview (initially hidden) -->
-                    <div class="card-preview" id="cardPreview" style="display: none;">
-                        <img src="images/debitcard.webp" alt="Card preview" id="cardPreviewImage" />
-                        <div class="card-preview-overlay">
-                            <div id="previewNumber">•••• •••• •••• ••••</div>
-                            <div class="card-preview-meta">
-                                <span id="previewName">CARDHOLDER NAME</span>
-                                <span id="previewExpiry">MM/YY</span>
-                            </div>
-                        </div>
+                <div class="settings-section">
+                    <h3>Preferences</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="twoFactorToggle">
+                        <label for="twoFactorToggle">Enable Two-Factor Authentication</label>
                     </div>
-
-                    <form id="cardForm">
-                        <div class="form-group"><label>Card Number</label><input type="text" maxlength="19" required />
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Expiry</label><input type="text" maxlength="5" required />
-                            </div>
-                            <div class="form-group"><label>CVV</label><input type="text" maxlength="4" required /></div>
-                        </div>
-                        <div class="form-group"><label>Cardholder Name</label><input type="text" required /></div>
-                        <button type="submit" class="btn btn-primary">Add Card</button>
-                    </form>
-
-                    <!-- Saved cards list -->
-                    <div id="savedCardsList" class="saved-cards-list"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loan -->
-        <div class="page" id="loanPage">
-            <div class="page-header">
-                <button class="back-btn" id="backFromLoanBtn">&larr; Back</button>
-                <h2>Apply for Loan</h2>
-            </div>
-            <div class="form-wrapper">
-                <div class="form-container">
-                    <form id="loanForm">
-                        <div class="form-group"><label>Loan Type</label>
-                            <select required>
-                                <option value="">Select</option>
-                                <option value="personal">Personal</option>
-                            </select>
-                        </div>
-                        <div class="form-group"><label>Amount</label><input type="number" required /></div>
-                        <div class="form-group"><label>Duration (Months)</label><select required>
-                                <option value="12">12</option>
-                            </select></div>
-                        <button type="submit" class="btn btn-primary">Apply</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Investments -->
-        <div class="page" id="investmentPage">
-            <div class="page-header">
-                <button class="back-btn" id="backFromInvestmentBtn">&larr; Back</button>
-                <h2>Investments</h2>
-            </div>
-            <div class="form-wrapper">
-                <div class="form-container">
-                    <div class="investment-options">
-                        <div class="investment-card">
-                            <h4>Tech Companies</h4>
-                            <p class="investment-return">8-12%</p>
-                            <button class="btn btn-secondary" data-investment="tech">Invest Now</button>
-                        </div>
-                        <div class="investment-card">
-                            <h4>Blue Chip</h4>
-                            <p class="investment-return">5-8%</p>
-                            <button class="btn btn-secondary" data-investment="bluechip">Invest Now</button>
-                        </div>
-                        <div class="investment-card">
-                            <h4>Real Estate</h4>
-                            <p class="investment-return">6-9%</p>
-                            <button class="btn btn-secondary" data-investment="realestate">Invest Now</button>
-                        </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notificationToggle" checked>
+                        <label for="notificationToggle">Receive Email Notifications</label>
                     </div>
-
-                    <form id="investmentForm" style="display:none;">
-                        <h4 id="investmentTitle"></h4>
-                        <div class="form-group"><label>Amount</label><input type="number" required /></div>
-                        <div class="form-group"><label>Duration (Years)</label><select required>
-                                <option value="1">1</option>
-                            </select></div>
-                        <button type="submit" class="btn btn-primary">Confirm</button>
-                        <button type="button" id="cancelInvestmentBtn" class="btn btn-secondary">Cancel</button>
-                    </form>
                 </div>
+                <button id="logoutBtn" class="btn btn-danger btn-full">Log Out</button>
             </div>
-        </div>
+        </section>
 
-        <!-- Transactions -->
-        <div class="page" id="transactionPage">
+        <!-- Transaction History Page -->
+        <section id="transactionHistoryPage" class="page">
             <div class="page-header">
-                <button class="back-btn" id="backFromTransactionBtn">&larr; Back</button>
+                <button id="backFromHistoryBtn" class="btn-back" aria-label="Go back">← Back</button>
                 <h2>Transaction History</h2>
             </div>
-            <div class="form-wrapper">
-                <div style="display:flex;gap:12px;align-items:center;padding:0 20px 10px;">
-                    <div style="flex:1;display:flex;gap:8px;">
-                        <input type="date" id="txFromDate" class="form-input" />
-                        <input type="date" id="txToDate" class="form-input" />
-                        <select id="txTypeFilter" class="form-input"><option value="all">All</option><option value="credit">Credits</option><option value="debit">Debits</option></select>
+            <div class="form-container">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="historyFromDate">From</label>
+                        <input type="date" id="historyFromDate">
                     </div>
-                    <button id="txFilterBtn" class="btn btn-secondary">Filter</button>
-                    <button id="txClearFilterBtn" class="btn btn-primary">Clear</button>
-                </div>
-                <div id="transactionHistoryList" class="transaction-history">
-                    <p style="text-align:center;color:#999;padding:20px">No transactions yet</p>
-                </div>
-            </div>
-        </div>
-
-            <!-- Settings -->
-            <div class="page" id="settingsPage">
-                <div class="page-header">
-                    <button class="back-btn" id="backFromSettingsBtn">&larr; Back</button>
-                    <h2>Settings</h2>
-                </div>
-                <div class="form-wrapper">
-                    <div class="form-container">
-                        <!-- Account Settings -->
-                        <div class="settings-section">
-                            <h3><i class="fas fa-user"></i> Account Settings</h3>
-                            <div class="settings-item">
-                                <div class="settings-label">Full Name</div>
-                                <div id="settingFullName" class="settings-value">-</div>
-                            </div>
-                            <div class="settings-item">
-                                <div class="settings-label">Email Address</div>
-                                <div id="settingEmail" class="settings-value">-</div>
-                            </div>
-                            <div class="settings-item">
-                                <div class="settings-label">Phone Number</div>
-                                <div id="settingPhone" class="settings-value">-</div>
-                            </div>
-                            <button class="btn btn-secondary" id="editProfileBtn">Edit Profile</button>
-                        </div>
-        
-                        <!-- Contact Support (moved to top-level page) -->
-                        <!-- Security Settings -->
-                        <div class="settings-section">
-                            <h3><i class="fas fa-lock"></i> Security</h3>
-                            <div class="settings-item">
-                                <div class="settings-label">Password</div>
-                                <button class="btn btn-secondary" id="changePasswordBtn">Change Password</button>
-                            </div>
-                            <div class="settings-item">
-                                <div class="settings-label">Two-Factor Authentication</div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="twoFactorToggle" />
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Notification Settings -->
-                        <div class="settings-section">
-                            <h3><i class="fas fa-bell"></i> Notifications</h3>
-                            <div class="settings-item">
-                                <div class="settings-label">Email Notifications</div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="emailNotifToggle" checked />
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="settings-item">
-                                <div class="settings-label">SMS Notifications</div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="smsNotifToggle" />
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="settings-item">
-                                <div class="settings-label">Transaction Alerts</div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="transactionAlertToggle" checked />
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Display Settings -->
-                        <div class="settings-section">
-                            <h3><i class="fas fa-eye"></i> Display</h3>
-                            <div class="settings-item">
-                                <div class="settings-label">Theme (Dark Mode)</div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="themeToggle" />
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Support / EmailJS template configuration -->
-                        <div class="settings-section">
-                            <h3><i class="fas fa-envelope"></i> Support Settings</h3>
-                            <div class="form-group">
-                                <label>EmailJS Template ID (for contact form)</label>
-                                <input type="text" id="emailjsTemplateId" placeholder="template_xxx" />
-                                <button class="btn btn-secondary" id="saveEmailJsTemplateBtn" style="margin-top:10px;">Save Template ID</button>
-                            </div>
-                        </div>
-
-                        <!-- Account Limits -->
-                        <div class="settings-section">
-                            <h3><i class="fas fa-landmark"></i> Account Limits</h3>
-                            <div class="settings-item">
-                                <div class="settings-label">Daily Transfer Limit</div>
-                                <div id="settingDailyLimit" class="settings-value">$10,000</div>
-                            </div>
-                            <div class="settings-item">
-                                <div class="settings-label">Daily Withdrawal Limit</div>
-                                <div id="settingWithdrawLimit" class="settings-value">$5,000</div>
-                            </div>
-                            <button class="btn btn-secondary" id="requestLimitChangeBtn">Request Limit Change</button>
-                        </div>
-
-                        <!-- Linked Accounts -->
-                        <div class="settings-section">
-                            <h3><i class="fas fa-link"></i> Linked Accounts</h3>
-                            <div id="linkedAccountsList" class="linked-accounts">
-                                <p style="color: #999;">No linked accounts</p>
-                            </div>
-                            <button class="btn btn-secondary" id="linkAccountBtn">Link New Account</button>
-                        </div>
-
-                        <!-- Privacy & Data -->
-                        <div class="settings-section">
-                            <h3><i class="fas fa-shield-alt"></i> Privacy & Data</h3>
-                            <div class="settings-item">
-                                <button class="btn btn-secondary" id="downloadDataBtn">Download My Data</button>
-                            </div>
-                            <div class="settings-item">
-                                <button class="btn btn-danger" id="deactivateAccountBtn">Deactivate Account</button>
-                            </div>
-                            <div style="margin-top:12px">
-                                <button id="settingsOpenLimitBtn" class="btn btn-secondary">Account Limit</button>
-                            </div>
-                            <div style="margin-top:12px">
-                                <button id="settingsOpenUserInfoBtn" class="btn btn-secondary">User's Info</button>
-                            </div>
-                            <div style="margin-top:12px">
-                                <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="simulateAdminChk" /> <span>Simulate Admin (show admin tools)</span></label>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="historyToDate">To</label>
+                        <input type="date" id="historyToDate">
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="historyMinAmount">Min amount</label>
+                        <input type="number" id="historyMinAmount" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="historyMaxAmount">Max amount</label>
+                        <input type="number" id="historyMaxAmount" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="historyType">Type</label>
+                    <select id="historyType">
+                        <option value="all">All</option>
+                        <option value="sent">Sent</option>
+                        <option value="received">Received</option>
+                    </select>
+                </div>
+                <button id="applyHistoryFilters" class="btn btn-primary btn-full">Apply Filters</button>
+                <button id="downloadStatement" class="btn btn-secondary btn-full">Download Statement</button>
+                <h3 style="margin-top:24px">Transactions</h3>
+                <div id="historyTransactionsList" class="transaction-list">
+                    <p class="empty-state">No transactions found</p>
+                </div>
             </div>
+        </section>
 
-    
-        <!-- Contact Support -->
-        <div class="page" id="supportPage">
+        <!-- Forex Page -->
+        <section id="forexPage" class="page">
             <div class="page-header">
-                <button class="back-btn" id="backFromSupportBtn">&larr; Back</button>
-                <h2>Contact Support</h2>
+                <button id="backFromForexBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Currency Exchange</h2>
             </div>
-            <div class="form-wrapper">
-                <div class="form-container">
-                    <form id="contactForm">
-                        <div class="form-group"><label>Your Name</label><input type="text" id="contactName" placeholder="Your full name" /></div>
-                        <div class="form-group"><label>Your Email</label><input type="email" id="contactEmail" placeholder="you@example.com" /></div>
-                        <div class="form-group"><label>Subject</label><input type="text" id="contactSubject" placeholder="Subject" required /></div>
-                        <div class="form-group"><label>Message</label><textarea id="contactMessage" rows="6" placeholder="Describe your issue" required></textarea></div>
-                        <div class="form-group"><label>Send copy to my email</label><input type="checkbox" id="contactSendCopy" checked /></div>
-                        <button type="submit" class="btn btn-primary">Send</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- Admin Page (simple simulator) -->
-        <div class="page" id="adminPage">
-            <div class="page-header">
-                <button class="back-btn" id="backFromAdminBtn">&larr; Back</button>
-                <h2>Admin — Limit Requests</h2>
-            </div>
-            <div class="form-wrapper">
-                <div class="form-container">
-                    <div id="adminRequestsList">
-                        <p style="color:#6b7280">No requests yet</p>
+            <div class="form-container">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="convertFrom">From</label>
+                        <input type="text" id="convertFrom" placeholder="e.g. USD">
+                    </div>
+                    <div class="form-group">
+                        <label for="convertTo">To</label>
+                        <input type="text" id="convertTo" placeholder="e.g. EUR">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="convertAmount">Amount</label>
+                    <input type="number" id="convertAmount" step="0.01">
+                </div>
+                <button id="performConversion" class="btn btn-primary btn-full">Convert</button>
+                <div id="conversionResult" style="margin-top:20px;"></div>
             </div>
-        </div>
+        </section>
 
-        <!-- Floating support icon (dashboard bottom-left) -->
-        <button id="dashboardSupportBtn" class="floating-support" aria-label="Contact Support"><i class="fas fa-headset"></i></button>
-
-        <!-- Bottom navigation (dashboard quick nav) -->
-        <nav id="dashboardBottomNav" class="bottom-nav" aria-label="Dashboard quick actions">
-            <button id="navInvestBtn" class="bottom-nav-btn" aria-label="Invest"><i class="fas fa-chart-line"></i><span>Invest</span></button>
-            <button id="navLoanBtn" class="bottom-nav-btn" aria-label="Loan"><i class="fas fa-file-contract"></i><span>Loan</span></button>
-            <button id="navCardBtn" class="bottom-nav-btn" aria-label="Card"><i class="fas fa-credit-card"></i><span>Card</span></button>
-            <button id="navMeBtn" class="bottom-nav-btn" aria-label="Me"><i class="fas fa-user"></i><span>Me</span></button>
-            <!-- Me quick actions (appears above bottom nav when Me is tapped) -->
-            <div id="meQuickActions" class="me-quick" style="display:none" aria-hidden="true">
-                <button id="meQuickUserInfo" class="btn btn-secondary">User's Info</button>
-                <button id="meQuickAccountLimit" class="btn btn-primary">Account Limit</button>
-                <button id="meQuickIncreaseLimit" class="btn btn-secondary">Increase Limit</button>
+        <!-- Card Management Page -->
+        <section id="cardManagementPage" class="page">
+            <div class="page-header">
+                <button id="backFromCardBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Card Management</h2>
             </div>
+            <div class="form-container">
+                <p>Manage your debit/credit cards here (placeholder).</p>
+            </div>
+        </section>
+
+        <!-- Investment Page -->
+        <section id="investmentPage" class="page">
+            <div class="page-header">
+                <button id="backFromInvestmentBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Investments</h2>
+            </div>
+            <div class="form-container">
+                <p>Investment options and portfolio (placeholder).</p>
+            </div>
+        </section>
+
+        <!-- Loan Page -->
+        <section id="loanPage" class="page">
+            <div class="page-header">
+                <button id="backFromLoanBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Loans</h2>
+            </div>
+            <div class="form-container">
+                <p>Apply for or view loan details (placeholder).</p>
+            </div>
+        </section>
+
+        <!-- Nav Menu -->
+        <nav id="navMenu" class="nav-menu">
+            <button id="closeMenuBtn" class="btn-close">✕</button>
+            <ul>
+                <li><a href="#" id="navDashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="#" id="navAccounts" class="nav-link">Accounts</a></li>
+                <li><a href="#" id="navTransactions" class="nav-link">Transactions</a></li>
+                <li><a href="#" id="navTransfers" class="nav-link">Transfers</a></li>
+                <li><a href="#" id="navPayments" class="nav-link">Payments</a></li>
+                <li><a href="#" id="navCards" class="nav-link">Cards</a></li>
+                <li><a href="#" id="navBeneficiaries" class="nav-link">Beneficiaries</a></li>
+                <li><a href="#" id="navInvestments" class="nav-link">Investments</a></li>
+                <li><a href="#" id="navForex" class="nav-link">Currency Exchange (Forex)</a></li>
+                <li><a href="#" id="navLoans" class="nav-link">Loans</a></li>
+                <li><a href="#" id="navStatements" class="nav-link">Statements</a></li>
+                <li><a href="#" id="navNotifications" class="nav-link">Notifications</a></li>
+                <li><a href="#" id="navMessages" class="nav-link">Messages</a></li>
+                <li><a href="#" id="navSecurity" class="nav-link">Security Center</a></li>
+                <li><a href="#" id="navDocuments" class="nav-link">Documents</a></li>
+                <li><a href="#" id="navProfile" class="nav-link">Profile</a></li>
+                <li><a href="#" id="navSettings" class="nav-link">Settings</a></li>
+                <li><a href="#" id="navSupport" class="nav-link">Support / Help</a></li>
+                <li><a href="#" id="navLogout" class="nav-link">Logout</a></li>
+            </ul>
         </nav>
-
-        <!-- Me / Profile Page -->
-        <div class="page" id="mePage">
-            <div class="page-header">
-                <button class="back-btn" id="backFromMeBtn">&larr; Back</button>
-                <h2>My Profile</h2>
-            </div>
-            <div class="form-wrapper me-section">
-                <div class="me-grid">
-                    <div>
-                        <div class="me-panel">
-                            <h3>Personal Profile & Settings</h3>
-                            <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-                                <div class="user-avatar" id="meAvatarLarge">G</div>
-                                <div style="flex:1">
-                                    <div id="meFullName">Your Name</div>
-                                    <div id="meEmail" class="muted">email@example.com</div>
-                                    <div id="mePhone" class="muted">+123456789</div>
-                                </div>
-                                <button id="editProfileBtn" class="btn btn-secondary">Edit</button>
-                            </div>
-                            <div style="margin-top:8px">
-                                <label>Update Email</label>
-                                <input id="meEditEmail" type="email" placeholder="you@example.com" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-bottom:8px" />
-                                <label>Update Phone</label>
-                                <input id="meEditPhone" type="tel" placeholder="+123456789" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8;margin-bottom:8px" />
-                                <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px"><button id="saveProfileBtn" class="btn btn-primary">Save Profile</button></div>
-                            </div>
-                        </div>
-
-                        <div class="me-panel" style="margin-top:12px">
-                            <h3>Security & Login</h3>
-                            <div class="settings-item"><div>Biometric (Face ID / Touch ID)</div><div><label class="toggle-switch"><input id="biometricToggle" type="checkbox" /><span class="toggle-slider"></span></label></div></div>
-                            <div class="settings-item"><div>Change App PIN / Password</div><div><button id="changePinBtn" class="small-btn btn btn-secondary">Change</button></div></div>
-                            <div class="settings-item"><div>Two-Factor Authentication</div><div><label class="toggle-switch"><input id="meTwoFactorToggle" type="checkbox" /><span class="toggle-slider"></span></label></div></div>
-                            <div class="settings-item"><div>Linked Devices</div><div><button id="manageDevicesBtn" class="small-btn btn btn-secondary">Manage</button></div></div>
-                        </div>
-
-                        <div class="me-panel" style="margin-top:12px">
-                            <h3>Security & Card Controls</h3>
-                            <div class="settings-item"><div>Card Management</div><div class="card-controls"><button class="small-btn btn btn-secondary" id="lockAllCardsBtn">Lock All</button><button class="small-btn btn btn-secondary" id="unlockAllCardsBtn">Unlock All</button></div></div>
-                            <div class="settings-item"><div>Travel Notices</div><div><button id="addTravelNoticeBtn" class="small-btn btn btn-secondary">Add Notice</button></div></div>
-                            <div class="settings-item"><div>Fraud Alerts & Limits</div><div><button id="manageAlertsBtn" class="small-btn btn btn-secondary">Manage</button></div></div>
-                        </div>
-
-                        <div class="me-panel" style="margin-top:12px">
-                            <h3>Account & Documents</h3>
-                            <div class="settings-item"><div>Account Statements</div><div><button id="downloadStatementBtn" class="small-btn btn btn-secondary">Download</button></div></div>
-                            <div class="settings-item"><div>KYC Status</div><div id="kycStatus">Pending</div></div>
-                            <div class="settings-item"><div>Linked Accounts</div><div><button id="manageLinkedAccountsBtn" class="small-btn btn btn-secondary">Manage</button></div></div>
-                        </div>
-
-                        <div class="me-panel" style="margin-top:12px">
-                            <h3>Communication & Support</h3>
-                            <div class="settings-item"><div>Notification Preferences</div><div><button id="manageNotificationsBtn" class="small-btn btn btn-secondary">Manage</button></div></div>
-                            <div class="settings-item"><div>Help Center / FAQ</div><div><a href="#support" class="small-btn btn btn-secondary">Open</a></div></div>
-                            <div class="settings-item"><div>Customer Support Chat</div><div><button id="openSupportChatBtn" class="small-btn btn btn-primary">Chat</button></div></div>
-                            <div style="margin-top:12px">
-                                <h4>Feedback</h4>
-                                <form id="feedbackForm">
-                                    <div class="form-group"><textarea id="feedbackText" rows="3" placeholder="Share feedback" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8"></textarea></div>
-                                    <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary" type="submit">Send Feedback</button></div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <aside>
-                        <div class="me-panel">
-                            <h3>Account Snapshot</h3>
-                            <div style="margin-bottom:10px"><label>Account Number</label><div style="display:flex;gap:8px"><input id="meAccountNumber" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa" /><button id="copyAccountBtn" class="btn btn-secondary">Copy</button></div></div>
-                            <div style="margin-bottom:10px"><label>Routing Number</label><div style="display:flex;gap:8px"><input id="meRoutingNumber" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa" /><button id="copyRoutingBtn" class="btn btn-secondary">Copy</button></div></div>
-                            <div style="margin-bottom:10px"><label>Daily Transfer Limit</label><div id="meCurrentTransfer" style="font-weight:700">$20,000</div></div>
-                            <div style="margin-bottom:10px"><label>Daily Withdraw Limit</label><div id="meCurrentWithdraw" style="font-weight:700">$50,000</div></div>
-                            <div style="display:flex;gap:8px;margin-top:8px"><button id="openAccountLimitBtn" class="btn btn-secondary">Request Increase</button><button id="meLogoutBtn" class="btn btn-danger" style="margin-left:auto">Logout</button></div>
-                        </div>
-
-                        <div class="me-panel" style="margin-top:12px">
-                            <h3>Linked Devices</h3>
-                            <div id="linkedDevicesList" class="linked-devices-list">
-                                <div class="device-item"><div>iPhone 14 — iOS</div><div><button class="small-btn btn btn-secondary" data-device-id="1">Revoke</button></div></div>
-                                <div class="device-item"><div>Windows Edge — Desktop</div><div><button class="small-btn btn btn-secondary" data-device-id="2">Revoke</button></div></div>
-                            </div>
-                        </div>
-                    </aside>
-                </div>
-            </div>
-        </div>
-
-        <!-- Account Limit Modal -->
-        <div class="modal" id="limitModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Request Limit Increase</h3>
-                    <button class="modal-close" id="closeLimitModal">&times;</button>
-                </div>
-                <div class="form-container">
-                    <p>Current Transfer Limit: <strong id="limitModalTransfer">$-</strong></p>
-                    <p>Current Withdrawal Limit: <strong id="limitModalWithdraw">$-</strong></p>
-                    <form id="limitRequestForm">
-                        <div class="form-group"><label>Requested Transfer Limit</label><input type="number" id="reqTransfer" min="0" placeholder="e.g., 50000" required /></div>
-                        <div class="form-group"><label>Requested Withdrawal Limit</label><input type="number" id="reqWithdraw" min="0" placeholder="e.g., 100000" required /></div>
-                        <div class="form-group"><label>Government ID (PDF or Image)</label><input type="file" id="reqGovId" accept="image/*,.pdf" required /></div>
-                        <div class="form-group"><label>Note</label><textarea id="reqNote" rows="3" placeholder="Reason for increase (business needs, travel, etc.)"></textarea></div>
-                        <div style="display:flex;gap:8px;align-items:center"><button class="btn btn-primary" type="submit">Submit Request</button><button type="button" id="cancelLimitRequest" class="btn btn-secondary">Cancel</button></div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- User Info Modal -->
-        <div class="modal" id="userInfoModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>User's Info</h3>
-                    <button class="modal-close" id="closeUserInfoModal">&times;</button>
-                </div>
-                <div class="form-container">
-                    <div class="form-group"><label>Full Name</label><input id="userInfoFullName" readonly style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%"/></div>
-                    <div class="form-group"><label>Email</label><input id="userInfoEmail" readonly style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%"/></div>
-                    <div class="form-group"><label>Phone</label><input id="userInfoPhone" readonly style="padding:10px;border:1px solid #e0e0e0;border-radius:8px;width:100%"/></div>
-                    <div class="form-group"><label>Account Number</label><div style="display:flex;gap:8px"><input id="userInfoAccount" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa"/><button id="userInfoCopyAccount" class="btn btn-secondary">Copy</button></div></div>
-                    <div class="form-group"><label>Routing Number</label><div style="display:flex;gap:8px"><input id="userInfoRouting" readonly style="flex:1;padding:10px;border:1px solid #e0e0e0;border-radius:8px;background:#fafafa"/><button id="userInfoCopyRouting" class="btn btn-secondary">Copy</button></div></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Market Reader Modal (Professional Reader) -->
-        <div class="modal" id="marketReaderModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Market Predictions — Professional Reader</h3>
-                    <button class="modal-close" id="closeMarketReaderBtn">&times;</button>
-                </div>
-                <div class="form-container">
-                    <div id="marketReaderContent" style="min-height:120px;color:#333">
-                        <div id="marketReaderHeader" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-                            <div>
-                                <div style="font-size:13px;color:#6b7280">Professional Market Reader</div>
-                                <div style="font-weight:700;font-size:16px">Short-term Market Outlook</div>
-                            </div>
-                            <div style="text-align:right">
-                                <div style="font-size:12px;color:#6b7280">Confidence</div>
-                                <div id="marketConfidence" style="font-weight:800;font-size:18px">--%</div>
-                                <div id="marketConfidenceLabel" style="font-size:12px;color:#6b7280">—</div>
-                            </div>
-                        </div>
-                        <div id="marketReaderSummary" style="margin-top:8px;color:#333"></div>
-                        <div id="marketReaderCharts" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-                            <div style="flex:1;min-width:180px">
-                                <div style="font-size:12px;color:#6b7280">EUR/USD</div>
-                                <canvas id="mr_eurusd" width="260" height="60" class="mr-chart"></canvas>
-                                <div class="mr-news"><a id="mr_news_eur" href="#" target="_blank">View news</a></div>
-                            </div>
-                            <div style="flex:1;min-width:180px">
-                                <div style="font-size:12px;color:#6b7280">GBP/USD</div>
-                                <canvas id="mr_gbpusd" width="260" height="60" class="mr-chart"></canvas>
-                                <div class="mr-news"><a id="mr_news_gbp" href="#" target="_blank">View news</a></div>
-                            </div>
-                            <div style="flex:1;min-width:180px">
-                                <div style="font-size:12px;color:#6b7280">BTC/USD</div>
-                                <canvas id="mr_btcusd" width="260" height="60" class="mr-chart"></canvas>
-                                <div class="mr-news"><a id="mr_news_btc" href="#" target="_blank">View news</a></div>
-                            </div>
-                        </div>
-                        <div id="marketPredictionSection" style="margin-top:14px">
-                            <div style="display:flex;justify-content:space-between;align-items:center">
-                                <div style="font-size:13px;color:#6b7280">Market Prediction</div>
-                                <div style="font-size:12px;color:#6b7280">Flow</div>
-                            </div>
-                            <div style="margin-top:8px">
-                                <div class="mr-controls" style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-                                    <label style="font-size:13px;color:#6b7280">Instrument</label>
-                                    <select id="mrInstrumentSelect" style="padding:6px;border-radius:8px">
-                                        <option value="EURUSD">EUR/USD</option>
-                                        <option value="GBPUSD">GBP/USD</option>
-                                        <option value="BTCUSD">BTC/USD</option>
-                                    </select>
-                                    <label style="font-size:13px;color:#6b7280">Timeframe</label>
-                                    <select id="mrTimeframeSelect" style="padding:6px;border-radius:8px">
-                                        <option value="365">1Y</option>
-                                        <option value="180">6M</option>
-                                        <option value="90">3M</option>
-                                        <option value="30">1M</option>
-                                    </select>
-                                    <button id="refreshYearlyChartBtn" class="btn btn-secondary" style="margin-left:auto">Refresh</button>
-                                </div>
-                                <canvas id="mr_prediction" width="760" height="180" class="mr-chart"></canvas>
-                                <div style="margin-top:10px">
-                                    <canvas id="mr_yearly" width="900" height="260" class="mr-chart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-                        <button id="refreshMarketReaderBtn" class="btn btn-primary">Refresh</button>
-                        <button id="closeMarketReaderBtn2" class="btn btn-secondary">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <script src="script.js"></script>
-</body>
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
 
+    <script src="script.js" defer></script>
+</body>
 </html>
