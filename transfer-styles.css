@@ -1,0 +1,136 @@
+/* ========================================
+   TRANSFER FORM STYLES
+   ======================================== */
+
+/* Fee summary display */
+.fee-summary {
+    background-color: var(--bg-tertiary);
+    padding: var(--spacing);
+    border-radius: var(--radius);
+    margin-top: 12px;
+    border-left: 4px solid var(--primary);
+}
+
+.fee-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+.fee-row.fee-total {
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+    margin-top: 8px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Form actions */
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Review card */
+.review-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: var(--spacing);
+    margin-bottom: 24px;
+}
+
+.review-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+.review-row:last-child {
+    border-bottom: none;
+}
+
+.review-row span {
+    flex: 1;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.review-row strong {
+    flex: 1;
+    text-align: right;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.review-row.review-total {
+    padding: 16px 0;
+    border-top: 2px solid var(--border-color);
+    border-bottom: none;
+    color: var(--primary);
+    font-size: 16px;
+}
+
+.review-row.review-total strong {
+    color: var(--primary);
+    font-size: 18px;
+}
+
+/* Fieldset styling */
+fieldset {
+    border: none;
+    padding: 0 0 24px 0;
+    margin: 0;
+}
+
+fieldset legend {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    padding: 0;
+    display: block;
+    width: 100%;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 8px;
+}
+
+/* Form row for multi-column inputs */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 480px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .review-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .review-row strong {
+        text-align: left;
+        margin-top: 4px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}

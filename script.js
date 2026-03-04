@@ -172,6 +172,8 @@ function updateDashboard() {
     }
 
     renderTransactions();
+    // update charts with latest data
+    if (typeof updateCharts === 'function') updateCharts();
 }
 
 // filtering/history
@@ -271,6 +273,88 @@ function updateSettings() {
 }
 
 // =================== AUTH HANDLERS ===================
+
+// =================== CHARTS (Currency prediction & Portfolio) ===================
+
+app.charts = app.charts || {};
+
+function initCharts() {
+    if (!window.Chart) return;
+    try {
+        const currencyCtx = document.getElementById('currencyChart');
+        const portfolioCtx = document.getElementById('portfolioChart');
+
+        // sample labels: next 12 weeks
+        const labels = Array.from({length: 12}, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() + i * 7);
+            return d.toLocaleDateString();
+        });
+
+        // currency prediction dataset (simulated)
+        const usdEur = labels.map((_, i) => 0.90 + Math.sin(i/2)/50 + i*0.001);
+        const usdGbp = labels.map((_, i) => 0.78 + Math.cos(i/3)/60 + i*0.0008);
+
+        if (currencyCtx) {
+            app.charts.currency = new Chart(currencyCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'USD/EUR', data: usdEur, borderColor: '#2563eb', tension: 0.25, fill: false },
+                        { label: 'USD/GBP', data: usdGbp, borderColor: '#7c3aed', tension: 0.25, fill: false }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { beginAtZero: false } }
+                }
+            });
+        }
+
+        // portfolio performance (simulated)
+        const base = 10000;
+        const values = labels.map((_, i) => base * (1 + (i*0.02) + Math.sin(i/2)/50));
+        if (portfolioCtx) {
+            app.charts.portfolio = new Chart(portfolioCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Portfolio Value (USD)', data: values, borderColor: '#10b981', tension: 0.2, fill: true, backgroundColor: 'rgba(16,185,129,0.08)' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { beginAtZero: false } }
+                }
+            });
+        }
+    } catch (e) {
+        console.error('Chart init error', e);
+    }
+}
+
+function updateCharts() {
+    if (!app.currentUser) return;
+    if (app.charts.currency) {
+        // Optionally map real holdings to impact/currency; here we just animate update
+        app.charts.currency.update();
+    }
+    if (app.charts.portfolio) {
+        // update portfolio chart with a slight random walk based on balance
+        const balance = app.currentUser.balance || 1000;
+        const ds = app.charts.portfolio.data.datasets[0];
+        if (ds && ds.data && ds.data.length) {
+            // nudge last value to reflect balance proportionally
+            const factor = 1 + (balance / 100000) * 0.05;
+            app.charts.portfolio.data.datasets[0].data = app.charts.portfolio.data.datasets[0].data.map(v => v * factor);
+            app.charts.portfolio.update();
+        }
+    }
+}
 
 function handleSignup(e) {
     e.preventDefault();
@@ -725,6 +809,13 @@ function attachEventListeners() {
 
         const convertBtn = $('performConversion');
         if (convertBtn) convertBtn.addEventListener('click', performConversion);
+
+        // initialize charts if Chart.js available
+        if (typeof initCharts === 'function') initCharts();
+        // initialize transfer form handlers if available
+        if (typeof attachTransferFormHandlers === 'function') attachTransferFormHandlers();
+        // initialize card form handlers if available
+        if (typeof attachCardFormHandlers === 'function') attachCardFormHandlers();
     } catch (e) {
         console.error('Error attaching listeners:', e);
     }

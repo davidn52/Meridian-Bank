@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meridian Bank - Mobile App</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="transfer-styles.css">
+    <link rel="stylesheet" href="card-styles.css">
 </head>
 <body>
     <div class="app-container">
@@ -299,6 +301,21 @@
                     <p class="empty-state">No transactions yet</p>
                 </div>
             </div>
+
+            <!-- Charts: currency prediction and portfolio performance -->
+            <div class="section">
+                <h3>Market & Portfolio</h3>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <label>Currency Growth Prediction (3 mo)</label>
+                        <canvas id="currencyChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <label>Portfolio Performance</label>
+                        <canvas id="portfolioChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Transfer Page -->
@@ -308,24 +325,239 @@
                 <h2>Send Money</h2>
             </div>
             <form id="transferForm" class="form-container">
-                <div class="form-group">
-                    <label for="transferRecipientName">Recipient Name *</label>
-                    <input type="text" id="transferRecipientName" required>
+                <!-- 1. Transfer Type Selection -->
+                <fieldset>
+                    <legend>Transfer Type</legend>
+                    <div class="form-group">
+                        <label for="transferType">Select Transfer Type *</label>
+                        <select id="transferType" required>
+                            <option value="">-- Choose --</option>
+                            <option value="internal">Internal Transfer (Own Accounts)</option>
+                            <option value="local">Local Bank Transfer</option>
+                            <option value="international">International Wire Transfer</option>
+                            <option value="offshore">Offshore Account Transfer</option>
+                            <option value="scheduled">Scheduled Transfer</option>
+                            <option value="recurring">Recurring Transfer</option>
+                        </select>
+                    </div>
+                </fieldset>
+
+                <!-- 2. Sender Account Section -->
+                <fieldset>
+                    <legend>Sender Account</legend>
+                    <div class="form-group">
+                        <label for="senderAccount">Select Source Account *</label>
+                        <select id="senderAccount" required>
+                            <option value="">-- Choose --</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="senderBalance">Account Balance</label>
+                            <input type="text" id="senderBalance" readonly placeholder="$0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="senderCurrency">Currency</label>
+                            <input type="text" id="senderCurrency" readonly placeholder="USD">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 3. Recipient / Beneficiary Section -->
+                <fieldset>
+                    <legend>Recipient / Beneficiary</legend>
+                    <div class="form-group">
+                        <label for="useSavedBeneficiary">Use Saved Beneficiary?</label>
+                        <input type="checkbox" id="useSavedBeneficiary">
+                    </div>
+                    <div id="savedBeneficiaryGroup" style="display:none;">
+                        <div class="form-group">
+                            <label for="savedBeneficiarySelect">Select Beneficiary</label>
+                            <select id="savedBeneficiarySelect">
+                                <option value="">-- No saved beneficiaries --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="newBeneficiaryGroup">
+                        <div class="form-group">
+                            <label for="recipientName">Recipient Name *</label>
+                            <input type="text" id="recipientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipientBankName">Bank Name *</label>
+                            <select id="recipientBankName" required>
+                                <option value="">-- Select Bank --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipientAccountNumber">Account Number / IBAN *</label>
+                            <input type="text" id="recipientAccountNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipientSwiftCode">SWIFT / BIC Code</label>
+                            <input type="text" id="recipientSwiftCode" placeholder="e.g., DEUTDEDD">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipientBankAddress">Bank Address</label>
+                            <input type="text" id="recipientBankAddress" placeholder="Full bank address">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipientCountry">Country of Recipient *</label>
+                            <select id="recipientCountry" required>
+                                <option value="">-- Select Country --</option>
+                                <option value="US">United States</option>
+                                <option value="DE">Germany</option>
+                                <option value="FR">France</option>
+                                <option value="GB">United Kingdom</option>
+                                <option value="IT">Italy</option>
+                                <option value="ES">Spain</option>
+                                <option value="NL">Netherlands</option>
+                                <option value="BE">Belgium</option>
+                                <option value="AT">Austria</option>
+                                <option value="CH">Switzerland</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="saveBeneficiary">
+                                <input type="checkbox" id="saveBeneficiary">
+                                Save this beneficiary for future transfers
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 4. Transfer Amount Details -->
+                <fieldset>
+                    <legend>Transfer Amount</legend>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="transferAmount">Amount *</label>
+                            <input type="number" id="transferAmount" min="0" step="0.01" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="transferCurrency">Currency *</label>
+                            <select id="transferCurrency" required>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exchangeRateDisplay">Exchange Rate</label>
+                        <input type="text" id="exchangeRateDisplay" readonly placeholder="1.00">
+                    </div>
+                    <div class="fee-summary">
+                        <div class="fee-row">
+                            <span>Transfer Amount:</span>
+                            <span id="feeAmountDisplay">$0.00</span>
+                        </div>
+                        <div class="fee-row">
+                            <span>Transfer Fee:</span>
+                            <span id="feeChargeDisplay">$0.00</span>
+                        </div>
+                        <div class="fee-row fee-total">
+                            <span>Total to be Debited:</span>
+                            <span id="feeTotalDisplay">$0.00</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 5. Transfer Notes -->
+                <fieldset>
+                    <legend>Transfer Notes (Optional)</legend>
+                    <div class="form-group">
+                        <label for="paymentReference">Payment Reference</label>
+                        <input type="text" id="paymentReference" placeholder="e.g., INV-2024-001">
+                    </div>
+                    <div class="form-group">
+                        <label for="transferDescription">Description / Message</label>
+                        <textarea id="transferDescription" rows="2" placeholder="Brief description of the transfer"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="purposeOfTransfer">Purpose of Transfer</label>
+                        <select id="purposeOfTransfer">
+                            <option value="">-- Select --</option>
+                            <option value="salary">Salary Payment</option>
+                            <option value="vendor">Vendor Payment</option>
+                            <option value="personal">Personal Transfer</option>
+                            <option value="loan">Loan</option>
+                            <option value="investment">Investment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </fieldset>
+
+                <!-- 6. Security Verification -->
+                <fieldset>
+                    <legend>Security Verification</legend>
+                    <div class="form-group">
+                        <label for="transactionPin">Transaction PIN *</label>
+                        <input type="password" id="transactionPin" required placeholder="Enter your 4-digit PIN">
+                    </div>
+                </fieldset>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" id="reviewTransferBtn" class="btn btn-primary btn-full">Review Transfer</button>
+                    <button type="button" id="cancelTransferBtn" class="btn btn-secondary btn-full">Cancel</button>
                 </div>
-                <div class="form-group">
-                    <label for="transferRecipientEmail">Recipient Email *</label>
-                    <input type="email" id="transferRecipientEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="transferAmount">Amount (USD) *</label>
-                    <input type="number" id="transferAmount" min="0" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="transferDescription">Description</label>
-                    <textarea id="transferDescription" rows="3" placeholder="What is this transfer for?"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Confirm Transfer</button>
             </form>
+
+            <!-- Transfer Review Page -->
+            <div id="transferReviewSection" style="display:none;" class="form-container">
+                <h3>Transfer Summary</h3>
+                <div class="review-card">
+                    <div class="review-row">
+                        <span>Sender Account:</span>
+                        <strong id="reviewSender">-</strong>
+                    </div>
+                    <div class="review-row">
+                        <span>Transfer Type:</span>
+                        <strong id="reviewType">-</strong>
+                    </div>
+                    <div class="review-row">
+                        <span>Recipient Name:</span>
+                        <strong id="reviewRecipient">-</strong>
+                    </div>
+                    <div class="review-row">
+                        <span>Recipient Bank:</span>
+                        <strong id="reviewBank">-</strong>
+                    </div>
+                    <div class="review-row">
+                        <span>Account / IBAN:</span>
+                        <strong id="reviewAccount">-</strong>
+                    </div>
+                    <div class="review-row">
+                        <span>Transfer Amount:</span>
+                        <strong id="reviewAmount">-</strong>
+                    </div>
+                    <div class="review-row">
+                        <span>Fee (%):</span>
+                        <strong id="reviewFeePercent">-</strong>
+                    </div>
+                    <div class="review-row">
+                        <span>Fee Amount:</span>
+                        <strong id="reviewFeeAmount">-</strong>
+                    </div>
+                    <div class="review-row review-total">
+                        <span>Total to be Debited:</span>
+                        <strong id="reviewTotal">-</strong>
+                    </div>
+                    <div class="review-row">
+                        <span>Reference:</span>
+                        <span id="reviewReference">-</span>
+                    </div>
+                    <div class="review-row">
+                        <span>Notes:</span>
+                        <span id="reviewNotes">-</span>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="editTransferBtn" class="btn btn-secondary btn-full">Edit Details</button>
+                    <button type="submit" form="transferForm" id="confirmTransferBtn" class="btn btn-primary btn-full">Confirm & Execute</button>
+                </div>
+            </div>
         </section>
 
         <!-- Add Funds Page -->
@@ -462,7 +694,202 @@
                 <h2>Card Management</h2>
             </div>
             <div class="form-container">
-                <p>Manage your debit/credit cards here (placeholder).</p>
+                <!-- No Card / Add Card View -->
+                <div id="noCardView" class="card-section">
+                    <div class="empty-state">
+                        <div style="font-size: 48px; margin-bottom: 16px;">💳</div>
+                        <p>You don't have any cards yet.</p>
+                        <button id="addCardBtn" class="btn btn-primary btn-full" style="margin-top: 12px;">Add Card</button>
+                    </div>
+                </div>
+
+                <!-- Add Card Form -->
+                <div id="addCardView" style="display:none;">
+                    <h3>Add Card</h3>
+                    <form id="addCardForm">
+                        <div class="form-group">
+                            <label for="cardholderName">Cardholder Name *</label>
+                            <input type="text" id="cardholderName" required placeholder="John Doe">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cardType">Card Type *</label>
+                                <select id="cardType" required>
+                                    <option value="">-- Select --</option>
+                                    <option value="debit">Debit Card</option>
+                                    <option value="credit">Credit Card</option>
+                                    <option value="virtual">Virtual Card</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number *</label>
+                                <input type="text" id="cardNumber" required placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cardExpiry">Expiry Date (MM/YY) *</label>
+                                <input type="text" id="cardExpiry" required placeholder="12/28" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label for="cardCVV">CVV *</label>
+                                <input type="password" id="cardCVV" required placeholder="123" maxlength="4">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="billingAddress">Billing Address</label>
+                            <input type="text" id="billingAddress" placeholder="123 Main St, City, State 12345">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" id="confirmAddCardBtn" class="btn btn-primary btn-full">Add Card</button>
+                            <button type="button" id="cancelAddCardBtn" class="btn btn-secondary btn-full">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Card Overview (Active Card) -->
+                <div id="cardOverviewView" style="display:none;">
+                    <!-- Card Image -->
+                    <div class="card-image">
+                        <div class="card-header">
+                            <span id="cardTypeDisplay">Debit Card</span>
+                            <span id="cardStatusDisplay" class="card-status active">Active</span>
+                        </div>
+                        <div class="card-content">
+                            <div id="cardNumberDisplay" class="card-number">•••• •••• •••• 1234</div>
+                            <div class="card-details">
+                                <div>
+                                    <small>Card Holder</small>
+                                    <div id="cardNameDisplay">John Doe</div>
+                                </div>
+                                <div>
+                                    <small>Expires</small>
+                                    <div id="cardExpiryDisplay">12/28</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Details Section -->
+                    <div class="card-section">
+                        <h3>Card Details</h3>
+                        <div class="detail-row">
+                            <span>Full Card Number</span>
+                            <div class="flexible-content">
+                                <input type="password" id="fullCardNumberInput" readonly style="width:100%; margin-right:8px;">
+                                <button id="copyCardBtn" class="btn btn-sm">Copy</button>
+                                <button id="revealCardBtn" class="btn btn-sm">Reveal</button>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <span>CVV/Security Code</span>
+                            <input type="password" id="cvvDisplay" readonly placeholder="•••" style="width:100%;">
+                        </div>
+                        <div class="detail-row">
+                            <span>Expiry Date</span>
+                            <span id="expiryDetailsDisplay">12/28</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Billing Address</span>
+                            <span id="billingAddressDisplay">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Card Controls -->
+                    <div class="card-section">
+                        <h3>Card Controls</h3>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label for="freezeToggle">
+                                    <input type="checkbox" id="freezeToggle">
+                                    Freeze/Unfreeze Card
+                                </label>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label for="onlinePaymentsToggle">
+                                    <input type="checkbox" id="onlinePaymentsToggle" checked>
+                                    Enable Online Payments
+                                </label>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label for="intlTransactionsToggle">
+                                    <input type="checkbox" id="intlTransactionsToggle" checked>
+                                    Enable International Transactions
+                                </label>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label for="atmWithdrawalsToggle">
+                                    <input type="checkbox" id="atmWithdrawalsToggle" checked>
+                                    Enable ATM Withdrawals
+                                </label>
+                            </div>
+                        </div>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <label for="contactlessToggle">
+                                    <input type="checkbox" id="contactlessToggle" checked>
+                                    Enable Contactless Payments
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Features -->
+                    <div class="card-section">
+                        <h3>Security Features</h3>
+                        <button id="changeCardPinBtn" class="btn btn-secondary btn-full">Change Card PIN</button>
+                        <button id="setupTransactionNotificationsBtn" class="btn btn-secondary btn-full" style="margin-top:8px;">Setup Transaction Notifications</button>
+                    </div>
+
+                    <!-- Card Management -->
+                    <div class="card-section">
+                        <h3>Card Management</h3>
+                        <button id="orderNewCardBtn" class="btn btn-secondary btn-full">Order New Card</button>
+                        <button id="requestReplacementBtn" class="btn btn-secondary btn-full" style="margin-top:8px;">Request Replacement Card</button>
+                        <button id="reportLostStokenBtn" class="btn btn-danger btn-full" style="margin-top:8px;">Report Lost / Stolen</button>
+                        <button id="renameCardBtn" class="btn btn-secondary btn-full" style="margin-top:8px;">Rename Card</button>
+                    </div>
+
+                    <!-- Spending Limits -->
+                    <div class="card-section">
+                        <h3>Spending Limits</h3>
+                        <div class="form-group">
+                            <label for="dailySpendingLimit">Daily Spending Limit ($)</label>
+                            <input type="number" id="dailySpendingLimit" min="0" step="0.01" placeholder="5000.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="atmWithdrawalLimit">ATM Withdrawal Limit ($)</label>
+                            <input type="number" id="atmWithdrawalLimit" min="0" step="0.01" placeholder="1000.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="onlinePurchaseLimit">Online Purchase Limit ($)</label>
+                            <input type="number" id="onlinePurchaseLimit" min="0" step="0.01" placeholder="2000.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardCurrency">Currency</label>
+                            <select id="cardCurrency">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                            </select>
+                        </div>
+                        <button id="saveLimitsBtn" class="btn btn-primary btn-full" style="margin-top:12px;">Save Limits</button>
+                    </div>
+
+                    <!-- Card Transactions -->
+                    <div class="card-section">
+                        <h3>Recent Card Transactions</h3>
+                        <div id="cardTransactionsList" class="transaction-list">
+                            <p class="empty-state">No transactions yet</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -492,25 +919,25 @@
         <nav id="navMenu" class="nav-menu">
             <button id="closeMenuBtn" class="btn-close">✕</button>
             <ul>
-                <li><a href="#" id="navDashboard" class="nav-link">Dashboard</a></li>
-                <li><a href="#" id="navAccounts" class="nav-link">Accounts</a></li>
-                <li><a href="#" id="navTransactions" class="nav-link">Transactions</a></li>
-                <li><a href="#" id="navTransfers" class="nav-link">Transfers</a></li>
-                <li><a href="#" id="navPayments" class="nav-link">Payments</a></li>
-                <li><a href="#" id="navCards" class="nav-link">Cards</a></li>
-                <li><a href="#" id="navBeneficiaries" class="nav-link">Beneficiaries</a></li>
-                <li><a href="#" id="navInvestments" class="nav-link">Investments</a></li>
-                <li><a href="#" id="navForex" class="nav-link">Currency Exchange (Forex)</a></li>
-                <li><a href="#" id="navLoans" class="nav-link">Loans</a></li>
-                <li><a href="#" id="navStatements" class="nav-link">Statements</a></li>
-                <li><a href="#" id="navNotifications" class="nav-link">Notifications</a></li>
-                <li><a href="#" id="navMessages" class="nav-link">Messages</a></li>
-                <li><a href="#" id="navSecurity" class="nav-link">Security Center</a></li>
-                <li><a href="#" id="navDocuments" class="nav-link">Documents</a></li>
-                <li><a href="#" id="navProfile" class="nav-link">Profile</a></li>
-                <li><a href="#" id="navSettings" class="nav-link">Settings</a></li>
-                <li><a href="#" id="navSupport" class="nav-link">Support / Help</a></li>
-                <li><a href="#" id="navLogout" class="nav-link">Logout</a></li>
+                <li><a href="#" id="navDashboard" class="nav-link" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#" id="navAccounts" class="nav-link" data-page="accounts">Accounts</a></li>
+                <li><a href="#" id="navTransactions" class="nav-link" data-page="transactions">Transactions</a></li>
+                <li><a href="#" id="navTransfers" class="nav-link" data-page="transfers">Transfers</a></li>
+                <li><a href="#" id="navPayments" class="nav-link" data-page="payments">Payments</a></li>
+                <li><a href="#" id="navCards" class="nav-link" data-page="cards">Cards</a></li>
+                <li><a href="#" id="navBeneficiaries" class="nav-link" data-page="beneficiaries">Beneficiaries</a></li>
+                <li><a href="#" id="navInvestments" class="nav-link" data-page="investment">Investments</a></li>
+                <li><a href="#" id="navForex" class="nav-link" data-page="forex">Currency Exchange (Forex)</a></li>
+                <li><a href="#" id="navLoans" class="nav-link" data-page="loan">Loans</a></li>
+                <li><a href="#" id="navStatements" class="nav-link" data-page="statements">Statements</a></li>
+                <li><a href="#" id="navNotifications" class="nav-link" data-page="notifications">Notifications</a></li>
+                <li><a href="#" id="navMessages" class="nav-link" data-page="messages">Messages</a></li>
+                <li><a href="#" id="navSecurity" class="nav-link" data-page="securityCenter">Security Center</a></li>
+                <li><a href="#" id="navDocuments" class="nav-link" data-page="documents">Documents</a></li>
+                <li><a href="#" id="navProfile" class="nav-link" data-page="profile">Profile</a></li>
+                <li><a href="#" id="navSettings" class="nav-link" data-page="settings">Settings</a></li>
+                <li><a href="#" id="navSupport" class="nav-link" data-page="support">Support / Help</a></li>
+                <li><a href="#" id="navLogout" class="nav-link" data-page="logout">Logout</a></li>
             </ul>
         </nav>
     </div>
@@ -518,6 +945,10 @@
     <!-- Notification Container -->
     <div id="notificationContainer" class="notification-container"></div>
 
+    <!-- Chart.js CDN for dashboards -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="transfer-handler.js" defer></script>
+    <script src="card-handler.js" defer></script>
     <script src="script.js" defer></script>
 </body>
 </html>

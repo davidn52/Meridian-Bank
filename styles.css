@@ -536,6 +536,8 @@ legend {
     z-index: 100;
     transition: right 0.3s ease;
     padding-top: 60px;
+    display: flex;
+    flex-direction: column;
 }
 
 .nav-menu.active {
@@ -555,6 +557,15 @@ legend {
 
 .nav-menu ul {
     list-style: none;
+}
+
+/* make nav list scrollable when content overflows */
+.nav-menu ul {
+    margin: 0;
+    padding: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .nav-menu li {
@@ -637,6 +648,48 @@ legend {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    /* make nav menu cover most of the screen on small devices */
+    .nav-menu {
+        width: 80%;
+        right: -80%;
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+
+/* Charts */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.chart-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.chart-card label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.chart-card canvas {
+    width: 100% !important;
+    height: 200px !important;
+}
     .page-header,
     .app-header {
         padding: 12px;
