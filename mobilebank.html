@@ -1065,7 +1065,7 @@
                         <p class="investment-subtitle">Monitor performance, explore asset classes, place orders, and manage funding from a single investment workspace.</p>
                     </div>
                     <div class="investment-action-row">
-                        <button class="btn btn-primary">Invest Now</button>
+                        <button id="toInvestFlowBtn" class="btn btn-primary">Invest Now</button>
                         <button class="btn btn-secondary">View Portfolio</button>
                         <button class="btn btn-secondary">Add to Watchlist</button>
                     </div>
@@ -1432,6 +1432,295 @@
                                 <div class="setting-row"><span>Risk Profile Setup</span><strong>Moderate</strong></div>
                                 <div class="setting-row"><span>Tax Information</span><strong>Updated</strong></div>
                             </div>
+                        </section>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- Invest Flow Page -->
+        <section id="investFlowPage" class="page">
+            <div class="page-header">
+                <button id="backFromInvestFlowBtn" class="btn-back" aria-label="Go back">â† Back</button>
+                <h2>Invest Now</h2>
+            </div>
+            <div class="form-container invest-flow-page">
+                <div class="invest-flow-hero">
+                    <div>
+                        <p class="invest-flow-eyebrow">Investment Order</p>
+                        <h3>Select an asset, configure the order, and confirm securely.</h3>
+                        <p class="invest-flow-subtitle">Everything you need to review an investment before execution, including pricing, risk, funding source, fees, compliance checks, and security verification.</p>
+                    </div>
+                </div>
+
+                <div class="invest-flow-layout">
+                    <div class="invest-flow-main">
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Investment Selection</p>
+                                    <h3>Choose What to Invest In</h3>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="investAssetType">Asset Type Selection</label>
+                                    <select id="investAssetType">
+                                        <option>Stocks</option>
+                                        <option>Cryptocurrency</option>
+                                        <option>Bonds</option>
+                                        <option>ETFs</option>
+                                        <option>Mutual Funds</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="investAssetSearch">Search Bar</label>
+                                    <input id="investAssetSearch" type="text" value="Apple Inc. (AAPL)" placeholder="Find specific asset">
+                                </div>
+                            </div>
+                            <div class="settings-grid">
+                                <div class="setting-card"><span>Trending / Popular Investments</span><p>NVDA, BTC, VOO, GLD</p></div>
+                                <div class="setting-card"><span>Recommended Investments</span><p>Balanced Growth ETF and Treasury Bond Ladder</p></div>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Investment Details</p>
+                                    <h3>Selected Asset Snapshot</h3>
+                                </div>
+                            </div>
+                            <div class="settings-grid">
+                                <div class="setting-card"><span>Current Price</span><p>$194.82</p></div>
+                                <div class="setting-card"><span>Risk Level</span><p class="negative">Medium</p></div>
+                                <div class="setting-card"><span>Expected Returns</span><p>Estimated 9.2% annualized</p></div>
+                                <div class="setting-card"><span>Asset Description</span><p>Large-cap technology stock with strong earnings momentum and recurring services revenue.</p></div>
+                            </div>
+                            <div class="chart-panel" style="margin-top: 12px;">
+                                <div class="chart-grid">
+                                    <span style="height: 34%;"></span>
+                                    <span style="height: 41%;"></span>
+                                    <span style="height: 58%;"></span>
+                                    <span style="height: 52%;"></span>
+                                    <span style="height: 68%;"></span>
+                                    <span style="height: 73%;"></span>
+                                    <span style="height: 88%;"></span>
+                                    <span style="height: 100%;"></span>
+                                </div>
+                                <div class="chart-axis">
+                                    <span>1W</span>
+                                    <span>2W</span>
+                                    <span>3W</span>
+                                    <span>1M</span>
+                                    <span>2M</span>
+                                    <span>3M</span>
+                                    <span>6M</span>
+                                    <span>1Y</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Amount Input</p>
+                                    <h3>Define How Much to Invest</h3>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="investAmount">Investment Amount Field</label>
+                                    <input id="investAmount" type="number" value="2500" min="100" step="50">
+                                </div>
+                                <div class="form-group">
+                                    <label for="investCurrency">Currency Selector</label>
+                                    <select id="investCurrency">
+                                        <option>USD</option>
+                                        <option>EUR</option>
+                                        <option>GBP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="settings-grid">
+                                <div class="setting-card"><span>Minimum Investment Limit</span><p>$100.00</p></div>
+                                <div class="setting-card"><span>Available Balance Display</span><p>$9,320.50 available</p></div>
+                            </div>
+                            <div class="settings-actions">
+                                <button class="btn btn-secondary">Invest All</button>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Order Configuration</p>
+                                    <h3>Customize Execution</h3>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="investOrderType">Order Type</label>
+                                    <select id="investOrderType">
+                                        <option>Market Order</option>
+                                        <option>Limit Order</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="investSetPrice">Set Price</label>
+                                    <input id="investSetPrice" type="number" value="193.50" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="investUnits">Quantity / Units</label>
+                                    <input id="investUnits" type="number" value="12.83" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="investAutoToggle">Auto-Invest Toggle</label>
+                                    <select id="investAutoToggle">
+                                        <option>Disabled</option>
+                                        <option>Weekly</option>
+                                        <option>Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Fees &amp; Charges</p>
+                                    <h3>Review Cost Breakdown</h3>
+                                </div>
+                            </div>
+                            <div class="settings-grid">
+                                <div class="setting-card"><span>Transaction Fee</span><p>$4.99</p></div>
+                                <div class="setting-card"><span>Service Charges</span><p>$2.50</p></div>
+                                <div class="setting-card"><span>Exchange Fees</span><p>$0.00</p></div>
+                                <div class="setting-card"><span>Total Cost Summary</span><p>$2,507.49</p></div>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Funding Source</p>
+                                    <h3>Choose Where Funds Come From</h3>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="investFundingAccount">Select Bank Account</label>
+                                    <select id="investFundingAccount">
+                                        <option>Checking Account - $4,660.25</option>
+                                        <option>Savings Account - $4,660.25</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="investFundingWallet">Select Wallet / Investment Balance</label>
+                                    <select id="investFundingWallet">
+                                        <option>Investment Wallet - $1,500.00</option>
+                                        <option>USD Cash Balance - $780.00</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="settings-actions">
+                                <button class="btn btn-secondary">Add Funds</button>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Risk Acknowledgment</p>
+                                    <h3>Compliance and Safety Check</h3>
+                                </div>
+                            </div>
+                            <div class="invest-warning">
+                                Market prices can move quickly. Past performance does not guarantee future returns, and you may lose part or all of your capital.
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="investTermsCheck" checked>
+                                <label for="investTermsCheck">I agree to the investment terms and conditions.</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="investSuitabilityCheck" checked>
+                                <label for="investSuitabilityCheck">I confirm this investment matches my suitability and risk profile.</label>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Review &amp; Confirmation</p>
+                                    <h3>Final Investment Review</h3>
+                                </div>
+                            </div>
+                            <div class="settings-grid">
+                                <div class="setting-card"><span>Investment Summary</span><p>Buy $2,500 of Apple Inc. from checking account.</p></div>
+                                <div class="setting-card"><span>Estimated Returns Preview</span><p>Projected yearly gain: $230.00 to $310.00</p></div>
+                            </div>
+                            <div class="settings-actions">
+                                <button class="btn btn-secondary">Edit</button>
+                                <button class="btn btn-primary">Confirm Investment</button>
+                                <button class="btn btn-secondary">Cancel</button>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Security Verification</p>
+                                    <h3>Verify Before Execution</h3>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="investOtp">OTP Verification</label>
+                                    <input id="investOtp" type="text" value="482913">
+                                </div>
+                                <div class="form-group">
+                                    <label for="investPin">Transaction PIN</label>
+                                    <input id="investPin" type="password" value="1234">
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Success / Confirmation</p>
+                                    <h3>Investment Ready Confirmation</h3>
+                                </div>
+                            </div>
+                            <div class="settings-grid">
+                                <div class="setting-card"><span>Transaction Success Message</span><p>Your investment order is ready for processing.</p></div>
+                                <div class="setting-card"><span>Reference ID</span><p>INV-2026-048291</p></div>
+                            </div>
+                            <div class="settings-actions">
+                                <button class="btn btn-primary">View Portfolio</button>
+                                <button class="btn btn-secondary">Download Receipt</button>
+                                <button class="btn btn-secondary">Share Confirmation</button>
+                            </div>
+                        </section>
+                    </div>
+
+                    <aside class="invest-flow-side">
+                        <section class="invest-flow-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="invest-flow-eyebrow">Smart Features</p>
+                                    <h3>Advanced Guidance</h3>
+                                </div>
+                            </div>
+                            <ul class="feature-list">
+                                <li>Portfolio Impact Preview<span>Tech exposure rises from 18% to 22%</span></li>
+                                <li>Diversification Suggestions<span>Add bonds or global ETFs to reduce concentration</span></li>
+                                <li>Auto-Rebalancing Option<span>Quarterly rebalancing available</span></li>
+                                <li>Save as Favorite Investment<span>Track this asset faster next time</span></li>
+                                <li>Set Price Alerts<span>Notify at $190 buy zone and $210 target</span></li>
+                            </ul>
                         </section>
                     </aside>
                 </div>

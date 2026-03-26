@@ -1086,6 +1086,72 @@ legend {
     letter-spacing: 0.04em;
 }
 
+/* Invest Flow Page */
+.invest-flow-page {
+    background: linear-gradient(180deg, #f7fbff 0%, #ffffff 26%);
+}
+
+.invest-flow-hero {
+    background: linear-gradient(135deg, #0b3b66 0%, #2563eb 58%, #60a5fa 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-lg);
+}
+
+.invest-flow-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.82;
+    margin-bottom: 8px;
+}
+
+.invest-flow-hero h3,
+.invest-flow-card h3 {
+    font-size: 22px;
+    line-height: 1.25;
+    margin-bottom: 8px;
+}
+
+.invest-flow-subtitle {
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 680px;
+}
+
+.invest-flow-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 0.9fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.invest-flow-main,
+.invest-flow-side {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.invest-flow-card {
+    background: var(--bg-primary);
+    border: 1px solid rgba(37, 99, 235, 0.16);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+}
+
+.invest-warning {
+    padding: 14px;
+    border-radius: 14px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    margin-bottom: 14px;
+    font-size: 14px;
+}
+
 /* Loan Page */
 .loan-page {
     background: linear-gradient(180deg, #fffdf7 0%, #ffffff 26%);
@@ -1347,6 +1413,7 @@ legend {
     .loan-layout,
     .loan-calculator-grid,
     .loan-detail-grid,
+    .invest-flow-layout,
     .settings-grid {
         grid-template-columns: 1fr;
     }
@@ -1361,6 +1428,7 @@ legend {
 
     .investment-hero,
     .investment-card,
+    .invest-flow-card,
     .loan-hero,
     .loan-card {
         padding: 16px;
@@ -1369,6 +1437,8 @@ legend {
 
     .investment-hero h3,
     .investment-card h3,
+    .invest-flow-hero h3,
+    .invest-flow-card h3,
     .loan-hero h3,
     .loan-card h3 {
         font-size: 20px;

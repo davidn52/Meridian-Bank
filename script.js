@@ -30,6 +30,7 @@ const pageMap = new Map([
     ['forex', 'forexPage'],
     ['cardManagement', 'cardManagementPage'],
     ['investment', 'investmentPage'],
+    ['investFlow', 'investFlowPage'],
     ['loan', 'loanPage'],
     // placeholder page ids for nav entries (sections may be added later)
     ['accounts', 'accountsPage'],
@@ -819,6 +820,7 @@ function attachBackButtons() {
         { id: 'backFromForexBtn', page: 'dashboard' },
         { id: 'backFromCardBtn', page: 'dashboard' },
         { id: 'backFromInvestmentBtn', page: 'dashboard' },
+        { id: 'backFromInvestFlowBtn', page: 'investment' },
         { id: 'backFromLoanBtn', page: 'dashboard' },
     ];
 
@@ -844,6 +846,7 @@ function attachPageLinks() {
         { id: 'toAddFundsBtn', page: 'addFunds' },
         { id: 'toCardMgmtBtn', page: 'cardManagement' },
         { id: 'toInvestmentBtn', page: 'investment' },
+        { id: 'toInvestFlowBtn', page: 'investFlow' },
         { id: 'toLoanBtn', page: 'loan' },
         { id: 'toForexBtn', page: 'forex' },
         { id: 'toHistoryBtn', page: 'transactionHistory' },
