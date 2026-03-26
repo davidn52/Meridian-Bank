@@ -234,8 +234,19 @@
                 <!-- Account overview -->
             <div class="account-overview">
                 <div class="overview-balance">
-                    <label>Total Balance</label>
-                    <h2 id="dashboardBalance">$0.00</h2>
+                    <label id="dashboardWelcomeLabel">Welcome</label>
+                    <h2 id="dashboardUserName">Customer Name</h2>
+                    <div class="balance-breakdown">
+                        <div class="balance-item">
+                            <span>Checking Available</span>
+                            <strong id="dashboardCheckingBalance">$0.00</strong>
+                        </div>
+                        <div class="balance-item">
+                            <span>Savings Available</span>
+                            <strong id="dashboardSavingsBalance">$0.00</strong>
+                        </div>
+                    </div>
+                    <p class="overview-total">Total Available Balance <strong id="dashboardBalance">$0.00</strong></p>
                 </div>
                 <div class="overview-linked">
                     <label>Linked Accounts</label>
@@ -591,8 +602,155 @@
                 <h2>Settings</h2>
             </div>
             <div class="settings-container">
+                <div class="settings-profile">
+                    <div class="settings-avatar" id="settingsAvatar">MB</div>
+                    <div>
+                        <h3 id="settingFullName">Meridian Customer</h3>
+                        <p id="settingAccountStatusSummary">Account status: Active</p>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Personal Information</h3>
+                    <div class="settings-grid">
+                        <div class="setting-card"><span>Full Name</span><p id="settingName">â€”</p></div>
+                        <div class="setting-card"><span>Profile Picture / Avatar</span><p>Displayed in the header avatar</p></div>
+                        <div class="setting-card"><span>Date of Birth</span><p id="settingDob">â€”</p></div>
+                        <div class="setting-card"><span>Gender</span><p id="settingGender">Not provided</p></div>
+                        <div class="setting-card"><span>Nationality</span><p id="settingNationality">â€”</p></div>
+                        <div class="setting-card"><span>Residential Address</span><p id="settingResidentialAddress">â€”</p></div>
+                        <div class="setting-card"><span>Mailing Address</span><p id="settingMailingAddress">Same as residential</p></div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Contact Information</h3>
+                    <div class="settings-grid">
+                        <div class="setting-card"><span>Email Address</span><p id="settingEmail">â€”</p></div>
+                        <div class="setting-card"><span>Phone Number</span><p id="settingPhone">â€”</p></div>
+                        <div class="setting-card"><span>Alternative Contact Info</span><p id="settingAltContact">Not provided</p></div>
+                        <div class="setting-card"><span>Verify Email / Phone Status</span><p id="settingVerifyStatus">Email pending, phone verified</p></div>
+                    </div>
+                </div>
                 <div class="settings-section">
                     <h3>Account Information</h3>
+                    <div class="settings-grid">
+                        <div class="setting-card"><span>Account Number (masked)</span><p id="settingAccountNumber">â€”</p></div>
+                        <div class="setting-card"><span>Account Type</span><p id="settingAccountType">Offshore Checking</p></div>
+                        <div class="setting-card"><span>Account Status</span><p id="settingAccountStatus">Active</p></div>
+                        <div class="setting-card"><span>Linked Accounts</span><p id="settingLinkedAccounts">â€”</p></div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>KYC / Verification Section</h3>
+                    <div class="settings-grid">
+                        <div class="setting-card"><span>Identity Verification Status</span><p id="settingIdentityStatus">Pending review</p></div>
+                        <div class="setting-card"><span>Upload ID</span><p id="settingIdUpload">Passport / Driver's License required</p></div>
+                        <div class="setting-card"><span>Proof of Address Upload</span><p id="settingProofStatus">Awaiting verification</p></div>
+                        <div class="setting-card"><span>Verification Progress</span><p id="settingVerificationProgress">2 of 3 checks complete</p></div>
+                    </div>
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary">Upload ID</button>
+                        <button class="btn btn-secondary">Upload Proof of Address</button>
+                        <button class="btn btn-secondary">Re-submit Documents</button>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Security Settings</h3>
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary">Change Password</button>
+                        <button class="btn btn-secondary">Set / Change Transaction PIN</button>
+                        <button class="btn btn-secondary">Device Management</button>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="twoFactorToggle">
+                        <label for="twoFactorToggle">Enable / Disable 2-Factor Authentication (2FA)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="biometricToggle" checked>
+                        <label for="biometricToggle">Biometric Login</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="loginAlertsToggle" checked>
+                        <label for="loginAlertsToggle">Login Alerts</label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Notification Preferences</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notificationToggle" checked>
+                        <label for="notificationToggle">Email Notifications</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="smsAlertsToggle" checked>
+                        <label for="smsAlertsToggle">SMS Alerts</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="pushNotificationsToggle" checked>
+                        <label for="pushNotificationsToggle">Push Notifications</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="transactionAlertsToggle" checked>
+                        <label for="transactionAlertsToggle">Transaction Alerts Toggle</label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Privacy Settings</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="dataSharingToggle">
+                        <label for="dataSharingToggle">Data Sharing Preferences</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="marketingToggle">
+                        <label for="marketingToggle">Marketing Preferences</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="visibilityToggle" checked>
+                        <label for="visibilityToggle">Account Visibility Settings</label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Linked Services &amp; Integrations</h3>
+                    <div class="settings-grid">
+                        <div class="setting-card"><span>Linked Cards</span><p id="settingLinkedCards">1 active card linked</p></div>
+                        <div class="setting-card"><span>Linked Bank Accounts</span><p id="settingLinkedBanks">2 connected accounts</p></div>
+                        <div class="setting-card"><span>Third-party Payment Services</span><p id="settingThirdParty">PayPal and Apple Pay connected</p></div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Preferences &amp; Customization</h3>
+                    <div class="settings-grid">
+                        <div class="setting-card"><span>Language Selection</span><p id="settingLanguage">English</p></div>
+                        <div class="setting-card"><span>Currency Preference</span><p id="settingCurrencyPref">USD</p></div>
+                        <div class="setting-card"><span>Theme (Light / Dark Mode)</span><p id="settingTheme">Light Mode</p></div>
+                        <div class="setting-card"><span>Time Zone Settings</span><p id="settingTimeZone">Africa/Lagos</p></div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Documents &amp; Statements</h3>
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary">Download Account Statements</button>
+                        <button class="btn btn-secondary">Tax Documents</button>
+                        <button class="btn btn-secondary">Uploaded Files</button>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Support &amp; Help</h3>
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary">Contact Support</button>
+                        <button class="btn btn-secondary">Live Chat</button>
+                        <button class="btn btn-secondary">Help Center / FAQ</button>
+                        <button class="btn btn-secondary">Report an Issue</button>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Account Actions</h3>
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary">Deactivate Account</button>
+                        <button class="btn btn-danger">Close Account</button>
+                        <button class="btn btn-danger" id="logoutAllDevicesBtn">Logout from All Devices</button>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Personal Information</h3>
                     <div class="setting-item">
                         <span>Email</span>
                         <p id="settingEmail">—</p>
@@ -899,8 +1057,384 @@
                 <button id="backFromInvestmentBtn" class="btn-back" aria-label="Go back">← Back</button>
                 <h2>Investments</h2>
             </div>
-            <div class="form-container">
-                <p>Investment options and portfolio (placeholder).</p>
+            <div class="form-container investment-page">
+                <div class="investment-hero">
+                    <div>
+                        <p class="investment-eyebrow">Portfolio Summary</p>
+                        <h3>Build, track, and rebalance your wealth in one place.</h3>
+                        <p class="investment-subtitle">Monitor performance, explore asset classes, place orders, and manage funding from a single investment workspace.</p>
+                    </div>
+                    <div class="investment-action-row">
+                        <button class="btn btn-primary">Invest Now</button>
+                        <button class="btn btn-secondary">View Portfolio</button>
+                        <button class="btn btn-secondary">Add to Watchlist</button>
+                    </div>
+                </div>
+
+                <div class="investment-metrics">
+                    <div class="investment-card metric-card metric-card-primary">
+                        <span>Total Portfolio Value</span>
+                        <strong>$248,560.90</strong>
+                        <small>Across 18 active holdings</small>
+                    </div>
+                    <div class="investment-card metric-card">
+                        <span>Profit / Loss (P&amp;L)</span>
+                        <strong class="positive">+$18,420.30</strong>
+                        <small>Net gain this year</small>
+                    </div>
+                    <div class="investment-card metric-card">
+                        <span>Percentage Growth</span>
+                        <strong class="positive">+8.01%</strong>
+                        <small>Versus previous 12 months</small>
+                    </div>
+                    <div class="investment-card metric-card">
+                        <span>Asset Allocation</span>
+                        <strong>48 / 20 / 17 / 9 / 6</strong>
+                        <small>Stocks, ETFs, Bonds, Crypto, Commodities</small>
+                    </div>
+                </div>
+
+                <div class="investment-layout">
+                    <div class="investment-main">
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Performance</p>
+                                    <h3>Portfolio Performance Chart</h3>
+                                </div>
+                                <div class="chip-row">
+                                    <button class="time-chip active">Daily</button>
+                                    <button class="time-chip">Monthly</button>
+                                    <button class="time-chip">Yearly</button>
+                                </div>
+                            </div>
+                            <div class="chart-panel">
+                                <div class="chart-grid">
+                                    <span style="height: 32%;"></span>
+                                    <span style="height: 58%;"></span>
+                                    <span style="height: 40%;"></span>
+                                    <span style="height: 76%;"></span>
+                                    <span style="height: 64%;"></span>
+                                    <span style="height: 88%;"></span>
+                                    <span style="height: 72%;"></span>
+                                    <span style="height: 100%;"></span>
+                                </div>
+                                <div class="chart-axis">
+                                    <span>Mon</span>
+                                    <span>Tue</span>
+                                    <span>Wed</span>
+                                    <span>Thu</span>
+                                    <span>Fri</span>
+                                    <span>Sat</span>
+                                    <span>Sun</span>
+                                    <span>Today</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Investment Options</p>
+                                    <h3>Available Asset Classes</h3>
+                                </div>
+                            </div>
+                            <div class="option-grid">
+                                <div class="option-tile"><strong>Stocks / Shares</strong><span>Blue-chip and growth equities</span></div>
+                                <div class="option-tile"><strong>Mutual Funds</strong><span>Diversified professionally managed funds</span></div>
+                                <div class="option-tile"><strong>Bonds</strong><span>Government and corporate income products</span></div>
+                                <div class="option-tile"><strong>ETFs</strong><span>Index, sector, and thematic exchange-traded funds</span></div>
+                                <div class="option-tile"><strong>Cryptocurrency</strong><span>Major digital assets and stable allocations</span></div>
+                                <div class="option-tile"><strong>Commodities</strong><span>Gold, oil, and inflation hedges</span></div>
+                                <div class="option-tile"><strong>Fixed Deposits</strong><span>Low-volatility savings plans with predictable returns</span></div>
+                            </div>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Market Data</p>
+                                    <h3>Live Market Snapshot</h3>
+                                </div>
+                                <button class="btn btn-secondary">Refresh Data</button>
+                            </div>
+                            <div class="market-grid">
+                                <div class="market-stat">
+                                    <span>Stock Prices</span>
+                                    <strong>MERI 124.82</strong>
+                                    <small class="positive">+2.41%</small>
+                                </div>
+                                <div class="market-stat">
+                                    <span>Market Trends</span>
+                                    <strong>Bullish</strong>
+                                    <small>Tech and energy leading</small>
+                                </div>
+                                <div class="market-stat">
+                                    <span>Top Gainers</span>
+                                    <strong>NVDA, META, XOM</strong>
+                                    <small class="positive">Up to +6.2%</small>
+                                </div>
+                                <div class="market-stat">
+                                    <span>Top Losers</span>
+                                    <strong>TSLA, BABA, BTC</strong>
+                                    <small class="negative">Down to -3.4%</small>
+                                </div>
+                            </div>
+                            <div class="info-grid two-column">
+                                <div class="info-panel">
+                                    <h4>Watchlist</h4>
+                                    <ul class="investment-list">
+                                        <li><span>AAPL</span><strong class="positive">+1.9%</strong></li>
+                                        <li><span>BTC</span><strong class="negative">-0.8%</strong></li>
+                                        <li><span>SPY</span><strong class="positive">+0.4%</strong></li>
+                                        <li><span>GLD</span><strong class="positive">+0.7%</strong></li>
+                                    </ul>
+                                </div>
+                                <div class="info-panel">
+                                    <h4>Financial News Feed</h4>
+                                    <ul class="news-list">
+                                        <li>Global equities extend weekly gains on softer inflation data.</li>
+                                        <li>Energy stocks climb as oil prices rebound in late trading.</li>
+                                        <li>Bond yields ease after central bank signals a cautious pause.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Buy / Sell</p>
+                                    <h3>Place an Order</h3>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="investmentAsset">Investment Asset</label>
+                                    <select id="investmentAsset">
+                                        <option>Apple Inc. (AAPL)</option>
+                                        <option>Vanguard S&amp;P 500 ETF (VOO)</option>
+                                        <option>Bitcoin (BTC)</option>
+                                        <option>US Treasury Bond 10Y</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="orderType">Order Type</label>
+                                    <select id="orderType">
+                                        <option>Market Order</option>
+                                        <option>Limit Order</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="orderQuantity">Quantity</label>
+                                    <input id="orderQuantity" type="number" value="10" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pricePreview">Price Preview</label>
+                                    <input id="pricePreview" type="text" value="$1,948.20" readonly>
+                                </div>
+                            </div>
+                            <div class="trade-summary">
+                                <div><span>Estimated price</span><strong>$194.82 / unit</strong></div>
+                                <div><span>Transaction fees</span><strong>$4.99</strong></div>
+                                <div><span>Settlement</span><strong>T+2 business days</strong></div>
+                            </div>
+                            <div class="investment-action-row">
+                                <button class="btn btn-primary">Buy</button>
+                                <button class="btn btn-danger">Sell</button>
+                            </div>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Investment Details</p>
+                                    <h3>Selected Asset Overview</h3>
+                                </div>
+                            </div>
+                            <div class="detail-hero">
+                                <div>
+                                    <h4>Apple Inc. (AAPL)</h4>
+                                    <p>Consumer technology leader with strong cash flow, recurring services revenue, and regular capital return programs.</p>
+                                </div>
+                                <div class="risk-pill risk-medium">Risk Level: Moderate</div>
+                            </div>
+                            <div class="mini-chart">
+                                <span style="left: 0%; top: 66%;"></span>
+                                <span style="left: 12%; top: 52%;"></span>
+                                <span style="left: 24%; top: 58%;"></span>
+                                <span style="left: 36%; top: 36%;"></span>
+                                <span style="left: 48%; top: 42%;"></span>
+                                <span style="left: 60%; top: 28%;"></span>
+                                <span style="left: 72%; top: 20%;"></span>
+                                <span style="left: 84%; top: 14%;"></span>
+                                <span style="left: 100%; top: 10%;"></span>
+                            </div>
+                            <div class="info-grid">
+                                <div class="info-panel">
+                                    <h4>Historical Performance</h4>
+                                    <p>1D +0.9%</p>
+                                    <p>1M +4.2%</p>
+                                    <p>1Y +18.7%</p>
+                                </div>
+                                <div class="info-panel">
+                                    <h4>Dividend Information</h4>
+                                    <p>Quarterly dividend yield: 0.52%</p>
+                                    <p>Next estimated payout: Apr 18</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Transaction History</p>
+                                    <h3>Buy / Sell Activity</h3>
+                                </div>
+                                <button class="btn btn-secondary">Download Statements</button>
+                            </div>
+                            <div class="investment-table-wrap">
+                                <table class="investment-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Asset</th>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>P&amp;L</th>
+                                            <th>Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>AAPL</td>
+                                            <td>2026-03-20</td>
+                                            <td>$3,200.00</td>
+                                            <td class="positive">+$220.00</td>
+                                            <td>Buy</td>
+                                        </tr>
+                                        <tr>
+                                            <td>BTC</td>
+                                            <td>2026-03-17</td>
+                                            <td>$1,800.00</td>
+                                            <td class="negative">-$65.00</td>
+                                            <td>Sell</td>
+                                        </tr>
+                                        <tr>
+                                            <td>VOO</td>
+                                            <td>2026-03-12</td>
+                                            <td>$5,450.00</td>
+                                            <td class="positive">+$410.00</td>
+                                            <td>Buy</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+
+                    <aside class="investment-side">
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Watchlist</p>
+                                    <h3>Track Favorites</h3>
+                                </div>
+                            </div>
+                            <div class="investment-action-stack">
+                                <button class="btn btn-primary btn-full">Add to Watchlist</button>
+                                <button class="btn btn-secondary btn-full">Remove from Watchlist</button>
+                            </div>
+                            <div class="info-panel compact">
+                                <h4>Price Alerts</h4>
+                                <p>Notify me if BTC crosses $70,000 or if AAPL drops below $185.</p>
+                            </div>
+                            <div class="info-panel compact">
+                                <h4>Favorite Investments</h4>
+                                <div class="tag-row">
+                                    <span class="tag">AAPL</span>
+                                    <span class="tag">VOO</span>
+                                    <span class="tag">BTC</span>
+                                    <span class="tag">GLD</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Automated Investing</p>
+                                    <h3>Smart Tools</h3>
+                                </div>
+                            </div>
+                            <ul class="feature-list">
+                                <li>Auto-Invest Plans for salary-day allocations</li>
+                                <li>Recurring weekly and monthly investments</li>
+                                <li>Robo-Advisor suggestions based on goals</li>
+                                <li>Portfolio rebalancing when allocations drift</li>
+                            </ul>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Funding &amp; Withdrawal</p>
+                                    <h3>Move Money</h3>
+                                </div>
+                            </div>
+                            <div class="investment-action-stack">
+                                <button class="btn btn-primary btn-full">Add Funds</button>
+                                <button class="btn btn-secondary btn-full">Withdraw</button>
+                                <button class="btn btn-secondary btn-full">Transfer Between Accounts</button>
+                            </div>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Security Features</p>
+                                    <h3>Protect Transactions</h3>
+                                </div>
+                            </div>
+                            <ul class="feature-list">
+                                <li>Transaction PIN / Password confirmation</li>
+                                <li>2-Factor Authentication for order approvals</li>
+                                <li>Biometric verification on supported mobile devices</li>
+                            </ul>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Education &amp; Insights</p>
+                                    <h3>Learn Before You Invest</h3>
+                                </div>
+                            </div>
+                            <ul class="feature-list">
+                                <li>Investment tips tailored to beginner and advanced users</li>
+                                <li>Risk warnings before volatile trades</li>
+                                <li>Tutorials and guides for building a balanced portfolio</li>
+                                <li>Market analysis and sector outlook summaries</li>
+                            </ul>
+                        </section>
+
+                        <section class="investment-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="investment-eyebrow">Settings &amp; Preferences</p>
+                                    <h3>Customize Experience</h3>
+                                </div>
+                            </div>
+                            <div class="settings-list">
+                                <div class="setting-row"><span>Currency Selection</span><strong>USD</strong></div>
+                                <div class="setting-row"><span>Notification Settings</span><strong>Enabled</strong></div>
+                                <div class="setting-row"><span>Risk Profile Setup</span><strong>Moderate</strong></div>
+                                <div class="setting-row"><span>Tax Information</span><strong>Updated</strong></div>
+                            </div>
+                        </section>
+                    </aside>
+                </div>
             </div>
         </section>
 
@@ -910,8 +1444,271 @@
                 <button id="backFromLoanBtn" class="btn-back" aria-label="Go back">← Back</button>
                 <h2>Loans</h2>
             </div>
-            <div class="form-container">
-                <p>Apply for or view loan details (placeholder).</p>
+            <div class="form-container loan-page">
+                <div class="loan-hero">
+                    <div>
+                        <p class="loan-eyebrow">Loan Center</p>
+                        <h3>Manage applications, repayments, and approvals from one place.</h3>
+                        <p class="loan-subtitle">Track active loans, estimate repayments, upload documents, and follow approval progress without leaving your dashboard.</p>
+                    </div>
+                    <div class="loan-action-row">
+                        <button class="btn btn-primary">Apply for Loan</button>
+                        <button class="btn btn-secondary">Make Payment</button>
+                    </div>
+                </div>
+
+                <div class="loan-overview-grid">
+                    <div class="loan-card loan-summary-card">
+                        <span>Active Loans Summary</span>
+                        <strong>2 Active Facilities</strong>
+                        <small>Personal loan and auto loan currently in repayment</small>
+                    </div>
+                    <div class="loan-card loan-summary-card">
+                        <span>Outstanding Balance</span>
+                        <strong>$18,420.65</strong>
+                        <small>Across all active repayments</small>
+                    </div>
+                    <div class="loan-card loan-summary-card">
+                        <span>Next Payment Due</span>
+                        <strong>2026-04-05</strong>
+                        <small>Auto-debit scheduled in 10 days</small>
+                    </div>
+                    <div class="loan-card loan-summary-card">
+                        <span>Interest / Status</span>
+                        <strong>8.4% Fixed</strong>
+                        <small>Loan status: Active</small>
+                    </div>
+                </div>
+
+                <div class="loan-layout">
+                    <div class="loan-main">
+                        <section class="loan-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="loan-eyebrow">Loan Application</p>
+                                    <h3>Apply for a New Loan</h3>
+                                </div>
+                            </div>
+                            <div class="loan-action-row" style="margin-bottom: 16px;">
+                                <button class="btn btn-primary">Apply for Loan</button>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="loanType">Loan Type</label>
+                                    <select id="loanType">
+                                        <option>Personal Loan</option>
+                                        <option>Business Loan</option>
+                                        <option>Mortgage</option>
+                                        <option>Auto Loan</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="loanAmount">Loan Amount</label>
+                                    <input id="loanAmount" type="number" value="15000" min="1000" step="500">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="loanDuration">Loan Duration (Months)</label>
+                                    <select id="loanDuration">
+                                        <option>12</option>
+                                        <option>24</option>
+                                        <option>36</option>
+                                        <option>48</option>
+                                        <option>60</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="loanPurpose">Purpose of Loan</label>
+                                    <input id="loanPurpose" type="text" value="Business expansion and equipment purchase">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanDocuments">Upload Documents</label>
+                                <input id="loanDocuments" type="file" multiple>
+                                <small>ID, proof of income, bank statements, and supporting documents</small>
+                            </div>
+                        </section>
+
+                        <section class="loan-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="loan-eyebrow">Loan Calculator</p>
+                                    <h3>Estimate Monthly Repayment</h3>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="loanInterestRate">Interest Rate</label>
+                                    <input id="loanInterestRate" type="number" value="8.4" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="loanTermSlider">Loan Term Slider</label>
+                                    <input id="loanTermSlider" type="range" min="6" max="72" value="36">
+                                </div>
+                            </div>
+                            <div class="loan-calculator-grid">
+                                <div class="loan-calc-item">
+                                    <span>Monthly Payment (EMI)</span>
+                                    <strong>$470.25</strong>
+                                </div>
+                                <div class="loan-calc-item">
+                                    <span>Total Repayment</span>
+                                    <strong>$16,929.00</strong>
+                                </div>
+                                <div class="loan-calc-item">
+                                    <span>Total Interest</span>
+                                    <strong>$1,929.00</strong>
+                                </div>
+                                <div class="loan-calc-item">
+                                    <span>Interest Breakdown</span>
+                                    <strong>11.4% of total cost</strong>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="loan-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="loan-eyebrow">Loan Details</p>
+                                    <h3>Current Loan Information</h3>
+                                </div>
+                            </div>
+                            <div class="loan-detail-grid">
+                                <div class="info-panel">
+                                    <h4>Loan Amount Approved</h4>
+                                    <p>$12,500.00</p>
+                                </div>
+                                <div class="info-panel">
+                                    <h4>Interest Type</h4>
+                                    <p>Fixed Rate</p>
+                                </div>
+                                <div class="info-panel">
+                                    <h4>Total Interest Payable</h4>
+                                    <p>$1,245.75</p>
+                                </div>
+                                <div class="info-panel">
+                                    <h4>Start &amp; End Date</h4>
+                                    <p>2025-11-05 to 2028-11-05</p>
+                                </div>
+                            </div>
+                            <div class="info-panel" style="margin-top: 12px;">
+                                <h4>Repayment Schedule</h4>
+                                <ul class="loan-schedule-list">
+                                    <li><span>Apr 05, 2026</span><strong>$470.25</strong></li>
+                                    <li><span>May 05, 2026</span><strong>$470.25</strong></li>
+                                    <li><span>Jun 05, 2026</span><strong>$470.25</strong></li>
+                                </ul>
+                            </div>
+                        </section>
+
+                        <section class="loan-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="loan-eyebrow">Repayment</p>
+                                    <h3>Manage Loan Payments</h3>
+                                </div>
+                            </div>
+                            <div class="loan-action-row">
+                                <button class="btn btn-primary">Make Payment</button>
+                                <button class="btn btn-secondary">Auto-Debit Setup</button>
+                                <button class="btn btn-secondary">Early Repayment</button>
+                                <button class="btn btn-secondary">Partial Payment</button>
+                            </div>
+                            <div class="loan-history-table-wrap">
+                                <table class="loan-history-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Method</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2026-03-05</td>
+                                            <td>$470.25</td>
+                                            <td>Auto-debit</td>
+                                            <td class="positive">Successful</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2026-02-05</td>
+                                            <td>$470.25</td>
+                                            <td>Card payment</td>
+                                            <td class="positive">Successful</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2026-01-05</td>
+                                            <td>$470.25</td>
+                                            <td>Bank transfer</td>
+                                            <td class="positive">Successful</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+
+                    <aside class="loan-side">
+                        <section class="loan-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="loan-eyebrow">Status Tracking</p>
+                                    <h3>Application Progress</h3>
+                                </div>
+                            </div>
+                            <div class="status-pill status-pending">Application Status: Pending Review</div>
+                            <div class="timeline">
+                                <div class="timeline-step complete">
+                                    <strong>Submitted</strong>
+                                    <span>Application and documents received</span>
+                                </div>
+                                <div class="timeline-step complete">
+                                    <strong>KYC Review</strong>
+                                    <span>Identity and income checks completed</span>
+                                </div>
+                                <div class="timeline-step active">
+                                    <strong>Credit Assessment</strong>
+                                    <span>Underwriter currently reviewing your profile</span>
+                                </div>
+                                <div class="timeline-step">
+                                    <strong>Final Approval</strong>
+                                    <span>Decision and disbursement pending</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="loan-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="loan-eyebrow">Loan Status</p>
+                                    <h3>Notifications &amp; Updates</h3>
+                                </div>
+                            </div>
+                            <ul class="loan-update-list">
+                                <li>Income verification completed successfully.</li>
+                                <li>Collateral review not required for this application.</li>
+                                <li>Expected credit decision within 2 business days.</li>
+                            </ul>
+                        </section>
+
+                        <section class="loan-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="loan-eyebrow">Quick Facts</p>
+                                    <h3>Loan Snapshot</h3>
+                                </div>
+                            </div>
+                            <div class="settings-list">
+                                <div class="setting-row"><span>Loan Status</span><strong>Active</strong></div>
+                                <div class="setting-row"><span>Interest Rate</span><strong>8.4%</strong></div>
+                                <div class="setting-row"><span>Next Due Date</span><strong>2026-04-05</strong></div>
+                                <div class="setting-row"><span>Repayment Mode</span><strong>Auto-Debit</strong></div>
+                            </div>
+                        </section>
+                    </aside>
+                </div>
             </div>
         </section>
 
@@ -920,7 +1717,6 @@
             <button id="closeMenuBtn" class="btn-close">✕</button>
             <ul>
                 <li><a href="#" id="navDashboard" class="nav-link" data-page="dashboard">Dashboard</a></li>
-                <li><a href="#" id="navAccounts" class="nav-link" data-page="accounts">Accounts</a></li>
                 <li><a href="#" id="navTransactions" class="nav-link" data-page="transactions">Transactions</a></li>
                 <li><a href="#" id="navTransfers" class="nav-link" data-page="transfers">Transfers</a></li>
                 <li><a href="#" id="navPayments" class="nav-link" data-page="payments">Payments</a></li>
@@ -934,7 +1730,6 @@
                 <li><a href="#" id="navMessages" class="nav-link" data-page="messages">Messages</a></li>
                 <li><a href="#" id="navSecurity" class="nav-link" data-page="securityCenter">Security Center</a></li>
                 <li><a href="#" id="navDocuments" class="nav-link" data-page="documents">Documents</a></li>
-                <li><a href="#" id="navProfile" class="nav-link" data-page="profile">Profile</a></li>
                 <li><a href="#" id="navSettings" class="nav-link" data-page="settings">Settings</a></li>
                 <li><a href="#" id="navSupport" class="nav-link" data-page="support">Support / Help</a></li>
                 <li><a href="#" id="navLogout" class="nav-link" data-page="logout">Logout</a></li>

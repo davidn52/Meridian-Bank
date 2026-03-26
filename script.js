@@ -14,6 +14,9 @@ const app = {
     transactions: [],
 };
 
+const urlParams = new URLSearchParams(window.location.search);
+const isLandingPreview = urlParams.get('preview') === 'landing';
+
 const pageMap = new Map([
     ['welcome', 'welcomePage'],
     ['signup', 'signupPage'],
@@ -84,6 +87,9 @@ function showPage(pageName) {
         page.classList.add('active');
     }
 
+    if (pageName === 'dashboard') updateDashboard();
+    if (pageName === 'settings') updateSettings();
+
     // Close any open menus
     closeNavMenu();
 }
@@ -98,22 +104,80 @@ function generateAccountNumber() {
 }
 
 function getCurrentUser() {
+    if (isLandingPreview) return null;
     const storage = localStorage.getItem('currentUser');
     return storage ? JSON.parse(storage) : null;
 }
 
 function saveCurrentUser(userData) {
     app.currentUser = userData;
+    if (isLandingPreview) return;
     localStorage.setItem('currentUser', JSON.stringify(userData));
 }
 
 function loadUsers() {
+    if (isLandingPreview) {
+        app.users = {};
+        return;
+    }
     const storage = localStorage.getItem('users');
     app.users = storage ? JSON.parse(storage) : {};
 }
 
 function saveUsers() {
+    if (isLandingPreview) return;
     localStorage.setItem('users', JSON.stringify(app.users));
+}
+
+function getLandingPreviewUser() {
+    return {
+        email: 'preview@meridianbank.com',
+        firstName: 'Ava',
+        lastName: 'Stone',
+        phone: '+44 20 7946 0821',
+        accountNumber: 'ACC4839201746',
+        balance: 24850.75,
+        checkingBalance: 18640.55,
+        savingsBalance: 6210.20,
+        linkedAccounts: ['Primary checking', 'USD investment wallet', 'Travel savings'],
+        currencies: [
+            { code: 'USD', amount: 24850.75 },
+            { code: 'EUR', amount: 8240.40 },
+            { code: 'GBP', amount: 3120.18 }
+        ],
+        transactions: [
+            {
+                type: 'received',
+                amount: 4200.00,
+                description: 'Salary deposit',
+                date: '2026-03-24T09:00:00.000Z',
+            },
+            {
+                type: 'sent',
+                amount: 185.60,
+                description: 'Utility payment',
+                date: '2026-03-23T15:45:00.000Z',
+            },
+            {
+                type: 'received',
+                amount: 960.25,
+                description: 'Investment dividend',
+                date: '2026-03-22T12:10:00.000Z',
+            },
+            {
+                type: 'sent',
+                amount: 74.99,
+                description: 'Streaming subscription',
+                date: '2026-03-21T18:20:00.000Z',
+            },
+            {
+                type: 'sent',
+                amount: 520.00,
+                description: 'Transfer to savings',
+                date: '2026-03-20T08:35:00.000Z',
+            },
+        ],
+    };
 }
 
 function validateEmail(email) {
@@ -128,7 +192,7 @@ function validatePassword(password) {
 
 function initializeApp() {
     loadUsers();
-    app.currentUser = getCurrentUser();
+    app.currentUser = isLandingPreview ? getLandingPreviewUser() : getCurrentUser();
 
     if (app.currentUser) {
         showPage('dashboard');
@@ -140,13 +204,43 @@ function initializeApp() {
     attachEventListeners();
 }
 
+function getUserDisplayName(user) {
+    if (!user) return 'Customer';
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    return fullName || user.email || 'Customer';
+}
+
+function getAccountBalances(user) {
+    const totalFromStoredBalance = typeof user?.balance === 'number' ? user.balance : 0;
+    const hasChecking = typeof user?.checkingBalance === 'number';
+    const hasSavings = typeof user?.savingsBalance === 'number';
+    const checkingBalance = hasChecking
+        ? user.checkingBalance
+        : (hasSavings ? totalFromStoredBalance - user.savingsBalance : totalFromStoredBalance / 2);
+    const savingsBalance = hasSavings
+        ? user.savingsBalance
+        : (hasChecking ? totalFromStoredBalance - user.checkingBalance : totalFromStoredBalance / 2);
+    return {
+        checkingBalance,
+        savingsBalance,
+        totalBalance: checkingBalance + savingsBalance,
+    };
+}
+
 function updateDashboard() {
     if (!app.currentUser) return;
 
+    const userName = $('dashboardUserName');
+    const checkingBalanceEl = $('dashboardCheckingBalance');
+    const savingsBalanceEl = $('dashboardSavingsBalance');
     const balance = $('dashboardBalance');
     const acctNum = $('dashboardAcctNum');
+    const { checkingBalance, savingsBalance, totalBalance } = getAccountBalances(app.currentUser);
 
-    if (balance) balance.textContent = `$${(app.currentUser.balance || 0).toFixed(2)}`;
+    if (userName) userName.textContent = getUserDisplayName(app.currentUser);
+    if (checkingBalanceEl) checkingBalanceEl.textContent = `$${checkingBalance.toFixed(2)}`;
+    if (savingsBalanceEl) savingsBalanceEl.textContent = `$${savingsBalance.toFixed(2)}`;
+    if (balance) balance.textContent = `$${totalBalance.toFixed(2)}`;
     if (acctNum) acctNum.textContent = app.currentUser.accountNumber || '—';
 
     // linked accounts and currencies
@@ -265,8 +359,69 @@ function renderTransactions() {
 function updateSettings() {
     if (!app.currentUser) return;
 
+    const fullName = getUserDisplayName(app.currentUser);
+    const accountNumber = app.currentUser.accountNumber || '-';
+    const maskedAccountNumber = accountNumber.length > 4
+        ? `${'*'.repeat(Math.max(0, accountNumber.length - 4))}${accountNumber.slice(-4)}`
+        : accountNumber;
+    const addressParts = [app.currentUser.address, app.currentUser.city, app.currentUser.country].filter(Boolean);
+    const fullAddress = addressParts.length ? addressParts.join(', ') : '-';
+    const linkedAccounts = (app.currentUser.linkedAccounts || []).join(', ') || 'Primary checking';
+    const avatar = $('settingsAvatar');
+    const fullNameEl = $('settingFullName');
+    const name = $('settingName');
     const email = $('settingEmail');
     const phone = $('settingPhone');
+    const dob = $('settingDob');
+    const gender = $('settingGender');
+    const nationality = $('settingNationality');
+    const residentialAddress = $('settingResidentialAddress');
+    const mailingAddress = $('settingMailingAddress');
+    const altContact = $('settingAltContact');
+    const verifyStatus = $('settingVerifyStatus');
+    const accountNumberEl = $('settingAccountNumber');
+    const accountType = $('settingAccountType');
+    const accountStatus = $('settingAccountStatus');
+    const accountStatusSummary = $('settingAccountStatusSummary');
+    const linkedAccountsEl = $('settingLinkedAccounts');
+    const identityStatus = $('settingIdentityStatus');
+    const idUpload = $('settingIdUpload');
+    const proofAddress = $('settingProofStatus');
+    const verification = $('settingVerificationProgress');
+    const linkedCards = $('settingLinkedCards');
+    const linkedBanks = $('settingLinkedBanks');
+    const thirdParty = $('settingThirdParty');
+    const language = $('settingLanguage');
+    const currencyPref = $('settingCurrencyPref');
+    const theme = $('settingTheme');
+    const timeZone = $('settingTimeZone');
+
+    if (avatar) avatar.textContent = fullName.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
+    if (fullNameEl) fullNameEl.textContent = fullName;
+    if (name) name.textContent = fullName;
+    if (dob) dob.textContent = app.currentUser.dateOfBirth || '-';
+    if (gender) gender.textContent = app.currentUser.gender || 'Not provided';
+    if (nationality) nationality.textContent = app.currentUser.country || '-';
+    if (residentialAddress) residentialAddress.textContent = fullAddress;
+    if (mailingAddress) mailingAddress.textContent = app.currentUser.mailingAddress || fullAddress;
+    if (altContact) altContact.textContent = app.currentUser.altContact || 'Not provided';
+    if (verifyStatus) verifyStatus.textContent = `${app.currentUser.emailVerified ? 'Email verified' : 'Email pending'}, ${app.currentUser.phone ? 'phone verified' : 'phone missing'}`;
+    if (accountNumberEl) accountNumberEl.textContent = maskedAccountNumber;
+    if (accountType) accountType.textContent = app.currentUser.accountType || 'Offshore Checking';
+    if (accountStatus) accountStatus.textContent = app.currentUser.accountStatus || 'Active';
+    if (accountStatusSummary) accountStatusSummary.textContent = `Account status: ${app.currentUser.accountStatus || 'Active'}`;
+    if (linkedAccountsEl) linkedAccountsEl.textContent = linkedAccounts;
+    if (identityStatus) identityStatus.textContent = app.currentUser.identityStatus || (app.currentUser.kyc?.passportFile ? 'Submitted' : 'Pending upload');
+    if (idUpload) idUpload.textContent = app.currentUser.kyc?.passportFile ? 'Passport uploaded' : 'Passport / Driver\'s License required';
+    if (proofAddress) proofAddress.textContent = app.currentUser.kyc?.proofAddressFile ? 'Submitted' : 'Awaiting verification';
+    if (verification) verification.textContent = app.currentUser.kyc?.passportFile && app.currentUser.kyc?.proofAddressFile ? '3 of 3 checks complete' : '2 of 3 checks complete';
+    if (linkedCards) linkedCards.textContent = app.currentUser.card ? '1 active card linked' : 'No linked cards';
+    if (linkedBanks) linkedBanks.textContent = linkedAccounts;
+    if (thirdParty) thirdParty.textContent = app.currentUser.thirdPartyServices || 'PayPal and Apple Pay connected';
+    if (language) language.textContent = app.currentUser.language || 'English';
+    if (currencyPref) currencyPref.textContent = app.currentUser.currencyPreference || 'USD';
+    if (theme) theme.textContent = app.currentUser.theme || 'Light Mode';
+    if (timeZone) timeZone.textContent = app.currentUser.timeZone || 'Africa/Lagos';
 
     if (email) email.textContent = app.currentUser.email || '—';
     if (phone) phone.textContent = app.currentUser.phone || '—';
@@ -404,6 +559,8 @@ function handleSignup(e) {
         country: $('signupCountry').value.trim(),
         accountNumber: generateAccountNumber(),
         balance: 1000, // Starting balance
+        checkingBalance: 500,
+        savingsBalance: 500,
         transactions: [],
         // additional fields
         transactionPin: $('signupTransactionPin').value,
@@ -474,10 +631,12 @@ function handleLogin(e) {
 }
 
 function handleLogout() {
-    localStorage.removeItem('currentUser');
+    if (!isLandingPreview) {
+        localStorage.removeItem('currentUser');
+    }
     app.currentUser = null;
-    showPage('welcome');
     showNotification('Logged out', 'success');
+    window.location.href = 'meridianbank.html';
 }
 
 function handleForgotPassword(e) {
@@ -691,7 +850,6 @@ function attachPageLinks() {
         { id: 'navMenuBtn', page: 'navMenu' },
         // nav menu items
         { id: 'navDashboard', page: 'dashboard' },
-        { id: 'navAccounts', page: 'accounts' },
         { id: 'navTransactions', page: 'transactions' },
         { id: 'navTransfers', page: 'transfers' },
         { id: 'navPayments', page: 'payments' },
@@ -705,7 +863,6 @@ function attachPageLinks() {
         { id: 'navMessages', page: 'messages' },
         { id: 'navSecurity', page: 'securityCenter' },
         { id: 'navDocuments', page: 'documents' },
-        { id: 'navProfile', page: 'profile' },
         { id: 'navSettings', page: 'settings' },
         { id: 'navSupport', page: 'support' },
         { id: 'navLogout', page: 'logout' },

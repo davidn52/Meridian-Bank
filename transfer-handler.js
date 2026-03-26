@@ -58,10 +58,20 @@ function initTransferForm() {
         const senderSelect = $('senderAccount');
         senderSelect.innerHTML = '';
 
-        // If user has accounts array, use it; otherwise derive Current and Savings
+        // If user has accounts array, use it; otherwise derive Checking and Savings
         const accounts = app.currentUser.accounts && app.currentUser.accounts.length ? app.currentUser.accounts : [
-            { id: 'current', name: 'Current Account', balance: (app.currentUser.balance || 0) * 0.6, currency: 'USD' },
-            { id: 'savings', name: 'Savings Account', balance: (app.currentUser.balance || 0) * 0.4, currency: 'USD' }
+            {
+                id: 'checking',
+                name: 'Checking Account',
+                balance: typeof app.currentUser.checkingBalance === 'number' ? app.currentUser.checkingBalance : (app.currentUser.balance || 0) / 2,
+                currency: 'USD'
+            },
+            {
+                id: 'savings',
+                name: 'Savings Account',
+                balance: typeof app.currentUser.savingsBalance === 'number' ? app.currentUser.savingsBalance : (app.currentUser.balance || 0) / 2,
+                currency: 'USD'
+            }
         ];
 
         // attach to app for later use
