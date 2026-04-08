@@ -234,19 +234,20 @@
                 <!-- Account overview -->
             <div class="account-overview">
                 <div class="overview-balance">
-                    <label id="dashboardWelcomeLabel">Welcome</label>
-                    <h2 id="dashboardUserName">Customer Name</h2>
-                    <div class="balance-breakdown">
-                        <div class="balance-item">
-                            <span>Checking Available</span>
+                    <div class="balance-panel-header">
+                        <label id="dashboardWelcomeLabel">Welcome</label>
+                        <h2 id="dashboardUserName">Customer Name</h2>
+                    </div>
+                    <div class="balance-breakdown vertical">
+                        <div class="balance-item professional">
+                            <span>Checking Available Balance</span>
                             <strong id="dashboardCheckingBalance">$0.00</strong>
                         </div>
-                        <div class="balance-item">
-                            <span>Savings Available</span>
+                        <div class="balance-item professional">
+                            <span>Savings Balance</span>
                             <strong id="dashboardSavingsBalance">$0.00</strong>
                         </div>
                     </div>
-                    <p class="overview-total">Total Available Balance <strong id="dashboardBalance">$0.00</strong></p>
                 </div>
                 <div class="overview-linked">
                     <label>Linked Accounts</label>
@@ -326,6 +327,30 @@
                         <canvas id="portfolioChart" width="400" height="200"></canvas>
                     </div>
                 </div>
+            </div>
+
+            <button id="dashboardSupportFab" class="dashboard-support-fab" type="button" aria-label="Chat with support agent">
+                <span class="dashboard-support-fab-icon">?</span>
+                <span>Chat with Agent</span>
+            </button>
+
+            <div id="dashboardSupportMiniChat" class="dashboard-support-chat" hidden>
+                <div class="dashboard-support-chat-header">
+                    <div>
+                        <strong>Chat with Support Agent</strong>
+                        <p>Live support assistance</p>
+                    </div>
+                    <div class="dashboard-support-chat-actions">
+                        <button id="dashboardSupportOpenFull" class="btn btn-secondary" type="button">Open Help</button>
+                        <button id="dashboardSupportClose" class="btn btn-secondary" type="button" aria-label="Close support chat">Close</button>
+                    </div>
+                </div>
+                <div id="dashboardSupportMiniHistory" class="dashboard-support-mini-history"></div>
+                <div id="dashboardSupportMiniTyping" class="support-typing-indicator" hidden>Support is typing...</div>
+                <form id="dashboardSupportMiniForm" class="dashboard-support-mini-form">
+                    <input id="dashboardSupportMiniInput" type="text" placeholder="Ask support anything">
+                    <button class="btn btn-primary" type="submit">Send</button>
+                </form>
             </div>
         </section>
 
@@ -578,6 +603,20 @@
                 <h2>Add Funds</h2>
             </div>
             <form id="addFundsForm" class="form-container">
+                <div class="add-funds-account-panel">
+                    <div class="form-group">
+                        <label for="addFundsTargetAccount">Select Account Source *</label>
+                        <select id="addFundsTargetAccount" required>
+                            <option value="">Select an account...</option>
+                            <option value="checking">Checking Account</option>
+                            <option value="savings">Savings Account</option>
+                        </select>
+                    </div>
+                    <div class="add-funds-balance-preview">
+                        <span>Selected Account Balance</span>
+                        <strong id="addFundsSelectedBalance">$0.00</strong>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="addFundsAmount">Amount (USD) *</label>
                     <input type="number" id="addFundsAmount" min="0" step="0.01" required placeholder="0.00">
@@ -611,6 +650,10 @@
                 </div>
                 <div class="settings-section">
                     <h3>Personal Information</h3>
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary" id="editPersonalInfoBtn" type="button">Edit Personal Info</button>
+                        <button class="btn btn-secondary" id="editAddressInfoBtn" type="button">Edit Address</button>
+                    </div>
                     <div class="settings-grid">
                         <div class="setting-card"><span>Full Name</span><p id="settingName">â€”</p></div>
                         <div class="setting-card"><span>Profile Picture / Avatar</span><p>Displayed in the header avatar</p></div>
@@ -623,6 +666,9 @@
                 </div>
                 <div class="settings-section">
                     <h3>Contact Information</h3>
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary" id="editContactInfoBtn" type="button">Edit Contact Info</button>
+                    </div>
                     <div class="settings-grid">
                         <div class="setting-card"><span>Email Address</span><p id="settingEmail">â€”</p></div>
                         <div class="setting-card"><span>Phone Number</span><p id="settingPhone">â€”</p></div>
@@ -637,6 +683,9 @@
                         <div class="setting-card"><span>Account Type</span><p id="settingAccountType">Offshore Checking</p></div>
                         <div class="setting-card"><span>Account Status</span><p id="settingAccountStatus">Active</p></div>
                         <div class="setting-card"><span>Linked Accounts</span><p id="settingLinkedAccounts">â€”</p></div>
+                    </div>
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary" id="linkAccountBtn" type="button">Link Account</button>
                     </div>
                 </div>
                 <div class="settings-section">
@@ -718,10 +767,49 @@
                 <div class="settings-section">
                     <h3>Preferences &amp; Customization</h3>
                     <div class="settings-grid">
-                        <div class="setting-card"><span>Language Selection</span><p id="settingLanguage">English</p></div>
-                        <div class="setting-card"><span>Currency Preference</span><p id="settingCurrencyPref">USD</p></div>
-                        <div class="setting-card"><span>Theme (Light / Dark Mode)</span><p id="settingTheme">Light Mode</p></div>
-                        <div class="setting-card"><span>Time Zone Settings</span><p id="settingTimeZone">Africa/Lagos</p></div>
+                        <div class="setting-card setting-option-card">
+                            <span>Language Selection</span>
+                            <p id="settingLanguage">English</p>
+                            <button class="btn btn-secondary setting-option-trigger" id="settingLanguageBtn" type="button">Choose Language</button>
+                            <select id="settingLanguageSelect" class="setting-select">
+                                <option value="English">English</option>
+                                <option value="French">French</option>
+                                <option value="Spanish">Spanish</option>
+                                <option value="German">German</option>
+                            </select>
+                        </div>
+                        <div class="setting-card setting-option-card">
+                            <span>Currency Preference</span>
+                            <p id="settingCurrencyPref">USD</p>
+                            <button class="btn btn-secondary setting-option-trigger" id="settingCurrencyBtn" type="button">Choose Currency</button>
+                            <select id="settingCurrencySelect" class="setting-select">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="NGN">NGN</option>
+                            </select>
+                        </div>
+                        <div class="setting-card setting-option-card">
+                            <span>Theme (Light / Dark Mode)</span>
+                            <p id="settingTheme">Light Mode</p>
+                            <button class="btn btn-secondary setting-option-trigger" id="settingThemeBtn" type="button">Choose Theme</button>
+                            <select id="settingThemeSelect" class="setting-select">
+                                <option value="Light Mode">Light Mode</option>
+                                <option value="Dark Mode">Dark Mode</option>
+                                <option value="Ocean Blue">Ocean Blue</option>
+                            </select>
+                        </div>
+                        <div class="setting-card setting-option-card">
+                            <span>Time Zone Settings</span>
+                            <p id="settingTimeZone">Africa/Lagos</p>
+                            <button class="btn btn-secondary setting-option-trigger" id="settingTimeZoneBtn" type="button">Choose Time Zone</button>
+                            <select id="settingTimeZoneSelect" class="setting-select">
+                                <option value="Africa/Lagos">Africa/Lagos</option>
+                                <option value="America/New_York">America/New_York</option>
+                                <option value="Europe/London">Europe/London</option>
+                                <option value="Asia/Dubai">Asia/Dubai</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="settings-section">
@@ -1544,7 +1632,7 @@
                             </div>
                             <div class="settings-grid">
                                 <div class="setting-card"><span>Minimum Investment Limit</span><p>$100.00</p></div>
-                                <div class="setting-card"><span>Available Balance Display</span><p>$9,320.50 available</p></div>
+                                <div class="setting-card"><span>Available Balance Display</span><p id="investmentAvailableBalance">$0.00 available</p></div>
                             </div>
                             <div class="settings-actions">
                                 <button class="btn btn-secondary">Invest All</button>
@@ -1613,8 +1701,8 @@
                                 <div class="form-group">
                                     <label for="investFundingAccount">Select Bank Account</label>
                                     <select id="investFundingAccount">
-                                        <option>Checking Account - $4,660.25</option>
-                                        <option>Savings Account - $4,660.25</option>
+                                        <option value="checking">Checking Account - $0.00</option>
+                                        <option value="savings">Savings Account - $0.00</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -1995,6 +2083,344 @@
                                 <div class="setting-row"><span>Next Due Date</span><strong>2026-04-05</strong></div>
                                 <div class="setting-row"><span>Repayment Mode</span><strong>Auto-Debit</strong></div>
                             </div>
+                        </section>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- Beneficiaries Page -->
+        <section id="beneficiariesPage" class="page">
+            <div class="page-header">
+                <button id="backFromBeneficiariesBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Beneficiaries</h2>
+            </div>
+            <div class="form-container beneficiaries-page">
+                <div class="beneficiaries-shell">
+                    <section class="beneficiaries-card beneficiaries-list-panel">
+                        <div class="beneficiaries-panel-header">
+                            <div>
+                                <p class="beneficiaries-eyebrow">Beneficiary List</p>
+                                <h3>Saved Recipients</h3>
+                            </div>
+                            <button id="addBeneficiaryBtn" class="btn btn-primary" type="button">Add Beneficiary</button>
+                        </div>
+                        <div id="beneficiariesList" class="beneficiaries-list"></div>
+                    </section>
+
+                    <section class="beneficiaries-card beneficiary-detail-panel">
+                        <div id="beneficiaryDetailView" class="beneficiary-detail-view">
+                            <p class="empty-state">Select a beneficiary to view details.</p>
+                        </div>
+                    </section>
+                </div>
+
+                <section id="beneficiaryFormPanel" class="beneficiaries-card beneficiary-form-panel" hidden>
+                    <div class="beneficiaries-panel-header">
+                        <div>
+                            <p class="beneficiaries-eyebrow">Add New Beneficiary</p>
+                            <h3 id="beneficiaryFormTitle">Save Recipient</h3>
+                        </div>
+                        <button id="closeBeneficiaryFormBtn" class="btn btn-secondary" type="button">Close</button>
+                    </div>
+                    <form id="beneficiaryForm">
+                        <input type="hidden" id="beneficiaryEditId">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="beneficiaryRecipientName">Recipient Name</label>
+                                <input id="beneficiaryRecipientName" type="text" placeholder="Recipient full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="beneficiaryBankName">Bank Name</label>
+                                <input id="beneficiaryBankName" type="text" placeholder="Bank name">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="beneficiaryAccountNumber">Account Number / IBAN</label>
+                                <input id="beneficiaryAccountNumber" type="text" placeholder="Account number or IBAN">
+                            </div>
+                            <div class="form-group">
+                                <label for="beneficiarySwiftCode">SWIFT / BIC Code</label>
+                                <input id="beneficiarySwiftCode" type="text" placeholder="e.g. DEUTDEDD">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="beneficiaryBankAddress">Bank Address</label>
+                            <input id="beneficiaryBankAddress" type="text" placeholder="Full bank address">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="beneficiaryCountry">Country Selection</label>
+                                <select id="beneficiaryCountry">
+                                    <option value="US">United States</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="FR">France</option>
+                                    <option value="GB">United Kingdom</option>
+                                    <option value="IT">Italy</option>
+                                    <option value="ES">Spain</option>
+                                    <option value="NL">Netherlands</option>
+                                    <option value="BE">Belgium</option>
+                                    <option value="AT">Austria</option>
+                                    <option value="CH">Switzerland</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="beneficiaryFavorite">Tag</label>
+                                <select id="beneficiaryFavorite">
+                                    <option value="recent">Recent</option>
+                                    <option value="favorite">Favorite</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Save Beneficiary</button>
+                    </form>
+                </section>
+            </div>
+        </section>
+
+        <!-- Messages Page -->
+        <section id="messagesPage" class="page">
+            <div class="page-header">
+                <button id="backFromMessagesBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Messages</h2>
+            </div>
+            <div class="form-container messages-page">
+                <div class="messages-shell">
+                    <section class="messages-card messages-list-panel">
+                        <div class="messages-panel-header">
+                            <div>
+                                <p class="messages-eyebrow">Inbox</p>
+                                <h3>Message Center</h3>
+                            </div>
+                            <button id="newMessageBtn" class="btn btn-primary" type="button">New Message</button>
+                        </div>
+                        <div class="messages-tabs" id="messagesTabs">
+                            <button type="button" class="message-tab active" data-category="all">All Messages</button>
+                            <button type="button" class="message-tab" data-category="transactions">Transaction Alerts</button>
+                            <button type="button" class="message-tab" data-category="security">Security Alerts</button>
+                            <button type="button" class="message-tab" data-category="promotions">Promotions / Offers</button>
+                            <button type="button" class="message-tab" data-category="support">Support Conversations</button>
+                        </div>
+                        <div id="messagesList" class="messages-list"></div>
+                    </section>
+
+                    <section class="messages-card message-detail-panel">
+                        <div id="messageDetailView" class="message-detail-view">
+                            <p class="empty-state">Select a message to view details.</p>
+                        </div>
+                    </section>
+                </div>
+
+                <section id="composeMessagePanel" class="messages-card compose-message-panel" hidden>
+                    <div class="messages-panel-header">
+                        <div>
+                            <p class="messages-eyebrow">Compose / New Message</p>
+                            <h3>Send a Message</h3>
+                        </div>
+                        <button id="closeComposeMessageBtn" class="btn btn-secondary" type="button">Close</button>
+                    </div>
+                    <form id="composeMessageForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="composeDepartment">Select Department</label>
+                                <select id="composeDepartment">
+                                    <option value="Support">Support</option>
+                                    <option value="Cards">Cards</option>
+                                    <option value="Loans">Loans</option>
+                                    <option value="Accounts">Accounts</option>
+                                    <option value="Security">Security</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="composeSubject">Subject</label>
+                                <input id="composeSubject" type="text" placeholder="Message subject">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="composeMessageBody">Message</label>
+                            <textarea id="composeMessageBody" rows="5" placeholder="Write your message here"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="composeAttachment">File Attachment</label>
+                            <input id="composeAttachment" type="file">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Send Message</button>
+                    </form>
+                </section>
+            </div>
+        </section>
+
+        <!-- Support Page -->
+        <section id="supportPage" class="page">
+            <div class="page-header">
+                <button id="backFromSupportBtn" class="btn-back" aria-label="Go back">← Back</button>
+                <h2>Support &amp; Help</h2>
+            </div>
+            <div class="form-container support-page">
+                <div class="support-hero">
+                    <div>
+                        <p class="support-eyebrow">Always Available</p>
+                        <h3>Get answers, chat with support, and manage your help requests in one place.</h3>
+                        <p class="support-subtitle">Search help articles, contact the bank, or track your support tickets without leaving the app.</p>
+                    </div>
+                    <div class="support-metrics">
+                        <div class="support-metric-card">
+                            <span>Average reply time</span>
+                            <strong>Under 5 min</strong>
+                        </div>
+                        <div class="support-metric-card">
+                            <span>Open tickets</span>
+                            <strong id="supportOpenTicketCount">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="support-layout">
+                    <div class="support-main">
+                        <section class="support-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="support-eyebrow">Help Center / FAQ</p>
+                                    <h3>Find answers quickly</h3>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="supportSearchInput">Search Help Articles</label>
+                                <input type="text" id="supportSearchInput" placeholder="Search accounts, transfers, cards, loans, security...">
+                            </div>
+                            <div class="support-category-row" id="supportCategoryRow">
+                                <button type="button" class="support-chip active" data-category="all">All</button>
+                                <button type="button" class="support-chip" data-category="accounts">Accounts</button>
+                                <button type="button" class="support-chip" data-category="transfers">Transfers</button>
+                                <button type="button" class="support-chip" data-category="cards">Cards</button>
+                                <button type="button" class="support-chip" data-category="loans">Loans</button>
+                                <button type="button" class="support-chip" data-category="security">Security</button>
+                            </div>
+                            <div id="supportFaqList" class="support-faq-list"></div>
+                            <div class="support-guides">
+                                <h4>Step-by-step Guides / Tutorials</h4>
+                                <div class="support-guide-grid">
+                                    <button type="button" class="support-guide-btn" data-guide="How to transfer money between your checking and savings balances.">Move money between accounts</button>
+                                    <button type="button" class="support-guide-btn" data-guide="How to add money into checking or savings from the Add Funds page.">Add money to an account</button>
+                                    <button type="button" class="support-guide-btn" data-guide="How to update your security settings and change your transaction PIN.">Improve account security</button>
+                                    <button type="button" class="support-guide-btn" data-guide="How to review your support tickets and reply to existing cases.">Manage support tickets</button>
+                                </div>
+                                <div id="supportGuideOutput" class="support-guide-output">Select a guide to see the tutorial here.</div>
+                            </div>
+                        </section>
+
+                        <section class="support-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="support-eyebrow">Live Chat Support</p>
+                                    <h3>Talk to support in real time</h3>
+                                </div>
+                            </div>
+                            <div class="support-chat-actions">
+                                <button type="button" class="btn btn-primary" id="chatAgentBtn">Chat with Support Agent</button>
+                                <button type="button" class="btn btn-secondary" id="chatBotBtn">AI Chatbot</button>
+                            </div>
+                            <div id="supportChatHistory" class="support-chat-history"></div>
+                            <div id="supportTypingIndicator" class="support-typing-indicator" hidden>Support is typing...</div>
+                            <form id="supportChatForm" class="support-chat-form">
+                                <input type="text" id="supportChatInput" placeholder="Type your message here">
+                                <button type="submit" class="btn btn-primary">Send</button>
+                            </form>
+                        </section>
+
+                        <section class="support-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="support-eyebrow">Contact Support Options</p>
+                                    <h3>Reach the bank your way</h3>
+                                </div>
+                            </div>
+                            <form id="supportContactForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="supportContactTopic">Topic</label>
+                                        <select id="supportContactTopic">
+                                            <option value="General Inquiry">General Inquiry</option>
+                                            <option value="Account Access">Account Access</option>
+                                            <option value="Transfers">Transfers</option>
+                                            <option value="Cards">Cards</option>
+                                            <option value="Loans">Loans</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="supportContactChannel">Contact Option</label>
+                                        <select id="supportContactChannel">
+                                            <option value="Send Message">Send Message / Email</option>
+                                            <option value="Request Callback">Request Callback</option>
+                                            <option value="Phone Support">Call Support</option>
+                                            <option value="Ticket Submission">Support Ticket Submission</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="supportCallbackTime">Preferred Callback Time</label>
+                                        <input type="text" id="supportCallbackTime" placeholder="e.g. Today 3:00 PM">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="supportPhoneDisplay">Call Support</label>
+                                        <input type="text" id="supportPhoneDisplay" value="+1 (800) 555-0199" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="supportContactMessage">Message</label>
+                                    <textarea id="supportContactMessage" rows="4" placeholder="Describe your request or issue"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-full">Submit Support Request</button>
+                            </form>
+                        </section>
+                    </div>
+
+                    <aside class="support-side">
+                        <section class="support-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="support-eyebrow">Ticket / Case Management</p>
+                                    <h3>Track your issues</h3>
+                                </div>
+                            </div>
+                            <form id="supportTicketForm">
+                                <div class="form-group">
+                                    <label for="supportTicketSubject">Open Support Ticket</label>
+                                    <input type="text" id="supportTicketSubject" placeholder="Ticket subject">
+                                </div>
+                                <div class="form-group">
+                                    <label for="supportTicketCategory">Category</label>
+                                    <select id="supportTicketCategory">
+                                        <option value="Accounts">Accounts</option>
+                                        <option value="Transfers">Transfers</option>
+                                        <option value="Cards">Cards</option>
+                                        <option value="Loans">Loans</option>
+                                        <option value="Security">Security</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="supportTicketMessage">Details</label>
+                                    <textarea id="supportTicketMessage" rows="4" placeholder="Describe the issue you want us to investigate"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-full">Create Ticket</button>
+                            </form>
+                            <div class="support-ticket-toolbar">
+                                <label for="supportTicketReply">Reply to Existing Ticket</label>
+                                <textarea id="supportTicketReply" rows="3" placeholder="Write a reply to the selected ticket"></textarea>
+                                <button type="button" class="btn btn-secondary btn-full" id="supportReplyBtn">Send Reply</button>
+                            </div>
+                        </section>
+
+                        <section class="support-card">
+                            <div class="section-head">
+                                <div>
+                                    <p class="support-eyebrow">Previous Requests</p>
+                                    <h3>Your ticket history</h3>
+                                </div>
+                            </div>
+                            <div id="supportTicketList" class="support-ticket-list"></div>
                         </section>
                     </aside>
                 </div>
